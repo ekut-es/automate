@@ -10,3 +10,4 @@ venv/
 dist/
 automate.egg-info/
 der_schrank/
+*.sqlite3
