@@ -1,0 +1,12 @@
+\#*
+*~
+*.pyc
+.\#*
+doc/
+schema/
+tmp/
+venv/
+.mypy_cache/
+dist/
+automate.egg-info/
+der_schrank/

@@ -1,0 +1,66 @@
+name: clang-80
+id: clang-80
+triples:
+  - 
+    machine: aarch64
+    os: linux
+    environment: gnu
+  -
+    machine: arm
+    os: linux
+    environment: gnueabihf
+  -
+    machine: arm
+    os: linux
+    environment: gnueabi
+    
+toolchain: llvm
+version: 8.0.1
+basedir: /afs/wsi/es/tools/clang/8.0
+cc: clang
+cxx: clang++
+asm: llvm-as
+ld: lld
+
+toolchain_configs:
+  -
+    id: aarch64-linux-gcc
+    triple:
+      machine: aarch64
+      os: linux
+      environment: gnu
+    gcc_toolchain: /afs/wsi/es/tools/arm/gcc-arm-8.2-2018.11-x86_64-aarch64-linux-gnu/
+    sysroot: /afs/wsi/es/tools/arm/gcc-arm-8.2-2018.11-x86_64-aarch64-linux-gnu/aarch64-linux-gnu/libc/
+    rtlib: libgcc
+    stdlib: libstdc++
+  -
+    id: arm-gnueabihf-linux-gcc
+    triple:
+      machine: arm
+      os: linux
+      environment: gnueabihf
+    target: arm-linux-gnueabihf
+    gcc_toolchain: /afs/wsi/es/tools/arm/gcc-arm-8.2-2018.11-x86_64-arm-linux-gnueabihf/
+    sysroot: /afs/wsi/es/tools/arm/gcc-arm-8.2-2018.11-x86_64-arm-linux-gnueabihf/arm-linux-gnueabihf/libc/
+    rtlib: libgcc
+    stdlib: libstdc++
+  -
+    id: arm-gnueabi-linux-gcc
+    triple:
+      machine: arm
+      os: linux
+      environment: gnueabi
+    target: arm-linux-gnueabi
+    gcc_toolchain: /afs/wsi/es/tools/arm/gcc-arm-8.2-2018.11-x86_64-arm-linux-gnueabi/
+    sysroot: /afs/wsi/es/tools/arm/gcc-arm-8.2-2018.11-x86_64-arm-linux-gnueabi/arm-linux-gnueabi/libc/
+    rtlib: libgcc
+    stdlib: libstdc++
+   
+  
+
+isa_map:
+  armv8.1-a: -march=armv8.1-a
+
+uarch_map:
+  cortex-a35:     -mcpu=cortex-a35
+

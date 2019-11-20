@@ -1,0 +1,15 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    - id: check-yaml
+    - id: check-ast
+      
+-   repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: 751466f46bd015149429ab7dffcc43b803e57dfa
+    hooks:
+    -   id: autopep8
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v0.730'  
+    hooks:
+    -   id: mypy

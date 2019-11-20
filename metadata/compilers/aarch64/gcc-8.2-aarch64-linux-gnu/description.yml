@@ -1,0 +1,72 @@
+name: gcc-8.2-aarch64-linux-gnu
+id: aarch64-gcc82
+triples:
+  -
+    machine: aarch64
+    os: linux
+    environment: gnu
+toolchain: gcc
+version: 8.2.1
+basedir: /afs/wsi/es/tools/arm/gcc-arm-8.2-2018.11-x86_64-aarch64-linux-gnu/
+prefix: aarch64-linux-gnu-
+cc: gcc
+cxx: g++
+asm: as
+ld: ld
+
+isa_map:
+  armv8-a: -march=armv8-a
+  armv8.1-a: -march=armv8.1-a
+  armv8.2-a: -march=armv8.2-a
+  armv8.3-a: -march=armv8.3-a
+  armv8.4-a: -march=armv8.4-a
+  
+uarch_map:
+  cortex-a35:     -mcpu=cortex-a35
+  cortex-a53:     -mcpu=cortex-a53
+  cortex-a57:     -mcpu=cortex-a57
+  cortex-a72:     -mcpu=cortex-a72
+  cortex-a73:     -mcpu=cortex-a73
+  thunderx:       -mcpu=thunderx
+  thunderxt88p1:  -mcpu=thunderxt88p1
+  thunderxt88:    -mcpu=thunderxt88
+  thunderxt81:    -mcpu=thunderxt81
+  thunderxt83:    -mcpu=thunderxt83
+  xgene1:         -mcpu=xgene1
+  falkor:         -mcpu=falkor
+  qdf24xx:        -mcpu=qdf24xx
+  exynos-m1:      -mcpu=exynos-m1
+  thunderx2t99p1: -mcpu=thunderx2t99p1
+  vulcan:         -mcpu=vulcan
+  thunderx2t99:   -mcpu=thunderx2t99
+  cortex-a55:     -mcpu=cortex-a55
+  cortex-a75:     -mcpu=cortex-a75
+  saphira:        -mcpu=saphira
+
+
+
+  # How should we handle big little configurations
+  #- cortex-a57.cortex-a53
+  #- cortex-a72.cortex-a53
+  #- cortex-a73.cortex-a35
+  #- cortex-a73.cortex-a53
+  #- cortex-a75.cortex-a55
+  
+#features:
+#  crc: Enable CRC extension. This is on by default for -march=armv8.1-a.
+#  
+#  crypto: Enable Crypto extension. This also enables Advanced SIMD and floating-point instructions.
+#  fp: Enable floating-point instructions. This is on by default for all possible values for options -march and -mcpu. 
+#  simd: Enable Advanced SIMD instructions. This also enables floating-point instructions. This is on by default for all possible values for options -march and -mcpu.
+#  sve: Enable Scalable Vector Extension instructions. This also enables Advanced SIMD and floating-point instructions. 
+#  lse: Enable Large System Extension instructions. This is on by default for -march=armv8.1-a. 
+#  rdma: Enable Round Double Multiply Accumulate instructions. This is on by default for -march=armv8.1-a. 
+#  fp16: Enable FP16 extension. This also enables floating-point instructions. 
+#  fp16fml: Enable FP16 fmla extension. This also enables FP16 extensions and floating-point instructions. This option is enabled by default for -march=armv8.4-a. Use of this option with architectures prior to Armv8.2-A is not supported.
+#  rcpc: Enable the RcPc extension. This does not change code generation from GCC, but is passed on to the assembler, enabling inline asm statements to use instructions from the RcPc extension. 
+#  dotprod: Enable the Dot Product extension. This also enables Advanced SIMD instructions. 
+#  aes: Enable the Armv8-a aes and pmull crypto extension. This also enables Advanced SIMD instructions. 
+#  sha2: Enable the Armv8-a sha2 crypto extension. This also enables Advanced SIMD instructions. 
+#  sha3: Enable the sha512 and sha3 crypto extension. This also enables Advanced SIMD instructions. Use of this option with architectures prior to Armv8.2-A is not supported. 
+#  sm4: Enable the sm3 and sm4 crypto extension. This also enables Advanced SIMD instructions. Use of this option with architectures prior to Armv8.2-A is not supported.
+

@@ -1,0 +1,6 @@
+-r requirements.txt
+pur==5.2.2
+mypy==0.740
+typeshed==0.0.1
+pre-commit==1.20.0
+pytest==5.3.0
