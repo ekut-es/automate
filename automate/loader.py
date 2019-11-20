@@ -6,16 +6,17 @@ from .model import CompilerModel, LoadedCompilerModel, DataModel, LoadedBoardMod
 
 from .config import configure
 
+from typing import List
 
 class ModelLoader(object):
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
         self.config = configure()
         logging.debug("Metadata Loader for {}".format(self.config.metadata))
 
         self.model = None
 
-    def load_compilers(self):
+    def load_compilers(self) -> List[LoadedCompilerModel]:
         compiler_files = glob(self.config.metadata +
                               "/compilers/**/description.yml", recursive=True)
         compilers = []
@@ -31,7 +32,7 @@ class ModelLoader(object):
 
         return compilers
 
-    def load_boards(self):
+    def load_boards(self) -> List[LoadedBoardModel]:
 
         boards = []
         for board_file in glob(self.config.metadata+"/boards/**/description.yml", recursive=True):
