@@ -8,6 +8,7 @@ from .config import configure
 
 from typing import List
 
+
 class ModelLoader(object):
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
@@ -48,5 +49,7 @@ class ModelLoader(object):
         return boards
 
     def load_model(self):
-        compilers = self.load_compilers()
+        compiler = self.load_compilers()
         boards = self.load_boards()
+
+        return DataModel(compilers=compiler, boards=boards)
