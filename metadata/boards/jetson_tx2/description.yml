@@ -1,180 +1,83 @@
 name: Jetson TX2
 id: jetsontx2
+board: jetsontx2
 description: An NVIDIA Jetson TX2 based board running linux
 
 doc:
   -
     title: Technical Reference Manual
-    url: doc/Parker_TRM_DP07821001p.pdf
+    loc: $(boardroot)/$(board_id)/doc/Parker_TRM_DP07821001p.pdf
   -
     title: Users Guide
-    url: doc/Jetson_X2_Developer_Kit_User_Guide.pdf
+    loc: $(boardroot)/$(board_id)/doc/Jetson_X2_Developer_Kit_User_Guide.pdf
   -
     title: ELinux Documentation
-    url: https://elinux.org/Jetson_TX2
+    loc: https://elinux.org/Jetson_TX2
   -
     title: Thermal Design Guide
-    url: doc/Jetson_TX2_Series_Thermal_Design_Guide.pdf
+    loc: $(boardroot)/$(board_id)/doc/Jetson_TX2_Series_Thermal_Design_Guide.pdf
 
 
 gateway:
   host: tichy.informatik.uni-tuebingen.de
   username: esdata
-  lockdir: /local/data/esdata/locks
   
   
 connections:
   -
-    type: ssh
     host: 10.42.0.99
     username: es
     rundir: /home/es/run
-  
+
+  -
+    device: /dev/ttyACM0
     
 cores:
   -
     id: 0
     isa: armv8-a
     uarch: cortex-a57
-    isolated: false
   -
     id: 1
     isa: armv8-a
     uarch: denver2
-    isolated: false
   -
     id: 2
     isa: armv8-a
     uarch: denver2
-    isolated: false
   -
     id: 3
     isa: armv8-a
     uarch: cortex-a57
-    isolated: false
   -
     id: 4
     isa: armv8-a
     uarch: cortex-a57
-    isolated: false
   -
     id: 5
     isa: armv8-a
     uarch: cortex-a57
-    isolated: false
-
-power_states:
-  -
-    name: max-n-fixed
-    description: "All CPUs active Denver@2.0 GHz ARM@2.0 GHz GPU@1.3 GHZ"
-    commands:
-      - sudo nvpmodel -m 0
-      - sudo jetson_clocks
-    default: True
-  -
-    name: max-q-fixed
-    description: "Only ARM cores active  ARM@1.2 GHz GPU@0.85 GHZ"
-    commands:
-      - sudo nvpmodel -m 1
-      - sudo jetson_clocks
-  -
-    name: max-p-core-all-fixed
-    description: "All CPUs active Denver@1.4 GHz ARM@1.4 GHz GPU@1.12 GHZ"
-    commands:
-      - sudo nvpmodel -m 2
-      - sudo jetson_clocks
-  -
-    name: max-p-arm-fixed
-    description: "Only A57 ARM Cores active  ARM@2.0 GHz GPU@1.12 GHZ"
-    commands:
-      - sudo nvpmodel -m 3
-      - sudo jetson_clocks
-  -
-    name: max-p-denver-fixed
-    description: "Denver active and one A57 active  Denver@2.0 GHz ARM@2.0 GHz GPU@1.12 GHZ"
-    commands:
-      - sudo nvpmodel -m 4
-      - sudo jetson_clocks  
-  -
-    name: max-n
-    description: "All CPUs active Denver@2.0 GHz ARM@2.0 GHz GPU@1.3 GHZ"
-    commands:
-      - sudo nvpmodel -m 0
-      - echo 77 | sudo tee /sys/devices/pwm-fan/target_pwm
-    idle: True
-  -
-    name: max-q
-    description: "Only ARM cores active  ARM@1.2 GHz GPU@0.85 GHZ"
-    commands:
-      - sudo nvpmodel -m 1
-      - echo 77 | sudo tee /sys/devices/pwm-fan/target_pwm
-  -
-    name: max-p-core-all
-    description: "All CPUs active Denver@1.4 GHz ARM@1.4 GHz GPU@1.12 GHZ"
-    commands:
-      - sudo nvpmodel -m 2
-      - echo 77 | sudo tee /sys/devices/pwm-fan/target_pwm
-  -
-    name: max-p-arm
-    description: "Only A57 ARM Cores active  ARM@2.0 GHz GPU@1.12 GHZ"
-    commands:
-      - sudo nvpmodel -m 3
-      - echo 77 | sudo tee /sys/devices/pwm-fan/target_pwm
-  -
-    name: max-p-denver
-    description: "Denver active and one A57 active  Denver@2.0 GHz ARM@2.0 GHz GPU@1.12 GHZ"
-    commands:
-      - sudo nvpmodel -m 4
-      - echo 77 | sudo tee /sys/devices/pwm-fan/target_pwm
-        
-
+ 
+ 
 os:
-  - 
-    os: linux
-    machine: aarch64
-    environment: gnu
+    triple:
+      os: linux
+      machine: aarch64
+      environment: gnu
     distribution: ubuntu
     release: "18.04"
     description: "Ubuntu 18.04.2 LTS"
-    kernel: "4.9.140-tegra"             #uname -r
-    # Has been disabled for now
-    commandline: "isolcpus=1,2,3,4,5,6,7"
-    kernel_config: kernel/config
-    kernel_source:
-      url: git://nv-tegra.nvidia.com/linux-4.9.git
-      tag: tegra-l4t-r32.2.0
-    packages: packages.txt
-    device_tree: kernel/device_tree.dts
-    sysroot: /local/data/buildroots/jetsontx2
+    sysroot: $(boardroot)/$(board_id)/sysroot
+    rootfs: $(boardroot)/$(board_id)/$(board_id).img.bz
     multiarch: True
-
-accelerators:
-  -
-    id: gpu
-    description: "The Volta architecture based GPU on Xavier SOCs"
-    vendor: nvidia
-    type: gpu
-    apis:
+    kernels:
       -
-        name: OpenCL
-        version: 2.3
-        vendor: nvidia
-        platform_id: 0
-        device_id: 1
-        description : "POCL (Portable OpenCL) implementation of OpenCL for CUDA and ARM"
-        includedirs: ["/usr/local/include"]
-        libs: ["/usr/local/lib/libOpenCL.so", "-lm"]
-
-      -
-        name: CUDA
-        version: 10.0
-        vendor: nvidia
-        basedir: /usr/local/cuda-10.0/
-      -
-        name: TensorRT
-        version: 5.0
-        vendor: nvidia
-        includedirs: ["/usr/local/cuda-10.0/include"]
-        libdirs: ["/usr/local/cuda/lib64"]
-        libs: ["-lnvinfer", "-lnvparsers", "-lnvinfer_plugin", "-lnvonnxparser",
-               "-lcudnn", "-lcublas", "-lcudart", "-lrt", "-ldl", "-lpthread"]
+        id: default
+        description: "Standard nvidia (jetpack) kernel with enabled kexec, coresight, nohz_full"
+        version: "4.9.140-tegra"
+        commandline: root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 console=ttyS0,115200n8 console=tty0 fbcon=map:0 net.ifnames=0 video=tegrafb no_console_suspend=1 earlycon=uart8250,mmio32,0x3100000 nvdumper_reserved=0x2772e0000 gpt usbcore.old_scheme_first=1 tegraid=18.1.2.0.0 maxcpus=6 boot.slot_suffix= boot.ratchetvalues=0.2031647.1 bl_prof_dataptr=0x10000@0x275840000 sdhci_tegra.en_boot_part_access=1 quiet 
+        isolated_cores: [1,2,3,4,5]
+        nohz: False
+        kernel_config: kernel/config
+        kernel_source: $(boardroot)/$(board)/kernel-4.9.tar.bz
+        default: true

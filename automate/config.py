@@ -3,7 +3,7 @@ import logging.config
 import os
 
 _search_paths = ["../config.ini",
-                 "~/der_schrank/config.ini"]
+                 "~/.der_schrank/config.ini"]
 _config = None
 
 
@@ -14,22 +14,31 @@ class Config(object):
             parser.read_file(f)
 
         self._config_dir = os.path.dirname(config_file)
+
         metadata = parser["automate"]["metadata"]
-        metadata = os.path.expanduser(metadata)
-        if not os.path.isabs(metadata):
-            metadata = os.path.join(self._config_dir,
-                                    metadata)
+        metadata = self._abspath(metadata)
         self.metadata: str = metadata
 
         identity = parser["automate"]["identity"]
-        if identity is not None:
-            identity = os.path.expanduser(identity)
-            if not os.path.isabs(identity):
-                identity = os.path.join(self._config_dir,
-                                        identity)
+        identity = self._abspath(identity)
         self.identity: str = identity
 
+        toolroot = parser["automate"]["toolroot"]
+        toolroot = self._abspath(toolroot)
+        self.toolroot: str = toolroot
+
+        boardroot = parser["automate"]["boardroot"]
+        boardroot = self._abspath(boardroot)
+        self.boardroot: str = boardroot
+
         logging.config.fileConfig(parser)
+
+    def _abspath(self, path: str) -> str:
+        path = os.path.expanduser(path)
+        if not os.path.isabs(path):
+            path = os.path.join(self._config_dir,
+                                path)
+        return path
 
 
 def configure() -> Config:

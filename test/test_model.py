@@ -1,15 +1,14 @@
+import pytest
+
 from automate.loader import ModelLoader
 
 
-def test_compiler_loader():
+def test_model_load():
     loader = ModelLoader()
-    models = loader.load_compilers()
-    assert len(models) > 0
-    print(models)
+    model = loader.load_model()
 
+    assert len(model.boards) > 0
+    assert len(model.compiler) > 0
 
-def test_board_loader():
-    loader = ModelLoader()
-    boards = loader.load_boards()
-
-    assert len(boards) > 0
+    with pytest.raises(TypeError):
+        model.compiler[0].name = "test"

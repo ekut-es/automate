@@ -2,10 +2,12 @@ from pydantic import BaseModel, Schema
 from enum import Enum
 from typing import List, Dict, Any
 
-from .compiler import LoadedCompilerModel
-from .board import LoadedBoardModel
+
+from .compiler import CompilerModel
+from .board import BoardModel
+from .model_base import *
 
 
-class DataModel(BaseModel):
-    compilers: List[LoadedCompilerModel]
-    boards: List[LoadedBoardModel]
+class DataModel(DataModelBase):
+    compiler: List[CompilerModel]
+    boards: List[BoardModel]
