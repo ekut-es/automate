@@ -11,6 +11,9 @@ from .config import configure
 from typing import List
 
 
+from ruamel.yaml.comments import CommentedMap
+
+
 class ModelLoader(object):
     def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
@@ -20,7 +23,7 @@ class ModelLoader(object):
 
         self.model = None
 
-    def _load_metadata_list(self, pattern, recursive=True):
+    def _load_metadata_list(self, pattern: str, recursive: bool = True) -> List[CommentedMap]:
         res = []
         files = glob(os.path.join(self.config.metadata,
                                   pattern), recursive=recursive)

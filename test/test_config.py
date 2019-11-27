@@ -1,23 +1,24 @@
-from automate.config import Config, configure
+from automate.config import configure
 import os
+from pathlib import Path
 
 root_path = os.path.dirname(os.path.abspath(__file__))
 
 config_file = os.path.join(root_path,
-                           "test_config.ini")
+                           "test_config.yml")
 
 
 def test_config():
-    config = Config(config_file)
+    config = configure(config_file)
 
-    assert config.identity == os.path.join(root_path,
-                                           "test_identity")
-    assert config.metadata == os.path.join(root_path,
-                                           "test_metadata")
-    assert config.toolroot == os.path.join(root_path,
-                                           "test_toolroot")
-    assert config.boardroot == os.path.join(root_path,
-                                            "test_boardroot")
+    assert config.identity == Path(os.path.join(root_path,
+                                                "test_identity"))
+    assert config.metadata == Path(os.path.join(root_path,
+                                                "test_metadata"))
+    assert config.toolroot == Path(os.path.join(root_path,
+                                                "test_toolroot"))
+    assert config.boardroot == Path(os.path.join(root_path,
+                                                 "test_boardroot"))
 
 
 def test_configure():

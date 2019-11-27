@@ -1,8 +1,8 @@
 automate:
-  metadata: metadata
-  identity: ~/.ssh/id_rsa
-  toolroot: /afs/wsi/es/tools/
-  boardroot: /nfs/es-genial/boards/
+  identity: test_identity
+  metadata: test_metadata
+  toolroot: test_toolroot
+  boardroot: test_boardroot
 
 logging:
   version: 1

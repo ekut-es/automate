@@ -1,59 +1,73 @@
 import configparser
 import logging.config
+import coloredlogs
 import os
+import ruamel.yaml as yaml
+from pathlib import Path
+from typing import Dict, Any, Optional, Union
 
-_search_paths = ["../config.ini",
-                 "~/.der_schrank/config.ini"]
-_config = None
+from .model import ConfigModel
 
-
-class Config(object):
-    def __init__(self, config_file: str) -> None:
-        parser = configparser.ConfigParser()
-        with open(config_file) as f:
-            parser.read_file(f)
-
-        self._config_dir = os.path.dirname(config_file)
-
-        metadata = parser["automate"]["metadata"]
-        metadata = self._abspath(metadata)
-        self.metadata: str = metadata
-
-        identity = parser["automate"]["identity"]
-        identity = self._abspath(identity)
-        self.identity: str = identity
-
-        toolroot = parser["automate"]["toolroot"]
-        toolroot = self._abspath(toolroot)
-        self.toolroot: str = toolroot
-
-        boardroot = parser["automate"]["boardroot"]
-        boardroot = self._abspath(boardroot)
-        self.boardroot: str = boardroot
-
-        logging.config.fileConfig(parser)
-
-    def _abspath(self, path: str) -> str:
-        path = os.path.expanduser(path)
-        if not os.path.isabs(path):
-            path = os.path.join(self._config_dir,
-                                path)
-        return path
+_search_paths = [
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "..",
+        "config.yml"),
+    "~/.der_schrank/config.yml"]
 
 
-def configure() -> Config:
-    global _config
-    if _config is not None:
-        return _config
+def _configure_automate(base_dir: Union[Path, str], automate_conf: Dict[str, Any]) -> ConfigModel:
+    base_dir = Path(base_dir).resolve()
+    config_model = ConfigModel(**automate_conf)
 
-    for path in _search_paths:
-        path = os.path.expanduser(path)
-        if not os.path.isabs(path):
-            path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                path)
-        if os.path.exists(path):
-            _config = Config(path)
-            return _config
+    model_dict = config_model.dict()
+
+    for key, item in model_dict.items():
+        if isinstance(item, Path):
+            if not item.is_absolute():
+                item = base_dir / item
+            item = item.resolve()
+
+            model_dict[key] = item
+
+    config_model = ConfigModel(**model_dict)
+
+    logging.info("Using configuration:\n {}".format(config_model))
+
+    return config_model
+
+
+def _configure_logging(logging_conf: Dict[str, Any]) -> None:
+    logging.config.dictConfig(logging_conf)
+    coloredlogs.install()
+
+
+def configure(config_file: Optional[str] = None) -> ConfigModel:
+
+    if config_file is None:
+        for path in _search_paths:
+            path = os.path.expanduser(path)
+            if not os.path.isabs(path):
+                path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    path)
+            if os.path.exists(path):
+                config_file = path
+                break
+
+    if config_file is None:
+        raise Exception("Could not find configuration file in {}".format(
+            " ".join(_search_paths)))
+
+    if os.path.exists(config_file):
+        with open(config_file, "r") as cf:
+            config_yaml = yaml.load(cf, Loader=yaml.Loader)
+
+            _configure_logging(config_yaml['logging'])
+            config_model = _configure_automate(os.path.dirname(config_file),
+                                               config_yaml['automate'])
+            config = config_model
+
+            return config_model
 
     raise Exception("Could not find configuration file in {}".format(
         " ".join(_search_paths)))
