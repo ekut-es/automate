@@ -74,3 +74,11 @@ class BoardModel(LoadedModelBase):
     connections: List[Union[SSHConnectionModel, UARTConnectionModel]]
     cores: List[CoreModel]
     os: OSModel
+
+    def _get_env_dict(self):
+        d = {
+            'board': self.board,
+            'board_id': self.id
+        }
+
+        return d

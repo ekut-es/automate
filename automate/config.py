@@ -24,6 +24,7 @@ def _configure_automate(base_dir: Union[Path, str], automate_conf: Dict[str, Any
 
     for key, item in model_dict.items():
         if isinstance(item, Path):
+            item = item.expanduser()
             if not item.is_absolute():
                 item = base_dir / item
             item = item.resolve()
@@ -32,14 +33,17 @@ def _configure_automate(base_dir: Union[Path, str], automate_conf: Dict[str, Any
 
     config_model = ConfigModel(**model_dict)
 
-    logging.info("Using configuration:\n {}".format(config_model))
+    logging.info("Using configuration:")
+    for key, item in config_model.dict().items():
+        logging.info("  {}: {}".format(key, item))
 
     return config_model
 
 
 def _configure_logging(logging_conf: Dict[str, Any]) -> None:
-    logging.config.dictConfig(logging_conf)
-    coloredlogs.install()
+    level = logging_conf["level"] if "level" in logging_conf else "DEBUG"
+    fmt = logging_conf["fmt"] if "fmt" in logging_conf else "%(message)s"
+    coloredlogs.install(level=level, fmt=fmt)
 
 
 def configure(config_file: Optional[str] = None) -> ConfigModel:
