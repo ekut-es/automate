@@ -5,6 +5,12 @@ import tabulate
 
 
 @task
+def show_context(c):
+    from pprint import pprint
+    pprint(dict(c), indent=2)
+
+
+@task
 def list(c, boards=False, compilers=False):
     "List available boards and compilers"
 
@@ -43,12 +49,22 @@ def list(c, boards=False, compilers=False):
         print("Compiler:")
 
         compiler_table = []
-        compiler_header = ["ID", "Name", "Description"]
+        compiler_header = ["ID", "Toolchain",
+                           "Version", "Machines", "Multiarch"]
+
         for compiler in metadata.compilers:
+            machines = set()
+            for triple in compiler.triples:
+                machines.add(triple.machine.value)
             compiler_line = [
                 compiler.id,
-                compiler.name,
-                compiler.description
+                compiler.toolchain.value,
+                compiler.version,
+                ", ".join(sorted(machines)),
+                "yes" if compiler.multiarch else "no",
             ]
+            compiler_table.append(compiler_line)
+
+        print(tabulate.tabulate(compiler_table, headers=compiler_header))
 
     return 0

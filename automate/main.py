@@ -2,9 +2,8 @@
 
 import sys
 
-from invoke import Program, Collection
+from invoke import Program, Collection, Config
 from invoke.config import merge_dicts
-from fabric import Config
 
 from .import __version__ as self_version
 
@@ -39,9 +38,8 @@ class AutoTool(Program):
         print("  fabric: {}".format(fabric_version))
         print("  invoke: {}".format(invoke_version))
         print("  paramiko: {}".format(paramiko_version))
-        print("  pydantic: {}".format(pydantic_version))
 
 
 program = AutoTool(version=self_version,
                    config_class=AutomateConfig,
-                   namespace=Collection.from_module(tasks))
+                   namespace=tasks.collection)
