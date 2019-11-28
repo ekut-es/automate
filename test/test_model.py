@@ -9,10 +9,7 @@ def test_model_load():
     model = loader.load_model()
 
     assert len(model.boards) > 0
-    assert len(model.compiler) > 0
-
-    with pytest.raises(TypeError):
-        model.compiler[0].name = "test"
+    assert len(model.compilers) > 0
 
     checked_boards = ["jetsontx2", "jetsonagx"]
     for board in model.boards:

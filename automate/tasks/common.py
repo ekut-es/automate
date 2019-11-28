@@ -14,9 +14,10 @@ def list(c, boards=False, compilers=False):
 
     metadata = c['metadata']
 
-    board_table = []
-    board_header = ["ID", "Machine", "Cores", "OS", "Connections"]
     if boards:
+        board_table = []
+        board_header = ["ID", "Machine", "Cores",
+                        "OS", "Connections", "Description"]
         for board in metadata.boards:
             os = getattr(board.os, "distribution", "unknown")
 
@@ -29,12 +30,25 @@ def list(c, boards=False, compilers=False):
                           board.board,
                           len(board.cores),
                           os,
-                          ",".join(connections)]
+                          ",".join(connections),
+                          board.description]
 
             board_table.append(board_line)
 
         print("Boards:")
         print(tabulate.tabulate(board_table,
                                 headers=board_header))
+
+    if compilers:
+        print("Compiler:")
+
+        compiler_table = []
+        compiler_header = ["ID", "Name", "Description"]
+        for compiler in metadata.compilers:
+            compiler_line = [
+                compiler.id,
+                compiler.name,
+                compiler.description
+            ]
 
     return 0

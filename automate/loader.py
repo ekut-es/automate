@@ -5,7 +5,7 @@ import string
 from datetime import datetime
 import ruamel.yaml as yaml
 
-from .model import DataModel, DataModelBase, LoadedModelBase
+from .model import MetadataModel, DataModelBase, LoadedModelBase
 
 from .config import configure
 
@@ -100,11 +100,11 @@ class ModelLoader(object):
 
         return None
 
-    def load_model(self) -> DataModel:
-        compiler = self._load_metadata_list("compiler/**/description.yml")
+    def load_model(self) -> MetadataModel:
+        compilers = self._load_metadata_list("compilers/**/description.yml")
         boards = self._load_metadata_list("boards/**/description.yml")
 
-        data_model = DataModel(compiler=compiler, boards=boards)
+        data_model = MetadataModel(compilers=compilers, boards=boards)
 
         template_env = {
             'metadata':  str(self.config.metadata),
@@ -121,10 +121,10 @@ class ModelLoader(object):
         return data_model
 
 
-_model: Optional[DataModel] = None
+_model: Optional[MetadataModel] = None
 
 
-def get_model() -> DataModel:
+def get_model() -> MetadataModel:
     global _model
     if _model is None:
         loader = ModelLoader()

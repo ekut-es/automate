@@ -8,6 +8,6 @@ from .board import BoardModel
 from .model_base import *
 
 
-class DataModel(DataModelBase):
-    compiler: List[CompilerModel]
+class MetadataModel(DataModelBase):
+    compilers: List[CompilerModel]
     boards: List[BoardModel]
