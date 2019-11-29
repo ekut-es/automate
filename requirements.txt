@@ -3,3 +3,4 @@ ruamel.yaml==0.16.5
 fabric==2.5.0
 coloredlogs==10.0
 tabulate==0.8.6
+patchwork==1.0.1
