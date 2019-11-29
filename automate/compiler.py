@@ -1,6 +1,8 @@
 import logging
 
-from .model import CompilerModel, BoardModel, MetadataModel, ConfigModel
+from typing import List
+
+from .model import CompilerModel, BoardModel, MetadataModel, ConfigModel, Toolchain
 
 
 class CrossCompiler(object):
@@ -9,9 +11,33 @@ class CrossCompiler(object):
         self.board = board
         self.compiler = compiler
 
-        self.logger.debug(
-            "Getting compiler {} for {}".format(compiler.id, board.id))
+        self.logger.debug("Getting compiler {} for {}".format(compiler.id,
+                                                              board.id))
         self.check_multiarch = True
+
+    @property
+    def version(self):
+        return self.compiler.version
+
+    @property
+    def os(self):
+        return self.board.os.triple.os
+
+    @property
+    def machine(self):
+        return self.board.os.triple.machine
+
+    @property
+    def environment(self):
+        return self.board.os.triple.environment
+
+    @property
+    def multiarch(self):
+        return self.compiler.multiarch
+
+    @property
+    def toolchain(self):
+        return self.compiler.toolchain
 
     @property
     def valid(self) -> bool:
@@ -36,23 +62,9 @@ class CrossCompilerGenerator(object):
     def get_compiler(self, compiler_id: str, board_id: str) -> CrossCompiler:
         self.logger.debug(
             "Getting compiler {} for {}".format(compiler_id, board_id))
-        compiler = None
-        for candidate in self.metadata.compilers:
-            if compiler_id == candidate.id:
-                compiler = candidate
-                break
 
-        if compiler is None:
-            raise Exception("Could not find compiler {}".format(compiler_id))
-
-        board = None
-        for candidate_board in self.metadata.boards:
-            if board_id == candidate_board.id:
-                board = candidate_board
-                break
-
-        if board is None:
-            raise Exception("Could not find board {}".format(board_id))
+        compiler = self.metadata.get_compiler(compiler_id)
+        board = self.metadata.get_board(board_id)
 
         cc = CrossCompiler(compiler, board)
         if cc.valid:
@@ -61,7 +73,17 @@ class CrossCompilerGenerator(object):
 
         return cc
 
-    def get_default_compiler(self, board_id: str) -> CrossCompiler:
+    def compatible_compilers(self, board_id: str) -> List[CrossCompiler]:
+        board = self.metadata.get_board(board_id)
+        compilers = []
+        for compiler in self.metadata.compilers:
+            cc = CrossCompiler(compiler, board)
+            if cc.valid:
+                compilers.append(cc)
+
+        return compilers
+
+    def get_default_compiler(self, board_id: str, toolchain: Toolchain = Toolchain.GCC) -> CrossCompiler:
         """Returns the default compiler for a board, 
            this is currently the newest compatible gcc compiler
 
@@ -70,6 +92,14 @@ class CrossCompilerGenerator(object):
         """
 
         res = None
+
+        compilers = self.compatible_compilers(board_id)
+        compilers_sorted = reversed(sorted(compilers, key=lambda x: x.version))
+
+        for compiler in compilers_sorted:
+            if compiler.toolchain == Toolchain.GCC:
+                res = compiler
+                break
 
         if res is None:
             raise Exception("Could not find compiler for {}".format(board_id))
