@@ -1,6 +1,6 @@
 import logging
 
-from .model import CompilerModel, BoardModel, MetadataModel
+from .model import CompilerModel, BoardModel, MetadataModel, ConfigModel
 
 
 class CrossCompiler(object):
@@ -14,23 +14,26 @@ class CrossCompiler(object):
         self.check_multiarch = True
 
     @property
-    def valid(self):
-        os_triple = (os.triple.os,
-                     os.triple.machine,
-                     os.triple.environment)
-        for ct in compiler.triples:
+    def valid(self) -> bool:
+        os_triple = (self.board.os.triple.os,
+                     self.board.os.triple.machine,
+                     self.board.os.triple.environment)
+        for ct in self.compiler.triples:
             if os_triple == (ct.os, ct.machine, ct.environment):
+                if self.check_multiarch and self.board.os.multiarch:
+                    if not self.compiler.multiarch:
+                        return False
                 return True
 
         return False
 
 
 class CrossCompilerGenerator(object):
-    def __init__(self, metadata: MetadataModel) -> None:
+    def __init__(self, metadata: MetadataModel, config: ConfigModel) -> None:
         self.logger = logging.getLogger(__name__)
         self.metadata = metadata
 
-    def get_compiler(self, compiler_id: str, board_id: str):
+    def get_compiler(self, compiler_id: str, board_id: str) -> CrossCompiler:
         self.logger.debug(
             "Getting compiler {} for {}".format(compiler_id, board_id))
         compiler = None
@@ -57,3 +60,18 @@ class CrossCompilerGenerator(object):
                 compiler_id, board_id))
 
         return cc
+
+    def get_default_compiler(self, board_id: str) -> CrossCompiler:
+        """Returns the default compiler for a board, 
+           this is currently the newest compatible gcc compiler
+
+           TODO: make default toolchain configurable and/or allow default
+           compiler selection using a default toolchain. 
+        """
+
+        res = None
+
+        if res is None:
+            raise Exception("Could not find compiler for {}".format(board_id))
+
+        return res
