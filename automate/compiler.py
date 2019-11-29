@@ -1,8 +1,10 @@
 import logging
 
 from typing import List
+from pathlib import Path
 
-from .model import CompilerModel, BoardModel, MetadataModel, ConfigModel, Toolchain
+from .model import CompilerModel, BoardModel, MetadataModel, ConfigModel, CoreModel
+from .model.common import Toolchain, Vendor, ISA, UArch, OS, Machine, Environment, Vendor
 
 
 class CrossCompiler(object):
@@ -16,28 +18,61 @@ class CrossCompiler(object):
         self.check_multiarch = True
 
     @property
-    def version(self):
+    def version(self) -> str:
         return self.compiler.version
 
     @property
-    def os(self):
+    def os(self) -> OS:
         return self.board.os.triple.os
 
     @property
-    def machine(self):
+    def machine(self) -> Machine:
         return self.board.os.triple.machine
 
     @property
-    def environment(self):
+    def environment(self) -> Environment:
         return self.board.os.triple.environment
 
     @property
-    def multiarch(self):
+    def multiarch(self) -> bool:
         return self.compiler.multiarch
 
     @property
-    def toolchain(self):
+    def toolchain(self) -> Toolchain:
         return self.compiler.toolchain
+
+    @property
+    def bin(self) -> Path:
+        return Path(self.compiler.basedir) / "bin"
+
+    @property
+    def cc(self) -> str:
+        return self.compiler.prefix + self.compiler.cc
+
+    @property
+    def cxx(self) -> str:
+        return self.compiler.prefix + self.compiler.cxx
+
+    @property
+    def asm(self) -> str:
+        return self.compiler.prefix + self.compiler.asm
+
+    @property
+    def ld(self) -> str:
+        return self.compiler.prefix + self.compiler.ld
+
+    def get_isa_flag(self, isa: ISA) -> str:
+        return self.compiler.isa_map.get(isa, "")
+
+    def get_uarch_flag(self, uarch: UArch) -> str:
+        return self.compiler.uarch_map.get(uarch, "")
+
+    def get_uarch_or_isa(self, core: CoreModel) -> str:
+        flag = self.get_uarch_flag(core.uarch)
+        if not flag:
+            flag = self.get_isa_flag(core.isa)
+
+        return flag
 
     @property
     def valid(self) -> bool:
@@ -75,6 +110,7 @@ class CrossCompilerGenerator(object):
 
     def compatible_compilers(self, board_id: str) -> List[CrossCompiler]:
         board = self.metadata.get_board(board_id)
+
         compilers = []
         for compiler in self.metadata.compilers:
             cc = CrossCompiler(compiler, board)
