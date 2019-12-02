@@ -25,7 +25,6 @@ class SSHConnectionModel(DataModelBase):
     host: str
     username: str
     port: int = 22
-    rundir: str
 
 
 class UARTConnectionModel(DataModelBase):
@@ -59,7 +58,7 @@ class OSModel(DataModelBase):
     release: str
     description: str
     sysroot: Path = Path("$(boardroot)/$(board_id)/sysroot")
-    rootfs: Path = Path("$(boardroot)/$(board_id)/$(board_id).img.bz")
+    rootfs: Path = Path("$(boardroot)/$(board_id)/$(board_id).img")
     multiarch: bool = False
     kernels: List[KernelModel] = []
 
@@ -69,6 +68,7 @@ class BoardModel(LoadedModelBase):
     id: str
     board: str
     description: str
+    rundir: Path
     doc: List[DocumentationLinkModel] = []
     gateway: Optional[GatewayModel] = None
     connections: List[Union[SSHConnectionModel, UARTConnectionModel]]

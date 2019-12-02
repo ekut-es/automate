@@ -7,6 +7,8 @@ from .compiler import CompilerModel
 from .board import BoardModel
 from .model_base import *
 
+from ..board import BoardHandler
+
 
 class MetadataModel(DataModelBase):
     compilers: List[CompilerModel]
@@ -35,3 +37,8 @@ class MetadataModel(DataModelBase):
             raise Exception("Could not find compiler {}".format(compiler_id))
 
         return compiler
+
+    def get_board_handler(self, board_id: str) -> BoardHandler:
+        board = self.get_board(board_id)
+
+        return BoardHandler(board)

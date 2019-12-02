@@ -1,4 +1,8 @@
-from typing import Union
+from pathlib import Path
+from typing import Union, List
+import os
+import sys
+import logging
 
 from .model.board import SSHConnectionModel, UARTConnectionModel
 
@@ -17,3 +21,37 @@ def connection_to_string(connection: Union[SSHConnectionModel, UARTConnectionMod
         name = table[t]
 
     return name
+
+
+def fix_symlinks(base_path: Path) -> None:
+    """ This function tries to fix symlinks in cloned buildroots by:
+
+1. Searching for all symlinks with absolute target path in base_path
+2. Prepending base_path to the target path
+3. Making the targets of the links relative to the symlink location
+4. Deleting the symlink and replacing it with one to the relative location
+ """
+
+    logging.info("Changing absolute symlinks to relative symlinks")
+    links: List[str] = []
+    broken: List[str] = []
+    for root, dirs, files in os.walk(base_path):
+        for filename in files:
+            path = os.path.join(root, filename)
+            if os.path.islink(path):
+                links.append(path)
+            else:
+                # If it's not a symlink we're not interested.
+                continue
+
+    for link in links:
+        target = os.readlink(link)
+        if os.path.isabs(target):
+            new_target = base_path / target
+            new_target_rel = os.path.relpath(
+                new_target, os.path.dirname(os.path.abspath(link)))
+
+            os.unlink(link)
+            os.symlink(new_target_rel, link)
+
+    sys.exit(0)

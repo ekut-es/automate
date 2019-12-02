@@ -2,6 +2,7 @@ name: Jetson TX2
 id: jetsontx2
 board: jetsontx2
 description: An NVIDIA Jetson TX2 based board running linux
+rundir: /home/es/run
 
 doc:
   -
@@ -27,7 +28,6 @@ connections:
   -
     host: 10.42.0.99
     username: es
-    rundir: /home/es/run
 
   -
     device: /dev/ttyACM0
@@ -68,7 +68,7 @@ os:
     release: "18.04.02"
     description: "Ubuntu 18.04.2 LTS"
     sysroot: ${boardroot}/${board_id}/sysroot
-    rootfs: ${boardroot}/${board_id}/${board_id}.img.bz
+    rootfs: ${boardroot}/${board_id}/${board_id}.img
     multiarch: True
     kernels:
       -

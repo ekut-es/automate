@@ -2,6 +2,7 @@ name: Jetson AGX Xavier
 id: jetsonagx
 board: jetsonagx
 description: An NVIDIA Jetson AGX Xavier Board running Linux
+rundir: /home/es/run
 
 doc:
   -
@@ -27,7 +28,6 @@ connections:
   -
     host: 192.168.55.1
     username: es
-    rundir: /home/es/run
         
 cores:
   -
@@ -72,7 +72,7 @@ os:
     release: "18.04"
     description: "Ubuntu 18.04.2 LTS"
     sysroot: ${boardroot}/${board_id}/sysroot
-    rootfs: ${boardroot}/${board_id}/${board_id}.img.bz
+    rootfs: ${boardroot}/${board_id}/${board_id}.img
     multiarch: True
     kernels:
       -

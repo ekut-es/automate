@@ -1,6 +1,6 @@
 import logging
 
-from typing import List
+from typing import List, Union
 from pathlib import Path
 
 from .model import CompilerModel, BoardModel, MetadataModel, ConfigModel, CoreModel
@@ -16,6 +16,15 @@ class CrossCompiler(object):
         self.logger.debug("Getting compiler {} for {}".format(compiler.id,
                                                               board.id))
         self.check_multiarch = True
+        self.core = 0
+
+    @property
+    def opt_flags(self) -> str:
+        return "-O2"
+
+    @property
+    def id(self) -> str:
+        return self.compiler.id
 
     @property
     def version(self) -> str:
@@ -42,7 +51,7 @@ class CrossCompiler(object):
         return self.compiler.toolchain
 
     @property
-    def bin(self) -> Path:
+    def bin_path(self) -> Path:
         return Path(self.compiler.basedir) / "bin"
 
     @property
@@ -61,18 +70,33 @@ class CrossCompiler(object):
     def ld(self) -> str:
         return self.compiler.prefix + self.compiler.ld
 
-    def get_isa_flag(self, isa: ISA) -> str:
+    @property
+    def isa_flags(self) -> str:
+        isa = self.board.cores[self.core].isa
         return self.compiler.isa_map.get(isa, "")
 
-    def get_uarch_flag(self, uarch: UArch) -> str:
-        return self.compiler.uarch_map.get(uarch, "")
+    @property
+    def uarch_flags(self) -> str:
+        uarch = self.board.cores[self.core].uarch
+        ret = self.compiler.uarch_map.get(uarch, "")
+        return str(ret)
 
-    def get_uarch_or_isa(self, core: CoreModel) -> str:
-        flag = self.get_uarch_flag(core.uarch)
+    @property
+    def uarch_or_isa_flags(self) -> str:
+        core = self.board.cores[self.core]
+        flag = self.uarch_flags
         if not flag:
-            flag = self.get_isa_flag(core.isa)
+            flag = self.isa_flags
 
         return flag
+
+    @property
+    def sysroot(self) -> Union[Path, str]:
+        if not Path(self.board.os.sysroot).exists():
+            self.logger.warning(
+                "Could not find sysroot {} using generic sysroot".format(self.board.os.sysroot))
+            return ""
+        return Path(self.board.os.sysroot)
 
     @property
     def valid(self) -> bool:
@@ -88,9 +112,44 @@ class CrossCompiler(object):
 
         return False
 
+    @property
+    def base_flags(self) -> str:
+        flags = []
+
+        if self.uarch_or_isa_flags:
+            flags.append(self.uarch_or_isa_flags)
+
+        if self.sysroot:
+            flags.append("--sysroot={}".format(self.sysroot))
+
+        return " ".join(flags)
+
+    @property
+    def cflags(self) -> str:
+        flags = []
+
+        if self.opt_flags:
+            flags.append(self.opt_flags)
+
+        base_flags = self.base_flags
+        if base_flags:
+            flags.append(base_flags)
+
+        return " ".join(flags)
+
+    @property
+    def ldflags(self):
+        flags = []
+
+        base_flags = self.base_flags
+        if self.base_flags:
+            flags.append(self.base_flags)
+
+        return " ".join(flags)
+
 
 class CrossCompilerGenerator(object):
-    def __init__(self, metadata: MetadataModel, config: ConfigModel) -> None:
+    def __init__(self, metadata: MetadataModel) -> None:
         self.logger = logging.getLogger(__name__)
         self.metadata = metadata
 
@@ -133,7 +192,7 @@ class CrossCompilerGenerator(object):
         compilers_sorted = reversed(sorted(compilers, key=lambda x: x.version))
 
         for compiler in compilers_sorted:
-            if compiler.toolchain == Toolchain.GCC:
+            if compiler.toolchain == toolchain:
                 res = compiler
                 break
 

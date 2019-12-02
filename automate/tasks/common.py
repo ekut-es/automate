@@ -1,6 +1,8 @@
 from invoke import task
 
 from ..utils import connection_to_string
+from ..compiler import CrossCompilerGenerator
+
 import tabulate
 
 
@@ -21,9 +23,10 @@ def list(c, boards=False, compilers=False):
     metadata = c['metadata']
 
     if boards:
+        compiler_generator = CrossCompilerGenerator(metadata)
         board_table = []
         board_header = ["ID", "Machine", "Cores",
-                        "OS", "Connections", "Description"]
+                        "OS", "Connections", "Default Compiler"]
         for board in metadata.boards:
             os = getattr(board.os, "distribution", "unknown")
 
@@ -32,18 +35,22 @@ def list(c, boards=False, compilers=False):
                 s = connection_to_string(connection)
                 connections.append(s)
 
+            default_compiler = compiler_generator.get_default_compiler(
+                board.id)
+
             board_line = [board.id,
                           board.board,
                           len(board.cores),
                           os,
                           ",".join(connections),
-                          board.description]
+                          default_compiler.id]
 
             board_table.append(board_line)
 
         print("Boards:")
         print(tabulate.tabulate(board_table,
                                 headers=board_header))
+        print("")
 
     if compilers:
         print("Compiler:")
@@ -66,5 +73,6 @@ def list(c, boards=False, compilers=False):
             compiler_table.append(compiler_line)
 
         print(tabulate.tabulate(compiler_table, headers=compiler_header))
+        print("")
 
     return 0

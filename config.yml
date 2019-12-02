@@ -5,4 +5,4 @@ automate:
   boardroot: /nfs/es-genial/boards/
 
 logging:
-  level: INFO
+  level: DEBUG
