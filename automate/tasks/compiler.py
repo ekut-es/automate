@@ -19,8 +19,9 @@ def compile(c, board, files=[], compiler="", builddir=""):
     else:
         compiler = generator.get_default_compiler(board)
 
-    logging.info("Compiling {} with compiler {}".format(
-        ", ".join(files), compiler.id))
+    logging.info(
+        "Compiling {} with compiler {}".format(", ".join(files), compiler.id)
+    )
 
     cc = compiler.bin_path / compiler.cc
     cxx = compiler.bin_path / compiler.cxx

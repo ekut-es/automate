@@ -3,8 +3,23 @@ import logging
 from typing import List, Union
 from pathlib import Path
 
-from .model import CompilerModel, BoardModel, MetadataModel, ConfigModel, CoreModel
-from .model.common import Toolchain, Vendor, ISA, UArch, OS, Machine, Environment, Vendor
+from .model import (
+    CompilerModel,
+    BoardModel,
+    MetadataModel,
+    ConfigModel,
+    CoreModel,
+)
+from .model.common import (
+    Toolchain,
+    Vendor,
+    ISA,
+    UArch,
+    OS,
+    Machine,
+    Environment,
+    Vendor,
+)
 
 
 class CrossCompiler(object):
@@ -13,8 +28,9 @@ class CrossCompiler(object):
         self.board = board
         self.compiler = compiler
 
-        self.logger.debug("Getting compiler {} for {}".format(compiler.id,
-                                                              board.id))
+        self.logger.debug(
+            "Getting compiler {} for {}".format(compiler.id, board.id)
+        )
         self.check_multiarch = True
         self.core = 0
 
@@ -94,15 +110,20 @@ class CrossCompiler(object):
     def sysroot(self) -> Union[Path, str]:
         if not Path(self.board.os.sysroot).exists():
             self.logger.warning(
-                "Could not find sysroot {} using generic sysroot".format(self.board.os.sysroot))
+                "Could not find sysroot {} using generic sysroot".format(
+                    self.board.os.sysroot
+                )
+            )
             return ""
         return Path(self.board.os.sysroot)
 
     @property
     def valid(self) -> bool:
-        os_triple = (self.board.os.triple.os,
-                     self.board.os.triple.machine,
-                     self.board.os.triple.environment)
+        os_triple = (
+            self.board.os.triple.os,
+            self.board.os.triple.machine,
+            self.board.os.triple.environment,
+        )
         for ct in self.compiler.triples:
             if os_triple == (ct.os, ct.machine, ct.environment):
                 if self.check_multiarch and self.board.os.multiarch:
@@ -155,15 +176,19 @@ class CrossCompilerGenerator(object):
 
     def get_compiler(self, compiler_id: str, board_id: str) -> CrossCompiler:
         self.logger.debug(
-            "Getting compiler {} for {}".format(compiler_id, board_id))
+            "Getting compiler {} for {}".format(compiler_id, board_id)
+        )
 
         compiler = self.metadata.get_compiler(compiler_id)
         board = self.metadata.get_board(board_id)
 
         cc = CrossCompiler(compiler, board)
         if cc.valid:
-            raise Exception("{} and {} combination is not valid".format(
-                compiler_id, board_id))
+            raise Exception(
+                "{} and {} combination is not valid".format(
+                    compiler_id, board_id
+                )
+            )
 
         return cc
 
@@ -178,7 +203,9 @@ class CrossCompilerGenerator(object):
 
         return compilers
 
-    def get_default_compiler(self, board_id: str, toolchain: Toolchain = Toolchain.GCC) -> CrossCompiler:
+    def get_default_compiler(
+        self, board_id: str, toolchain: Toolchain = Toolchain.GCC
+    ) -> CrossCompiler:
         """Returns the default compiler for a board, 
            this is currently the newest compatible gcc compiler
 

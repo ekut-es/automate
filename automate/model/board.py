@@ -76,9 +76,6 @@ class BoardModel(LoadedModelBase):
     os: OSModel
 
     def _get_env_dict(self) -> Dict[str, str]:
-        d = {
-            'board': self.board,
-            'board_id': self.id
-        }
+        d = {"board": self.board, "board_id": self.id}
 
         return d

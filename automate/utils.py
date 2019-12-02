@@ -7,11 +7,10 @@ import logging
 from .model.board import SSHConnectionModel, UARTConnectionModel
 
 
-def connection_to_string(connection: Union[SSHConnectionModel, UARTConnectionModel]) -> str:
-    table = {
-        SSHConnectionModel: "ssh",
-        UARTConnectionModel: "uart"
-    }
+def connection_to_string(
+    connection: Union[SSHConnectionModel, UARTConnectionModel]
+) -> str:
+    table = {SSHConnectionModel: "ssh", UARTConnectionModel: "uart"}
 
     name = "UNKNOWN"
 
@@ -49,7 +48,8 @@ def fix_symlinks(base_path: Path) -> None:
         if os.path.isabs(target):
             new_target = base_path / target
             new_target_rel = os.path.relpath(
-                new_target, os.path.dirname(os.path.abspath(link)))
+                new_target, os.path.dirname(os.path.abspath(link))
+            )
 
             os.unlink(link)
             os.symlink(new_target_rel, link)

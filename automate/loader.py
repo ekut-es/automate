@@ -20,15 +20,17 @@ class ModelLoader(object):
     def __init__(self) -> None:
         self.config = configure()
         self.logger = logging.getLogger(__name__)
-        self.logger.debug(
-            "Metadata Loader for {}".format(self.config.metadata))
+        self.logger.debug("Metadata Loader for {}".format(self.config.metadata))
 
         self.model = None
 
-    def _load_metadata_list(self, pattern: str, recursive: bool = True) -> List[CommentedMap]:
+    def _load_metadata_list(
+        self, pattern: str, recursive: bool = True
+    ) -> List[CommentedMap]:
         res = []
-        files = glob(os.path.join(self.config.metadata,
-                                  pattern), recursive=recursive)
+        files = glob(
+            os.path.join(self.config.metadata, pattern), recursive=recursive
+        )
 
         for file_name in files:
             self.logger.debug("Loading metadata from {}".format(file_name))
@@ -41,10 +43,12 @@ class ModelLoader(object):
 
         return res
 
-    def _apply_templates(self,
-                         data_model: DataModelBase,
-                         env: Dict[str, str],
-                         model_file: Optional[Path] = None) -> None:
+    def _apply_templates(
+        self,
+        data_model: DataModelBase,
+        env: Dict[str, str],
+        model_file: Optional[Path] = None,
+    ) -> None:
 
         env = dict(env)
         env.update(data_model._get_env_dict())
@@ -60,8 +64,11 @@ class ModelLoader(object):
                 return formatted
             except ValueError as e:
                 logging.error(str(e))
-                logging.error("During formatting of field {} from {} value: {}".format(
-                    field_name, model_file, field))
+                logging.error(
+                    "During formatting of field {} from {} value: {}".format(
+                        field_name, model_file, field
+                    )
+                )
                 logging.error(str(env))
                 raise e
 
@@ -88,15 +95,11 @@ class ModelLoader(object):
                 setattr(data_model, field_name, formatted)
 
             elif isinstance(field, DataModelBase):
-                self._apply_templates(field,
-                                      env,
-                                      model_file)
+                self._apply_templates(field, env, model_file)
             elif isinstance(field, list):
                 for item in field:
                     if isinstance(item, DataModelBase):
-                        self._apply_templates(item,
-                                              env,
-                                              model_file)
+                        self._apply_templates(item, env, model_file)
 
         return None
 
@@ -107,9 +110,9 @@ class ModelLoader(object):
         data_model = MetadataModel(compilers=compilers, boards=boards)
 
         template_env = {
-            'metadata':  str(self.config.metadata),
-            'toolroot':  str(self.config.toolroot),
-            'boardroot': str(self.config.boardroot)
+            "metadata": str(self.config.metadata),
+            "toolroot": str(self.config.toolroot),
+            "boardroot": str(self.config.boardroot),
         }
 
         self.logger.debug("Applying templates")

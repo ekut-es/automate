@@ -41,11 +41,14 @@ class BoardHandler(object):
                     gw_port = self.model.gateway.port
 
                     gw_connection = Connection(
-                        gw_host, user=gw_user, port=gw_port)
+                        gw_host, user=gw_user, port=gw_port
+                    )
 
-                c = Connection(host=host, user=user, port=port,
-                               gateway=gateway_connection)
+                c = Connection(
+                    host=host, user=user, port=port, gateway=gateway_connection
+                )
                 return c
 
         raise Exception(
-            "Could not find ssh connection for {}".format(self.model.id))
+            "Could not find ssh connection for {}".format(self.model.id)
+        )

@@ -10,13 +10,15 @@ from .model import ConfigModel
 
 _search_paths = [
     os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "..",
-        "config.yml"),
-    "~/.der_schrank/config.yml"]
+        os.path.dirname(os.path.abspath(__file__)), "..", "config.yml"
+    ),
+    "~/.der_schrank/config.yml",
+]
 
 
-def _configure_automate(base_dir: Union[Path, str], automate_conf: Dict[str, Any]) -> ConfigModel:
+def _configure_automate(
+    base_dir: Union[Path, str], automate_conf: Dict[str, Any]
+) -> ConfigModel:
     base_dir = Path(base_dir).resolve()
     config_model = ConfigModel(**automate_conf)
 
@@ -52,26 +54,34 @@ def configure(config_file: Optional[str] = None) -> ConfigModel:
         for path in _search_paths:
             path = os.path.expanduser(path)
             if not os.path.isabs(path):
-                path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    path)
+                path = os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)), path
+                )
             if os.path.exists(path):
                 config_file = path
                 break
 
     if config_file is None:
-        raise Exception("Could not find configuration file in {}".format(
-            " ".join(_search_paths)))
+        raise Exception(
+            "Could not find configuration file in {}".format(
+                " ".join(_search_paths)
+            )
+        )
 
     if os.path.exists(config_file):
         with open(config_file, "r") as cf:
             config_yaml = yaml.load(cf, Loader=yaml.Loader)
 
-            _configure_logging(config_yaml['logging'])
-            config_model = _configure_automate(os.path.dirname(config_file),
-                                               config_yaml['automate'])
+            _configure_logging(config_yaml["logging"])
+            config_model = _configure_automate(
+                os.path.dirname(config_file), config_yaml["automate"]
+            )
             config = config_model
 
             return config_model
 
-    raise Exception("Could not find configuration file in {}".format(
-        " ".join(_search_paths)))
+    raise Exception(
+        "Could not find configuration file in {}".format(
+            " ".join(_search_paths)
+        )
+    )

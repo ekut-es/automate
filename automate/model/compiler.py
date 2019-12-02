@@ -10,6 +10,7 @@ from .model_base import *
 
 class TripleModel(DataModelBase):
     """Description of a target triple"""
+
     machine: Machine
     vendor: Vendor = Vendor.UNKNOWN
     os: OS
@@ -19,8 +20,9 @@ class TripleModel(DataModelBase):
 class CompilerModel(LoadedModelBase):
     name: str
     id: str
-    triples: List[TripleModel] = Field(...,
-                                       description="List of supported target triples")
+    triples: List[TripleModel] = Field(
+        ..., description="List of supported target triples"
+    )
     toolchain: Toolchain
     version: str
     basedir: str
@@ -33,5 +35,7 @@ class CompilerModel(LoadedModelBase):
     description: str = ""
     prefix: str = ""
     postfix: str = ""
-    multiarch: bool = Field(False,
-                            description="Flag to indicate that this compiler supports builds with multiarch sysroots")
+    multiarch: bool = Field(
+        False,
+        description="Flag to indicate that this compiler supports builds with multiarch sysroots",
+    )

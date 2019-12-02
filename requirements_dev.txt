@@ -1,8 +1,9 @@
 -r requirements.txt
 pur==5.2.2
-mypy==0.740
+mypy==0.750
 typeshed==0.0.1
 pre-commit==1.20.0
 pytest==5.3.1
 pytest-cov==2.8.1
-pytest-monkeytype==1.0.1
+pytest-monkeytype==1.0.5
+black==19.10b0

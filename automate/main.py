@@ -5,25 +5,23 @@ import sys
 from invoke import Program, Collection, Config
 from invoke.config import merge_dicts
 
-from .import __version__ as self_version
+from . import __version__ as self_version
 
 
-from .import tasks
+from . import tasks
 from .loader import get_model
 
 
 class AutomateConfig(Config):
-    prefix = 'automate'
-    env_prefix = 'AUTOMATE'
+    prefix = "automate"
+    env_prefix = "AUTOMATE"
 
     @staticmethod
     def global_defaults():
         their_defaults = Config.global_defaults()
         metadata = get_model()
 
-        my_defaults = {
-            'metadata': metadata
-        }
+        my_defaults = {"metadata": metadata}
 
         return merge_dicts(their_defaults, my_defaults)
 
@@ -40,6 +38,8 @@ class AutoTool(Program):
         print("  paramiko: {}".format(paramiko_version))
 
 
-program = AutoTool(version=self_version,
-                   config_class=AutomateConfig,
-                   namespace=tasks.collection)
+program = AutoTool(
+    version=self_version,
+    config_class=AutomateConfig,
+    namespace=tasks.collection,
+)

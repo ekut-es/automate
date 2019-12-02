@@ -8,6 +8,11 @@ import time
 import tempfile
 import re
 import patchwork
+import io
+import gzip
+import threading
+import shutil
+import concurrent.futures
 
 from pathlib import Path
 
@@ -34,8 +39,7 @@ def safe_rootfs(c, board):
 
         con.run("uptime")
 
-        result = con.run(
-            "echo 1 | sudo tee /proc/sys/kernel/sysrq", hide="out")
+        result = con.run("echo 1 | sudo tee /proc/sys/kernel/sysrq", hide="out")
         if result.return_code != 0:
             raise Exception("Could not enable sysrq triggers")
 
@@ -43,7 +47,7 @@ def safe_rootfs(c, board):
         if mount_result.return_code != 0:
             raise Exception("Could not get mountpoints")
         mount_output = mount_result.stdout
-        mount_table_pattern = re.compile("(.*) on (.*) type (.*) \((.*)\)")
+        mount_table_pattern = re.compile(r"(.*) on (.*) type (.*) \((.*)\)")
         rootdevice = ""
         for line in mount_output.splitlines():
             line = line.strip()
@@ -63,43 +67,65 @@ def safe_rootfs(c, board):
 
         logging.info("Using device: {}".format(rootdevice))
 
-        try:
-            with open(image_name.with_suffix(".tmp"), "wb") as image_file:
-                logging.info("Starting listener")
-                reader_cmd = "nc -l {}".format(port)
-                reader = subprocess.Popen(
-                    shlex.split(reader_cmd), stdout=image_file)
+        with concurrent.futures.ThreadPoolExecutor() as thread_executor:
 
-                result = con.run(
-                    "echo u | sudo tee /proc/sysrq-trigger", hide="out")
-                if result.return_code != 0:
-                    raise Exception("Could not remount file systems read only")
+            try:
+                with open(image_name.with_suffix(".tmp"), "wb") as image_file:
+                    logging.info("Starting listener")
 
-                with con.forward_remote(port):
-                    logging.info("Starting writer")
-                    res = con.sudo("dd if={} | nc -N localhost {}".format(rootdevice,
-                                                                          port))
-                    print("Finished!\n")
+                    def reader_func():
 
-                    result = reader.wait()
-                    if result != 0:
-                        raise Exception("Could not write image!")
-        except BaseException as e:
-            if image_name.with_suffix(".tmp").exists():
-                c.run("rm {}".format(image_name.with_suffix(".tmp")))
-            raise e
-        finally:
-            print("Rebooting target {}".format(board))
-            #con.sudo("shutdown -r now")
+                        reader_cmd = "nc -l {}".format(port)
+                        reader = subprocess.Popen(
+                            shlex.split(reader_cmd), stdout=subprocess.PIPE
+                        )
+
+                        decompressor = gzip.GzipFile(
+                            fileobj=reader.stdout, mode="rb"
+                        )
+                        shutil.copyfileobj(decompressor, image_file)
+                        return reader.wait()
+
+                    reader_result = thread_executor.submit(reader_func)
+
+                    result = con.run(
+                        "echo u | sudo tee /proc/sysrq-trigger", hide="out"
+                    )
+                    if result.return_code != 0:
+                        raise Exception(
+                            "Could not remount file systems read only"
+                        )
+
+                    with con.forward_remote(port):
+                        logging.info("Starting writer")
+                        res = con.sudo(
+                            "dd if={} | gzip -c |nc -N localhost {}".format(
+                                rootdevice, port
+                            )
+                        )
+                        print("Finished!\n")
+
+                        result = reader_result.result()
+                        if result != 0:
+                            raise Exception("Could not write image!")
+            except BaseException as e:
+                if image_name.with_suffix(".tmp").exists():
+                    c.run("rm {}".format(image_name.with_suffix(".tmp")))
+                raise e
+            finally:
+                print("Rebooting target {}".format(board))
+                # con.sudo("shutdown -r now")
 
         logging.info("Sparsifying saved image")
-        c.run("fallocate -d {0}".format(image_name.with_suffix(tmp)))
+        c.run("fallocate -d {0}".format(image_name.with_suffix(".tmp")))
         if image_name.exists():
-            c.run("mv {0} {1}".format(
-                image_name, image_name.with_suffix(".bak")))
+            c.run(
+                "mv {0} {1}".format(image_name, image_name.with_suffix(".bak"))
+            )
 
-        c.run("mv {0}.tmp {1}".format(
-            image_name.with_suffix(".tmp"), image_name))
+        c.run(
+            "mv {0}.tmp {1}".format(image_name.with_suffix(".tmp"), image_name)
+        )
 
         return 0
 
@@ -121,10 +147,12 @@ def build_sysroot(c, board):
         c.run("sudo mount -l {} {}".format(str(image_path), str(tmp_path)))
 
         try:
-            patchwork.transfers.rsync(c,
-                                      source=str(tmp_path),
-                                      target=str(bh.model.sysroot),
-                                      delete=True)
+            patchwork.transfers.rsync(
+                c,
+                source=str(tmp_path),
+                target=str(bh.model.sysroot),
+                delete=True,
+            )
 
             fix_symlinks(bh.model.sysroot)
 
