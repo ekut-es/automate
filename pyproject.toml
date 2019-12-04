@@ -17,7 +17,7 @@ pre-commit = "^1.20"
 
 [tool.poetry.dev-dependencies]
 pur = "^5.2"
-mypy = "^0.750.0"
+mypy = "==0.740.0"
 typeshed = "^0.0.1"
 pre-commit = "^1.20"
 pytest = "^5.3"
