@@ -7,7 +7,7 @@ import ruamel.yaml as yaml
 
 from .model import MetadataModel, DataModelBase, LoadedModelBase
 
-from .config import configure
+from .config import AutomateConfig
 
 from typing import List, Dict, Any, Optional
 from pathlib import Path
@@ -17,8 +17,8 @@ from ruamel.yaml.comments import CommentedMap
 
 
 class ModelLoader(object):
-    def __init__(self) -> None:
-        self.config = configure()
+    def __init__(self, config: AutomateConfig) -> None:
+        self.config = config
         self.logger = logging.getLogger(__name__)
         self.logger.debug("Metadata Loader for {}".format(self.config.metadata))
 
@@ -92,7 +92,7 @@ class ModelLoader(object):
                 if not formatted_path.is_absolute():
                     if model_file is not None:
                         formatted_path = model_file.parent / formatted_path
-                setattr(data_model, field_name, formatted)
+                setattr(data_model, field_name, formatted_path)
 
             elif isinstance(field, DataModelBase):
                 self._apply_templates(field, env, model_file)
@@ -103,7 +103,7 @@ class ModelLoader(object):
 
         return None
 
-    def load_model(self) -> MetadataModel:
+    def load(self) -> MetadataModel:
         compilers = self._load_metadata_list("compilers/**/description.yml")
         boards = self._load_metadata_list("boards/**/description.yml")
 
@@ -122,16 +122,3 @@ class ModelLoader(object):
         self.logger.debug(data_model.dict())
 
         return data_model
-
-
-_model: Optional[MetadataModel] = None
-
-
-def get_model() -> MetadataModel:
-    global _model
-    if _model is None:
-        loader = ModelLoader()
-        model = loader.load_model()
-        _model = model
-
-    return _model

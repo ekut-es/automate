@@ -1,7 +1,5 @@
 import logging
 from fabric import Connection
-
-
 from contextlib import contextmanager
 
 

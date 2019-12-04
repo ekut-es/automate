@@ -3,30 +3,19 @@
 import sys
 
 from invoke import Program, Collection, Config
-from invoke.config import merge_dicts
+from .config import AutomateConfig
+from .executor import AutomateExecutor
 
 from . import __version__ as self_version
-
-
 from . import tasks
-from .loader import get_model
-
-
-class AutomateConfig(Config):
-    prefix = "automate"
-    env_prefix = "AUTOMATE"
-
-    @staticmethod
-    def global_defaults():
-        their_defaults = Config.global_defaults()
-        metadata = get_model()
-
-        my_defaults = {"metadata": metadata}
-
-        return merge_dicts(their_defaults, my_defaults)
 
 
 class AutoTool(Program):
+    def core_args(self):
+        core_args = super(AutoTool, self).core_args()
+
+        return core_args
+
     def print_version(self):
         from invoke import __version__ as invoke_version
         from paramiko import __version__ as paramiko_version
@@ -42,4 +31,5 @@ program = AutoTool(
     version=self_version,
     config_class=AutomateConfig,
     namespace=tasks.collection,
+    executor_class=AutomateExecutor,
 )

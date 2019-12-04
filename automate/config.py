@@ -6,6 +6,8 @@ import ruamel.yaml as yaml
 from pathlib import Path
 from typing import Dict, Any, Optional, Union
 
+from invoke.config import Config, merge_dicts
+
 from .model import ConfigModel
 
 _search_paths = [
@@ -85,3 +87,16 @@ def configure(config_file: Optional[str] = None) -> ConfigModel:
             " ".join(_search_paths)
         )
     )
+
+
+class AutomateConfig(Config):
+    prefix = "automate"
+    env_prefix = "AUTOMATE"
+
+    @staticmethod
+    def global_defaults():
+        their_defaults = Config.global_defaults()
+
+        my_defaults = {}
+
+        return merge_dicts(their_defaults, my_defaults)

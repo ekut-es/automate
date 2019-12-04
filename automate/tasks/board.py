@@ -7,12 +7,13 @@ import shlex
 import time
 import tempfile
 import re
-import patchwork
+import patchwork.transfers
 import io
 import gzip
 import threading
 import shutil
 import concurrent.futures
+import contextlib
 
 from pathlib import Path
 
@@ -31,6 +32,7 @@ def safe_rootfs(c, board):
     image_name.parent.mkdir(parents=True, exist_ok=True)
 
     print("Cloning rootfs to {}\n".format(image_name))
+
     with bh.lock():
 
         logging.info("Connecting to target")
@@ -114,7 +116,7 @@ def safe_rootfs(c, board):
                 raise e
             finally:
                 print("Rebooting target {}".format(board))
-                # con.sudo("shutdown -r now")
+                con.sudo("shutdown -r now")
 
         logging.info("Sparsifying saved image")
         c.run("fallocate -d {0}".format(image_name.with_suffix(".tmp")))
@@ -123,9 +125,7 @@ def safe_rootfs(c, board):
                 "mv {0} {1}".format(image_name, image_name.with_suffix(".bak"))
             )
 
-        c.run(
-            "mv {0}.tmp {1}".format(image_name.with_suffix(".tmp"), image_name)
-        )
+        c.run("mv {0} {1}".format(image_name.with_suffix(".tmp"), image_name))
 
         return 0
 
@@ -137,7 +137,7 @@ def build_sysroot(c, board):
     bh = m.get_board_handler(board)
 
     image_path = Path(bh.model.os.rootfs)
-    if not image_path.exists:
+    if not image_path.exists():
         safe_rootfs(c, board)
 
     try:
@@ -146,19 +146,28 @@ def build_sysroot(c, board):
 
         c.run("sudo mount -l {} {}".format(str(image_path), str(tmp_path)))
 
+        bh.model.os.sysroot.mkdir(exist_ok=True, parents=True)
+
         try:
-            patchwork.transfers.rsync(
-                c,
-                source=str(tmp_path),
-                target=str(bh.model.sysroot),
-                delete=True,
+            rsync_result = c.run(
+                r'rsync -ar --delete --delete-excluded --exclude="/tmp" --exclude="/home" {}/ {}/'.format(
+                    str(tmp_path), str(bh.model.os.sysroot)
+                ),
+                hide="out",
+                warn=True,
             )
 
-            fix_symlinks(bh.model.sysroot)
+            fix_symlinks(bh.model.os.sysroot)
 
+        except BaseException as e:
+            print(e)
+            raise e
         finally:
             c.run("sudo umount {}".format(tmp_path))
 
+    except BaseException as e:
+        print(e)
+        raise e
     finally:
         c.run("sudo rmdir {}".format(tmp_path))
 
@@ -173,27 +182,10 @@ def run(c, board, command, cwd=""):
     if not cwd:
         cwd = bh.model.rundir
 
-    with bh.lock():
-        with bh.connect() as con:
-            con.run("mkdir -p {}".format(cwd))
-            with con.cd(cwd):
-                con.run(command)
-
-
-@task
-def sudo(c, board, command, cwd):
-    "Run command remotely with root privileges"
-    m = c.metadata
-    bh = m.get_board_handler(board)
-
-    if not cwd:
-        cwd = bh.model.rundir
-
-    with bh.lock():
-        with bh.connect() as con:
-            con.run("mkdir -p {}".format(cwd))
-            with con.cd(cwd):
-                con.sudo(command)
+    with bh.connect() as con:
+        con.run("mkdir -p {}".format(str(cwd)))
+        with con.cd(str(cwd)):
+            con.run(command)
 
 
 @task
@@ -204,7 +196,15 @@ def put(c, board, file, remote_path=""):
     bh = m.get_board_handler(board)
     con = bh.connect()
 
-    raise Exception("Not Implemented")
+    if not remote_path:
+        remote_path = bh.model.rundir
+        remote_file = remote_path / Path(file).name
+
+    else:
+        remote_file_path = Path(remote_path)
+
+    con.run("mkdir -p {}".format(str(remote_file.parent)))
+    con.put(str(file), str(remote_file))
 
 
 @task
@@ -219,10 +219,10 @@ def get(c, board, file, remote_path=""):
 
 
 @task
-def rsync(c, board, local_path, remote_path=""):
+def lock(c, board):
+    logging.warning("Board locking is currently not implemented")
 
-    m = c.metadata
-    bh = m.get_board_handler(board)
-    con = bh.connect()
 
-    raise Exception("Not Implemented")
+@task
+def unlock(c, board):
+    logging.warning("Board unlocking is currently not implemented")

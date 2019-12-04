@@ -46,9 +46,15 @@ def fix_symlinks(base_path: Path) -> None:
     for link in links:
         target = os.readlink(link)
         if os.path.isabs(target):
-            new_target = base_path / target
+            new_target = str(base_path) + str(target)
             new_target_rel = os.path.relpath(
                 new_target, os.path.dirname(os.path.abspath(link))
+            )
+
+            logging.debug(
+                "Relinking\n  link: {}\n  target: {}\n  new_target: {}\n  new_target_rel: {}\n  base_path: {}".format(
+                    link, target, new_target, new_target_rel, base_path
+                )
             )
 
             os.unlink(link)
