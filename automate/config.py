@@ -50,7 +50,7 @@ def _configure_logging(logging_conf: Dict[str, Any]) -> None:
     coloredlogs.install(level=level, fmt=fmt)
 
 
-def configure(config_file: Optional[str] = None) -> ConfigModel:
+def _configure(config_file: Optional[str] = None) -> ConfigModel:
 
     if config_file is None:
         for path in _search_paths:
@@ -97,6 +97,6 @@ class AutomateConfig(Config):
     def global_defaults():
         their_defaults = Config.global_defaults()
 
-        my_defaults = {}
+        my_defaults = _configure().dict()
 
         return merge_dicts(their_defaults, my_defaults)

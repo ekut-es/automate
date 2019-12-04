@@ -2,11 +2,13 @@ import pytest
 from collections import Counter
 
 from automate.loader import ModelLoader
+from automate.config import AutomateConfig
 
 
 def test_model_load():
-    loader = ModelLoader()
-    model = loader.load_model()
+    config = AutomateConfig()
+    loader = ModelLoader(config)
+    model = loader.load()
 
     assert len(model.boards) > 0
     assert len(model.compilers) > 0

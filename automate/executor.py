@@ -13,7 +13,6 @@ class AutomateExecutor(Executor):
 
         ret = []
         for call in extended_calls:
-            print("expand call:", call)
             automate_call = call.clone(into=AutomateCall)
             ret.append(automate_call)
 

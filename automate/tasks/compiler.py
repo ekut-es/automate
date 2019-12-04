@@ -2,8 +2,6 @@ from invoke import task, Collection
 import logging
 from pathlib import Path
 
-from ..compiler import CrossCompilerGenerator
-
 
 @task
 def compile(c, board, files=[], output="a.out", compiler="", builddir=""):
@@ -13,11 +11,9 @@ def compile(c, board, files=[], output="a.out", compiler="", builddir=""):
     """
 
     generator = CrossCompilerGenerator(c.metadata)
-    compiler = None
-    if compiler:
-        compiler = generator.get_compiler(compiler, board)
-    else:
-        compiler = generator.get_default_compiler(board)
+
+    board = c.board(board)
+    compiler = c.compiler(compiler)
 
     logging.info(
         "Compiling {} with compiler {}".format(", ".join(files), compiler.id)

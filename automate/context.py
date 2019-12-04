@@ -2,7 +2,8 @@ import invoke
 
 from .config import AutomateConfig
 from .loader import ModelLoader
-from .board import BoardHandler
+from .board import Board
+from .compiler import Compiler
 
 
 class AutomateContext(invoke.Context):
@@ -14,15 +15,32 @@ class AutomateContext(invoke.Context):
 
     def boards(self):
         for board in self.metadata.boards:
-            yield BoardHandler(board)
+            yield Board(board, self.metadata.compilers)
 
-    def board(self, board_id: str) -> BoardHandler:
+    def board(self, board_id: str) -> Board:
         for board in self.metadata.boards:
             if board.id == board_id:
-                return BoardHandler(board)
+                return Board(board, self.metadata.compilers)
 
         raise Exception(
             "Could not find board {} available boards {}".format(
                 board_id, ",".join([board.id for board in self.metadata.boards])
+            )
+        )
+
+    def compilers(self):
+        for compiler in self.metadata.compilers:
+            yield Compiler(compiler)
+
+    def compiler(self, compiler_id: str) -> Compiler:
+
+        for compiler in self.metadata.compilers:
+            if compiler.id == compiler_id:
+                return Compiler(compiler)
+
+        raise Exception(
+            "Could not find compiler {} available compilers {}".format(
+                compiler_id,
+                ",".join([compiler.id for compiler in self.metadata.compilers]),
             )
         )

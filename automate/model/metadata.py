@@ -7,14 +7,12 @@ from .compiler import CompilerModel
 from .board import BoardModel
 from .model_base import *
 
-from ..board import BoardHandler
-
 
 class MetadataModel(DataModelBase):
     compilers: List[CompilerModel]
     boards: List[BoardModel]
 
-    def get_board(self, board_id: str) -> BoardModel:
+    def get_board_model(self, board_id: str) -> BoardModel:
         board = None
         for candidate_board in self.boards:
             if board_id == candidate_board.id:
@@ -26,7 +24,7 @@ class MetadataModel(DataModelBase):
 
         return board
 
-    def get_compiler(self, compiler_id: str) -> CompilerModel:
+    def get_compiler_model(self, compiler_id: str) -> CompilerModel:
         compiler = None
         for candidate in self.compilers:
             if compiler_id == candidate.id:
@@ -37,8 +35,3 @@ class MetadataModel(DataModelBase):
             raise Exception("Could not find compiler {}".format(compiler_id))
 
         return compiler
-
-    def get_board_handler(self, board_id: str) -> BoardHandler:
-        board = self.get_board(board_id)
-
-        return BoardHandler(board)

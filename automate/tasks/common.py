@@ -1,7 +1,6 @@
 from invoke import task
 
 from ..utils import connection_to_string
-from ..compiler import CrossCompilerGenerator
 
 import tabulate
 
@@ -17,14 +16,11 @@ def show_context(c):
 def list(c, boards=False, compilers=False):
     "List available boards and compilers"
 
-    if not (boards and compilers):
+    if not boards and not compilers:
         boards = True
         compilers = True
 
-    metadata = c["metadata"]
-
     if boards:
-        compiler_generator = CrossCompilerGenerator(metadata)
         board_table = []
         board_header = [
             "ID",
@@ -34,7 +30,7 @@ def list(c, boards=False, compilers=False):
             "Connections",
             "Default Compiler",
         ]
-        for board in metadata.boards:
+        for board in c.boards():
             os = getattr(board.os, "distribution", "unknown")
 
             connections = []
@@ -42,7 +38,7 @@ def list(c, boards=False, compilers=False):
                 s = connection_to_string(connection)
                 connections.append(s)
 
-            default_compiler = compiler_generator.get_default_compiler(board.id)
+            default_compiler = board.compiler()
 
             board_line = [
                 board.id,
@@ -71,7 +67,7 @@ def list(c, boards=False, compilers=False):
             "Multiarch",
         ]
 
-        for compiler in metadata.compilers:
+        for compiler in c.compilers():
             machines = set()
             for triple in compiler.triples:
                 machines.add(triple.machine.value)
