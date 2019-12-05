@@ -12,3 +12,4 @@ automate.egg-info/
 der_schrank/
 *.sqlite3
 .coverage
+build-*/
