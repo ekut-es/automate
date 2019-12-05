@@ -4,8 +4,16 @@ from contextlib import contextmanager
 from .compiler import CrossCompiler
 from .model.common import Toolchain
 from .model import BoardModel, CompilerModel
-from typing import List, Union
+from typing import List, Union, Any
 import time
+
+
+from automate.model.board import (
+    CoreModel,
+    OSModel,
+    SSHConnectionModel,
+    UARTConnectionModel,
+)
 
 
 class Board(object):
@@ -151,6 +159,6 @@ class Board(object):
 
         return None
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Any:
         """proxy model properties if they are not shadowed by an own property"""
         return getattr(self.model, attr)
