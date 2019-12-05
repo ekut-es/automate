@@ -34,34 +34,42 @@ cores:
     id: 0
     isa: armv8.2-a
     uarch: carmel
+    vendor: nvidia
   -
     id: 1
     isa: armv8.2-a
     uarch: carmel
+    vendor: nvidia
   -
     id: 2
     isa: armv8.2-a
     uarch: carmel
+    vendor: nvidia
   -
     id: 3
     isa: armv8.2-a
     uarch: carmel
+    vendor: nvidia
   -
     id: 4
     isa: armv8.2-a
     uarch: carmel
+    vendor: nvidia
   -
     id: 5
     isa: armv8.2-a
     uarch: carmel
+    vendor: nvidia
   -
     id: 6
     isa: armv8.2-a
     uarch: carmel
+    vendor: nvidia
   -
     id: 7
     isa: armv8.2-a
     uarch: carmel
+    vendor: nvidia
 
 os:
     triple:
@@ -80,8 +88,6 @@ os:
         description: "Standard nvidia (jetpack) kernel with enabled kexec, coresight, nohz_full"
         version: "4.9.140-tegra"
         commandline: root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 console=ttyS0,115200n8 console=tty0 fbcon=map:0 net.ifnames=0 video=tegrafb no_console_suspend=1 earlycon=uart8250,mmio32,0x3100000 nvdumper_reserved=0x2772e0000 gpt usbcore.old_scheme_first=1 tegraid=18.1.2.0.0 maxcpus=6 boot.slot_suffix= boot.ratchetvalues=0.2031647.1 bl_prof_dataptr=0x10000@0x275840000 sdhci_tegra.en_boot_part_access=1 quiet 
-        isolated_cores: [1,2,3,4,5]
-        nohz: False
         kernel_config: kernel/config
         kernel_source: ${boardroot}/${board_id}/kernel-4.9.tar.bz
         default: true

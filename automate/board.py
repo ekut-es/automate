@@ -4,7 +4,8 @@ from contextlib import contextmanager
 from .compiler import CrossCompiler
 from .model.common import Toolchain
 from .model import BoardModel, CompilerModel
-from typing import List
+from typing import List, Union
+import time
 
 
 class Board(object):
@@ -23,8 +24,11 @@ class Board(object):
             # TODO: acquire lock
             yield None
         finally:
-            # TODO: release lock
+            self.unlock()
             pass
+
+    def unlock(self):
+        self.logger.warning("Unlocking of boards is currently not implemented")
 
     def compiler(
         self, compiler_id: str = "", toolchain: Toolchain = Toolchain.GCC
@@ -49,7 +53,18 @@ class Board(object):
             )
         )
 
-    def connect(self, type: str = "ssh") -> Connection:
+    def compilers(
+        self, toolchain: Union[Toolchain, None] = None
+    ) -> List[CrossCompiler]:
+        res = []
+        for model in self.compiler_models:
+            cc = CrossCompiler(model, self)
+            if (cc.toolchain == toolchain) or (toolchain is None):
+                if cc.valid:
+                    res.append(cc)
+        return res
+
+    def connect(self, type: str = "ssh", timeout: int = 10) -> Connection:
 
         if type != "ssh":
             raise Exception("Currently only ssh connections are supported")
@@ -69,17 +84,72 @@ class Board(object):
                     gw_port = self.model.gateway.port
 
                     gw_connection = Connection(
-                        gw_host, user=gw_user, port=gw_port
+                        gw_host,
+                        user=gw_user,
+                        port=gw_port,
+                        connect_timeout=timeout,
                     )
 
                 c = Connection(
-                    host=host, user=user, port=port, gateway=gateway_connection
+                    host=host,
+                    user=user,
+                    port=port,
+                    gateway=gateway_connection,
+                    connect_timeout=timeout,
                 )
                 return c
 
         raise Exception(
             "Could not find ssh connection for {}".format(self.model.id)
         )
+
+    def reboot(self, wait=True) -> Union[Connection, None]:
+        """ Starts a new connection to the device and initiates a reboot
+
+           If wait is true tries to start a new connection, 
+           waits until connecting succeeds. And returns a new connection.
+        """
+
+        self.logger.info("Rebooting board {}".format(self.id))
+
+        with self.connect() as connection:
+            connection.run("sudo shutdown -r now")
+            self.logger.info("Reboot initiated!")
+            time.sleep(3)
+
+        if wait:
+            return self.wait_for_connection()
+
+        return None
+
+    def wait_for_connection(self):
+        self.logger.info("waiting for reconnection")
+        connected = False
+        while not connected:
+            try:
+                connection = self.connect()
+                connection.open()
+                return connection
+            except Exception as e:
+                self.logger.info("Waiting for reconnection")
+                time.sleep(3)
+
+    def reset(self, wait=True) -> Union[Connection, None]:
+        self.logger.warning(
+            "True resets are currently not implemented, trying a reboot instead"
+        )
+        try:
+            self.reboot(wait=False)
+        except BaseException as e:
+            self.logger.error(
+                "Reboot has been unsuccessful with exception {}".format(str(e))
+            )
+            self.logger.error("Please reboot device manually")
+
+        if wait:
+            return self.wait_for_connection()
+
+        return None
 
     def __getattr__(self, attr):
         """proxy model properties if they are not shadowed by an own property"""

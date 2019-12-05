@@ -36,6 +36,9 @@ class CoreModel(DataModelBase):
     id: int
     isa: ISA
     uarch: UArch
+    vendor: Vendor
+    extensions: List[ISAExtension] = []  # Supported ISA extensions
+    description: str = ""
 
 
 class KernelModel(DataModelBase):
@@ -44,12 +47,9 @@ class KernelModel(DataModelBase):
     version: str
     localversion: Optional[str] = None
     commandline: str
-    commandline_extra: Optional[str] = None
     kernel_config: Path
     kernel_source: Path
     default: bool
-    isolated_cores: List[int] = []
-    nohz: bool
 
 
 class OSModel(DataModelBase):

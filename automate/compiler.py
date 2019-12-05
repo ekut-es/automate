@@ -2,7 +2,7 @@ import logging
 
 from typing import List, Union
 from pathlib import Path
-from .board import Board
+
 
 from .model import (
     CompilerModel,
@@ -10,6 +10,7 @@ from .model import (
     MetadataModel,
     ConfigModel,
     CoreModel,
+    TripleModel,
 )
 from .model.common import (
     Toolchain,
@@ -22,12 +23,26 @@ from .model.common import (
     Vendor,
 )
 
+from . import board
+
 
 class Compiler(object):
     """Represents an unconfigured generic compiler"""
 
     def __init__(self, compiler: CompilerModel):
         self.model = compiler
+
+    @property
+    def triples(self) -> List[TripleModel]:
+        return self.model.triples
+
+    @property
+    def version(self) -> str:
+        return self.model.version
+
+    @property
+    def multiarch(self) -> bool:
+        return self.model.multiarch
 
     @property
     def bin_path(self) -> Path:
@@ -49,15 +64,19 @@ class Compiler(object):
     def ld(self) -> str:
         return self.model.prefix + self.model.ld
 
-    def __getattr__(self, attr):
-        """Proxy for unshadowed model attributes"""
-        return getattr(self.model, attr)
+    @property
+    def toolchain(self) -> Toolchain:
+        return self.model.toolchain
+
+    @property
+    def id(self) -> str:
+        return self.model.id
 
 
 class CrossCompiler(Compiler):
     """Represents a Compiler with board specific configuration"""
 
-    def __init__(self, compiler: CompilerModel, board: Board) -> None:
+    def __init__(self, compiler: CompilerModel, board: "board.Board") -> None:
         super(CrossCompiler, self).__init__(compiler)
 
         self.logger = logging.getLogger(__name__)
@@ -68,6 +87,7 @@ class CrossCompiler(Compiler):
         )
         self.check_multiarch = True
         self.core = 0
+        self.opt_flags = "-O2"
 
     @property
     def os(self) -> OS:

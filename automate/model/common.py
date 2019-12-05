@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, unique
 
 
 class Toolchain(Enum):
@@ -6,7 +6,24 @@ class Toolchain(Enum):
     LLVM = "llvm"
 
 
-class Vendor(Enum):
+class ISAExtension(Enum):
+    AES = "aes"
+    ASIMD = "asimd"
+    CRC32 = "crc32"
+    EDSP = "edsp"
+    EVTSTRM = "evtstrm"
+    FASTMULT = "fastmult"
+    FP = "fp"
+    HALF = "half"
+    NEON = "neon"
+    PMULL = "pmull"
+    SHA1 = "sha1"
+    SHA2 = "sha2"
+    THUMB = "thumb"
+    TLS = "tls"
+    VFP = "vfp"
+    VFPD32 = "vfpd32"
+    VFPV3 = "vfpv3"
     UNKNOWN = "unknown"
 
 
@@ -42,11 +59,13 @@ class ISA(Enum):
     ARMV8_2_A = "armv8.2-a"
     ARMV8_3_A = "armv8.3-a"
     ARMV8_4_A = "armv8.4-a"
+    ARMV8_5_A = "armv8.5-a"
     ARMV8_M_BASE = "armv8-m.base"
     ARMV8_M_MAIN = "armv8-m.main"
     ARMV8_R = "armv8-r"
     IWMMXT = "iwmmxt"
     IWMMXT2 = "iwmmxt2"
+    UNKNOWN = "unknown"
 
 
 class UArch(Enum):
@@ -117,6 +136,7 @@ class UArch(Enum):
     CORTEX_A72 = "cortex-a72"
     CORTEX_A73 = "cortex-a73"
     CORTEX_A75 = "cortex-a75"
+    CORTEX_A76 = "cortex-a76"
     CORTEX_A8 = "cortex-a8"
     CORTEX_A9 = "cortex-a9"
     CORTEX_M0 = "cortex-m0"
@@ -151,8 +171,8 @@ class UArch(Enum):
     IWMMXT = "iwmmxt"
     IWMMXT2 = "iwmmxt2"
     MARVELL_PJ4 = "marvell-pj4"
-    MPCORE = "mpcore"
-    MPCORENOVFP = "mpcorenovfp"
+    ARM11_MPCORE = "arm11-mpcore"
+    ARM11_MPCORENOVFP = "arm11-mpcorenovfp"
     QDF24XX = "qdf24xx"
     SAPHIRA = "saphira"
     STRONGARM = "strongarm"
@@ -169,6 +189,18 @@ class UArch(Enum):
     VULCAN = "vulcan"
     XGENE1 = "xgene1"
     XSCALE = "xscale"
+    NEOVERSE_N1 = "neoverse-n1"
+    NEOVERSE_E1 = "neoverse-e1"
+    BRAHMA_B15 = "brahma-b15"
+    BRAHMA_B32 = "brahma-b32"
+    BRAHMA_B53 = "brahma-b53"
+    SA110 = "sa110"
+    SA1100 = "sa1100"
+    SCORPION = "scorpion"
+    KRAIT = "krait"
+    KRYO = "kryo"
+    TSV110 = "tsv110"
+    UNKNOWN = "unknown"
 
 
 class ConnectionType(Enum):
@@ -196,13 +228,24 @@ class AcceleratorType(Enum):
     GPU = "gpu"
     CPU = "cpu"
     AI = "ai"
+    FPGA = "fpga"
     UNKNOWN = "unknown"
 
 
-class VendorType(Enum):
+class Vendor(Enum):
+    APM = "apm"
     ARM = "arm"
-    NVIDIA = "nvidia"
+    BROADCOM = "broadcom"
+    CAVIUM = "cavium"
+    DEC = "dec"
+    FARADAY = "faraday"
     GOOGLE = "google"
+    HISILICON = "hisilicon"
+    INFINEON = "infineon"
+    INTEL = "intel"
+    MARVELL = "marvell"
+    NVIDIA = "nvidia"
+    QUALCOMM = "qualcomm"
     SAMSUNG = "samsung"
     EKUT = "ekut"
     UNKNOWN = "unknown"

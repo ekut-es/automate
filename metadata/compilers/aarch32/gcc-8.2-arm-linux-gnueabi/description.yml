@@ -119,8 +119,8 @@ uarch_map:
   arm1136jf-s:                  -mcpu=arm1136jf-s                  
   arm1176jz-s:                  -mcpu=arm1176jz-s                  
   arm1176jzf-s:                 -mcpu=arm1176jzf-s                 
-  mpcorenovfp:                  -mcpu=mpcorenovfp                  
-  mpcore:                       -mcpu=mpcore                       
+  arm11-mpcorenovfp:            -mcpu=mpcorenovfp                  
+  arm11-mpcore:                 -mcpu=mpcore                       
   arm1156t2-s:                  -mcpu=arm1156t2-s                  
   arm1156t2f-s:                 -mcpu=arm1156t2f-s                 
   cortex-m1:                    -mcpu=cortex-m1                    

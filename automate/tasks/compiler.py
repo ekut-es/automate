@@ -10,10 +10,8 @@ def compile(c, board, files=[], output="a.out", compiler="", builddir=""):
        Output will be placed in: build-{board_id} by default
     """
 
-    generator = CrossCompilerGenerator(c.metadata)
-
     board = c.board(board)
-    compiler = c.compiler(compiler)
+    compiler = board.compiler(compiler)
 
     logging.info(
         "Compiling {} with compiler {}".format(", ".join(files), compiler.id)
@@ -23,7 +21,7 @@ def compile(c, board, files=[], output="a.out", compiler="", builddir=""):
     cxx = compiler.bin_path / compiler.cxx
 
     if not builddir:
-        builddir = "build-{}".format(board)
+        builddir = "build-{}".format(board.id)
 
     build_path = Path(builddir)
     build_path.mkdir(exist_ok=True)
@@ -39,11 +37,13 @@ def compile(c, board, files=[], output="a.out", compiler="", builddir=""):
         objs.append(obj)
 
         comp = cc
+        flags = compiler.cflags
         if f.suffix in ["cc", "cxx", "cpp", "C", "c++"]:
             comp = cxx
+            flags = cxxflags
             is_cpp = True
 
-        cmd_list = [comp, "-c", "-o", obj, compiler.cflags, f]
+        cmd_list = [comp, "-c", "-o", obj, flags, f]
         cmd = " ".join((str(i) for i in cmd_list))
         logging.info("COMPILE: {}".format(cmd))
         c.run(cmd)

@@ -4,7 +4,7 @@ import os
 import sys
 import logging
 
-from .model.board import SSHConnectionModel, UARTConnectionModel
+from ..model.board import SSHConnectionModel, UARTConnectionModel
 
 
 def connection_to_string(

@@ -7,7 +7,6 @@ import shlex
 import time
 import tempfile
 import re
-import patchwork.transfers
 import io
 import gzip
 import threading
@@ -15,7 +14,6 @@ import shutil
 import concurrent.futures
 import contextlib
 
-from pathlib import Path
 
 from ..utils import fix_symlinks
 
@@ -23,12 +21,11 @@ from ..utils import fix_symlinks
 @task
 def safe_rootfs(c, board):
     "Safe rootfs image of board to board directory"
-    m = c.metadata
-    bh = m.get_board_handler(board)
+    bh = c.board(board)
 
     port = 12345
 
-    image_name = Path(bh.model.os.rootfs)
+    image_name = Path(bh.os.rootfs)
     image_name.parent.mkdir(parents=True, exist_ok=True)
 
     print("Cloning rootfs to {}\n".format(image_name))
@@ -70,7 +67,6 @@ def safe_rootfs(c, board):
         logging.info("Using device: {}".format(rootdevice))
 
         with concurrent.futures.ThreadPoolExecutor() as thread_executor:
-
             try:
                 with open(image_name.with_suffix(".tmp"), "wb") as image_file:
                     logging.info("Starting listener")
@@ -116,7 +112,7 @@ def safe_rootfs(c, board):
                 raise e
             finally:
                 print("Rebooting target {}".format(board))
-                con.sudo("shutdown -r now")
+                bh.reboot(wait=False)
 
         logging.info("Sparsifying saved image")
         c.run("fallocate -d {0}".format(image_name.with_suffix(".tmp")))
@@ -133,10 +129,10 @@ def safe_rootfs(c, board):
 @task
 def build_sysroot(c, board):
     "Build a sysroot for the given board"
-    m = c.metadata
-    bh = m.get_board_handler(board)
 
-    image_path = Path(bh.model.os.rootfs)
+    bh = c.board(board)
+
+    image_path = Path(bh.os.rootfs)
     if not image_path.exists():
         safe_rootfs(c, board)
 
@@ -146,18 +142,18 @@ def build_sysroot(c, board):
 
         c.run("sudo mount -l {} {}".format(str(image_path), str(tmp_path)))
 
-        bh.model.os.sysroot.mkdir(exist_ok=True, parents=True)
+        bh.os.sysroot.mkdir(exist_ok=True, parents=True)
 
         try:
             rsync_result = c.run(
                 r'rsync -ar --delete --delete-excluded --exclude="/tmp" --exclude="/home" {}/ {}/'.format(
-                    str(tmp_path), str(bh.model.os.sysroot)
+                    str(tmp_path), str(bh.os.sysroot)
                 ),
                 hide="out",
                 warn=True,
             )
 
-            fix_symlinks(bh.model.os.sysroot)
+            fix_symlinks(bh.os.sysroot)
 
         except BaseException as e:
             print(e)
@@ -176,8 +172,7 @@ def build_sysroot(c, board):
 def run(c, board, command, cwd=""):
     "Run command remotely"
 
-    m = c.metadata
-    bh = m.get_board_handler(board)
+    bh = c.board(board)
 
     if not cwd:
         cwd = bh.model.rundir
@@ -192,8 +187,7 @@ def run(c, board, command, cwd=""):
 def put(c, board, file, remote_path=""):
     "Put file on the board"
 
-    m = c.metadata
-    bh = m.get_board_handler(board)
+    bh = c.board(board)
     con = bh.connect()
 
     if not remote_path:
@@ -211,18 +205,48 @@ def put(c, board, file, remote_path=""):
 def get(c, board, file, remote_path=""):
     "get file from the board"
 
-    m = c.metadata
-    bh = m.get_board_handler(board)
-    con = bh.connect()
+    bh = c.board(board)
 
     raise Exception("Not Implemented")
 
 
 @task
 def lock(c, board):
-    logging.warning("Board locking is currently not implemented")
+    board = c.board(board)
+    board.lock()
 
 
 @task
 def unlock(c, board):
-    logging.warning("Board unlocking is currently not implemented")
+    board = c.board(board)
+    board.lock()
+
+
+@task
+def reboot(c, board, wait=False):
+    """Reboots the board
+       
+       If -w / --wait is given waits untile the boards is reachable via ssh again
+    """
+
+    board = c.board(board)
+    board.reboot(wait)
+
+
+@task
+def reset(c, board, wait=False):
+    """Does a hard reset of the board
+    
+       If -w / --wait is given waits until the board is reachable again
+    """
+
+    board = c.board(board)
+    board.reset(wait)
+
+
+@task
+def install(c, board, package):
+    board = c.board(board)
+    apt = "DEBIAN_FRONTEND=noninteractive apt-get install -y {0}"
+    with board.connect() as con:
+        con.sudo(apt.format(package))

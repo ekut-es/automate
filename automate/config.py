@@ -37,9 +37,9 @@ def _configure_automate(
 
     config_model = ConfigModel(**model_dict)
 
-    logging.info("Using configuration:")
+    logging.debug("Using configuration:")
     for key, item in config_model.dict().items():
-        logging.info("  {}: {}".format(key, item))
+        logging.debug("  {}: {}".format(key, item))
 
     return config_model
 
