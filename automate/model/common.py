@@ -137,6 +137,7 @@ class UArch(Enum):
     CORTEX_A73 = "cortex-a73"
     CORTEX_A75 = "cortex-a75"
     CORTEX_A76 = "cortex-a76"
+    CORTEX_A77 = "cortex-a77"
     CORTEX_A8 = "cortex-a8"
     CORTEX_A9 = "cortex-a9"
     CORTEX_M0 = "cortex-m0"
