@@ -1,0 +1,12 @@
+site_name: Automate docs
+
+nav:
+  - Index: index.md
+  - Metadata Model: model.md
+  - Development: development.md
+
+theme:
+  name: 'material'
+    
+markdown_extensions:
+  - codehilite
