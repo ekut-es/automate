@@ -1,4 +1,4 @@
-from ..model.common import Vendor, UArch
+from ..model.common import Vendor, UArch, ISA
 
 from typing import Dict, Tuple
 
@@ -145,4 +145,29 @@ implementers: Dict[int, Tuple[Vendor, Dict[int, UArch]]] = {
     0x56: (Vendor.MARVELL, marvell_cpus),
     0x66: (Vendor.FARADAY, faraday_cpus),
     0x69: (Vendor.INTEL, intel_cpus),
+}
+
+
+# TODO: there should be a better way to do this
+# Source: https://developer.arm.com/ip-products/processors/cortex-a
+uarch_to_isa: Dict[UArch, ISA] = {
+    UArch.CORTEX_A12: ISA.ARMV7_A,
+    UArch.CORTEX_A15: ISA.ARMV7_A,
+    UArch.CORTEX_A17: ISA.ARMV7_A,
+    UArch.CORTEX_A32: ISA.ARMV8_A,
+    UArch.CORTEX_A35: ISA.ARMV8_A,
+    UArch.CORTEX_A5: ISA.ARMV7_A,
+    UArch.CORTEX_A53: ISA.ARMV8_A,
+    UArch.CORTEX_A55: ISA.ARMV8_2_A,
+    UArch.CORTEX_A57: ISA.ARMV8_A,
+    UArch.CORTEX_A7: ISA.ARMV7_A,
+    UArch.CORTEX_A72: ISA.ARMV8_A,
+    UArch.CORTEX_A73: ISA.ARMV8_A,
+    UArch.CORTEX_A75: ISA.ARMV8_2_A,
+    UArch.CORTEX_A76: ISA.ARMV8_2_A,
+    UArch.CORTEX_A77: ISA.ARMV8_2_A,
+    UArch.CORTEX_A9: ISA.ARMV7_A,
+    UArch.DENVER: ISA.ARMV8_A,
+    UArch.DENVER2: ISA.ARMV8_A,
+    UArch.CARMEL: ISA.ARMV8_2_A,
 }

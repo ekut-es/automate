@@ -6,7 +6,7 @@ import logging
 
 
 from ..model import CoreModel
-from .cpuinfo_arm import implementers as arm_implementers
+from .cpuinfo_arm import implementers as arm_implementers, uarch_to_isa
 from ..model.common import ISA, UArch, ISAExtension, Vendor
 
 
@@ -27,6 +27,11 @@ def cpuinfo(con: Connection) -> List[CoreModel]:
         m = re.match(r"processor\s+: (\d+)", line)
         if m:
             if current_dict:
+                if current_dict["isa"] == ISA.UNKNOWN:
+                    if current_dict["uarch"] in uarch_to_isa:
+                        current_dict["isa"] = uarch_to_isa[
+                            current_dict["uarch"]
+                        ]
                 current_dict["description"] = current_dict[
                     "description"
                 ] + " (microarchitecture: {})".format(
@@ -73,6 +78,10 @@ def cpuinfo(con: Connection) -> List[CoreModel]:
             current_dict["uarch"] = uarch
 
     if current_dict:
+
+        if current_dict["isa"] == ISA.UNKNOWN:
+            if current_dict["uarch"] in uarch_to_isa:
+                current_dict["isa"] = uarch_to_isa[current_dict["uarch"]]
         current_dict["description"] = current_dict[
             "description"
         ] + " (microarchitecture: {})".format(current_dict["uarch"].value)

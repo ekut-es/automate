@@ -246,7 +246,31 @@ def reset(c, board, wait=False):
 
 @task
 def install(c, board, package):
+    """Installs a package on the board"""
+
     board = c.board(board)
+
+    # TODO: Support other distributions as needed
+    if board.os.distribution not in ["debian", "ubuntu"]:
+        logging.error(
+            "Currently package installation only supports Ubuntu or Debian based systems this board is {}".format(
+                board.os.distribution
+            )
+        )
+        return -1
+
     apt = "DEBIAN_FRONTEND=noninteractive apt-get install -y {0}"
     with board.connect() as con:
         con.sudo(apt.format(package))
+
+    return 0
+
+
+@task
+def shell(c, board):
+    """Starts a remote shell on the given board"""
+
+    board = c.board(board)
+
+    with board.connect() as con:
+        con.run("$SHELL", pty=True)

@@ -168,7 +168,6 @@ def add_board(c, user="", host=""):
 
     machine_sentinels = {
         "armv7l": "arm",
-        "armv71": "arm",
         "arm": "arm",
         "aarch64": "aarch64",
         "arm64": "aarch64",
@@ -178,7 +177,7 @@ def add_board(c, user="", host=""):
         t_machine = machine_sentinels[t_machine]
 
     t_abi = "gnueabihf"
-    if t_machine == "arm64":
+    if t_machine == "aarch64":
         t_abi = "gnu"
 
     triple = prompt(
