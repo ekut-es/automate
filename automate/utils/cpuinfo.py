@@ -10,19 +10,11 @@ from .cpuinfo_arm import implementers as arm_implementers, uarch_to_isa
 from ..model.common import ISA, UArch, ISAExtension, Vendor
 
 
-def cpuinfo(con: Connection) -> List[CoreModel]:
-    cpus: List[CoreModel] = []
+def _cpuinfo(text: str) -> List[CoreModel]:
+    lines = text.split("\n")
 
-    result = con.run("cat /proc/cpuinfo", hide="stdout", warn=True)
-    if result.return_code != 0:
-        return []
-
-    lines = result.stdout.split("\n")
-
-    print("lines: ")
-
-    current_type = "ARM"
     current_dict: Dict[str, Any] = {}
+    cpus: List[CoreModel] = []
     for line in lines:
         m = re.match(r"processor\s+: (\d+)", line)
         if m:
@@ -88,3 +80,13 @@ def cpuinfo(con: Connection) -> List[CoreModel]:
         cpus.append(CoreModel(**current_dict))
 
     return cpus
+
+
+def cpuinfo(con: Connection) -> List[CoreModel]:
+    cpus: List[CoreModel] = []
+
+    result = con.run("cat /proc/cpuinfo", hide="stdout", warn=True)
+    if result.return_code != 0:
+        return []
+
+    return _cpuinfo(result.stdout)

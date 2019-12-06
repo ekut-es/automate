@@ -1,8 +1,0 @@
-automate:
-  metadata: metadata
-  identity: ~/.ssh/id_rsa
-  toolroot: /afs/wsi/es/tools/
-  boardroot: /nfs/es-genial/boards/
-
-logging:
-  level: INFO

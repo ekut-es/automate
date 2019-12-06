@@ -94,7 +94,7 @@ class AutomateConfig(Config):
     env_prefix = "AUTOMATE"
 
     @staticmethod
-    def global_defaults():
+    def global_defaults() -> Any:
         their_defaults = Config.global_defaults()
 
         my_defaults = _configure().dict()

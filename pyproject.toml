@@ -25,6 +25,8 @@ pytest = "^5.3"
 pytest-cov = "^2.8"
 pytest-monkeytype = "^1.0"
 black = {version = "^18.3-alpha.0", allows-prereleases = true}
+mkdocs = "^1.0"
+pygments = "^2.5"
 
 [tool.poetry.scripts]
 automate = 'automate.main:program.run'
