@@ -69,6 +69,24 @@ def _cpuinfo(text: str) -> List[CoreModel]:
 
             current_dict["uarch"] = uarch
 
+        m = re.match(r"Features\s*: (.*)", line)
+        if m:
+            features = m.group(1).split()
+            extensions = []
+
+            extension_set = set()
+
+            for v in ISAExtension:
+                extension_set.add(v.value)
+
+            for feature in features:
+                if feature in extension_set:
+                    extensions.append(ISAExtension(feature))
+                else:
+                    extensions.append(ISAExtension.UNKNOWN)
+
+            current_dict["extensions"] = extensions
+
     if current_dict:
 
         if current_dict["isa"] == ISA.UNKNOWN:

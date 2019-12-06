@@ -13,3 +13,4 @@ der_schrank/
 *.sqlite3
 .coverage
 build-*/
+htmlcov
