@@ -4,7 +4,9 @@ from pathlib import Path
 
 
 @task
-def compile(c, board, files=[], output="a.out", compiler="", builddir=""):
+def compile(
+    c, board, files=[], output="a.out", compiler="", builddir=""
+):  # pragma: no cover
     """Compiles multiple source files to a target specific executable
 
        Output will be placed in: build-{board_id} by default

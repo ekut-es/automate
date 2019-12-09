@@ -13,13 +13,13 @@ import threading
 import shutil
 import concurrent.futures
 import contextlib
-
+from pathlib import Path
 
 from ..utils import fix_symlinks
 
 
 @task
-def safe_rootfs(c, board):
+def safe_rootfs(c, board):  # pragma: no cover
     "Safe rootfs image of board to board directory"
     bh = c.board(board)
 
@@ -127,7 +127,7 @@ def safe_rootfs(c, board):
 
 
 @task
-def build_sysroot(c, board):
+def build_sysroot(c, board):  # pragma: no cover
     "Build a sysroot for the given board"
 
     bh = c.board(board)
@@ -169,7 +169,7 @@ def build_sysroot(c, board):
 
 
 @task
-def run(c, board, command, cwd=""):
+def run(c, board, command, cwd=""):  # pragma: no cover
     "Run command remotely"
 
     bh = c.board(board)
@@ -184,46 +184,54 @@ def run(c, board, command, cwd=""):
 
 
 @task
-def put(c, board, file, remote_path=""):
+def put(c, board, file, remote_path=""):  # pragma: no cover
     "Put file on the board"
 
     bh = c.board(board)
-    con = bh.connect()
+    with bh.connect() as con:
+        if not remote_path:
+            remote_path = bh.model.rundir
+            remote_file = remote_path / Path(file).name
 
-    if not remote_path:
-        remote_path = bh.model.rundir
-        remote_file = remote_path / Path(file).name
+        else:
+            remote_file_path = Path(remote_path)
 
-    else:
-        remote_file_path = Path(remote_path)
-
-    con.run("mkdir -p {}".format(str(remote_file.parent)))
-    con.put(str(file), str(remote_file))
+        con.run("mkdir -p {}".format(str(remote_file.parent)))
+        con.put(str(file), str(remote_file))
 
 
 @task
-def get(c, board, file, remote_path=""):
+def get(c, board, remote, local=""):  # pragma: no cover
     "get file from the board"
 
     bh = c.board(board)
+    with bh.connect() as con:
+        if local:
+            local_path = Path(local)
+            if local_path.is_dir():
+                local_path.mkdir(parents=True, exist_ok=True)
+            else:
+                local_path.parent.mkdir(parents=True, exist_ok=True)
+
+        con.get(remote=str(remote), local=str(local))
 
     raise Exception("Not Implemented")
 
 
 @task
-def lock(c, board):
+def lock(c, board):  # pragma: no cover
     board = c.board(board)
     board.lock()
 
 
 @task
-def unlock(c, board):
+def unlock(c, board):  # pragma: no cover
     board = c.board(board)
-    board.lock()
+    board.unlock()
 
 
 @task
-def reboot(c, board, wait=False):
+def reboot(c, board, wait=False):  # pragma: no cover
     """Reboots the board
        
        If -w / --wait is given waits untile the boards is reachable via ssh again
@@ -234,7 +242,7 @@ def reboot(c, board, wait=False):
 
 
 @task
-def reset(c, board, wait=False):
+def reset(c, board, wait=False):  # pragma: no cover
     """Does a hard reset of the board
     
        If -w / --wait is given waits until the board is reachable again
@@ -245,7 +253,7 @@ def reset(c, board, wait=False):
 
 
 @task
-def install(c, board, package):
+def install(c, board, package):  # pragma: no cover
     """Installs a package on the board"""
 
     board = c.board(board)
@@ -267,7 +275,7 @@ def install(c, board, package):
 
 
 @task
-def shell(c, board):
+def shell(c, board):  # pragma: no cover
     """Starts a remote shell on the given board"""
 
     board = c.board(board)

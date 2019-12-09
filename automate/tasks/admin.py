@@ -45,7 +45,7 @@ class UArchValidator(Validator):
             )
 
 
-class VendorValidator(Validator):
+class VendorValidator(Validator):  # pragma: no cover
     vendor_set = set((k.value for k in Vendor))
 
     def validate(self, document):
@@ -58,7 +58,7 @@ class VendorValidator(Validator):
 
 
 @task
-def add_board(c, user="", host=""):
+def add_board(c, user="", host=""):  # pragma: no cover
 
     if host == "":
         host = prompt("Host: ")

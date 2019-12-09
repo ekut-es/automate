@@ -8,7 +8,6 @@ from .model import (
     CompilerModel,
     BoardModel,
     MetadataModel,
-    ConfigModel,
     CoreModel,
     TripleModel,
 )
@@ -145,6 +144,7 @@ class CrossCompiler(Compiler):
             self.board.os.triple.machine,
             self.board.os.triple.environment,
         )
+
         for ct in self.model.triples:
             if os_triple == (ct.os, ct.machine, ct.environment):
                 if self.check_multiarch and self.board.os.multiarch:

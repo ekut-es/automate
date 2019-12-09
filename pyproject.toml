@@ -29,6 +29,7 @@ black = {version = "^18.3-alpha.0", allows-prereleases = true}
 mkdocs = "^1.0"
 pygments = "^2.5"
 coverage = {version = "^4.5", extras = ["toml"]}
+mock-ssh-server = "^0.8.0"
 
 [tool.poetry.scripts]
 automate = 'automate.main:program.run'

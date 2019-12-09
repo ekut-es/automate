@@ -20,7 +20,9 @@ class ModelLoader(object):
     def __init__(self, config: AutomateConfig) -> None:
         self.config = config
         self.logger = logging.getLogger(__name__)
-        self.logger.debug("Metadata Loader for {}".format(self.config.metadata))
+        self.logger.debug(
+            "Metadata Loader for {}".format(self.config.automate.metadata)
+        )
 
         self.model = None
 
@@ -29,7 +31,8 @@ class ModelLoader(object):
     ) -> List[CommentedMap]:
         res = []
         files = glob(
-            os.path.join(self.config.metadata, pattern), recursive=recursive
+            os.path.join(self.config.automate.metadata, pattern),
+            recursive=recursive,
         )
 
         for file_name in files:
@@ -58,24 +61,24 @@ class ModelLoader(object):
 
         def do_apply_template(template, env):
             try:
-                logging.debug("Template is: {}".format(template.template))
+                self.logger.debug("Template is: {}".format(template.template))
                 formatted = template.substitute(env)
-                logging.debug("Formatted field: {}".format(formatted))
+                self.logger.debug("Formatted field: {}".format(formatted))
                 return formatted
-            except ValueError as e:
-                logging.error(str(e))
-                logging.error(
+            except ValueError as e:  # pragma: no cover
+                self.logger.error(str(e))
+                self.logger.error(
                     "During formatting of field {} from {} value: {}".format(
                         field_name, model_file, field
                     )
                 )
-                logging.error(str(env))
+                self.logger.error(str(env))
                 raise e
 
         for field_name in data_model.__fields__:
-            logging.debug("Field_name is: {}".format(field_name))
+            self.logger.debug("Field_name is: {}".format(field_name))
             field = getattr(data_model, field_name)
-            logging.debug("Field is: {}".format(field))
+            self.logger.debug("Field is: {}".format(field))
 
             formatted = ""
             if isinstance(field, str):
@@ -110,9 +113,11 @@ class ModelLoader(object):
         data_model = MetadataModel(compilers=compilers, boards=boards)
 
         template_env = {
-            "metadata": str(self.config.metadata),
-            "toolroot": str(self.config.toolroot),
-            "boardroot": str(self.config.boardroot),
+            "metadata": os.path.expanduser(str(self.config.automate.metadata)),
+            "toolroot": os.path.expanduser(str(self.config.automate.toolroot)),
+            "boardroot": os.path.expanduser(
+                str(self.config.automate.boardroot)
+            ),
         }
 
         self.logger.debug("Applying templates")

@@ -59,5 +59,3 @@ def fix_symlinks(base_path: Path) -> None:
 
             os.unlink(link)
             os.symlink(new_target_rel, link)
-
-    sys.exit(0)

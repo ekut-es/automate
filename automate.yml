@@ -1,8 +1,10 @@
+
+
 automate:
-  metadata: metadata
+  metadata: /local/gerum/projects/autojail/der_schrank/metadata
   identity: ~/.ssh/id_rsa
   toolroot: /afs/wsi/es/tools/
   boardroot: /nfs/es-genial/boards/
 
 logging:
-  level: INFO
+  level: DEBUG

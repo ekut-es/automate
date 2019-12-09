@@ -6,14 +6,14 @@ import tabulate
 
 
 @task
-def show_context(c):
+def show_context(c):  # pragma: no cover
     from pprint import pprint
 
     pprint(dict(c), indent=2)
 
 
 @task
-def list(c, boards=False, compilers=False):
+def list(c, boards=False, compilers=False):  # pragma: no cover
     "List available boards and compilers"
 
     if not boards and not compilers:
