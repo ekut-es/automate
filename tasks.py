@@ -1,4 +1,7 @@
 from invoke import task
+import os
+from pathlib import Path
+import sys
 
 
 @task
@@ -40,20 +43,39 @@ def pre_commit(c):
 
 @task
 def update_schemas(c):
-    from automate.model import CompilerModel, BoardModel
-    from pathlib import Path
+    from automate.model import CompilerModel, BoardModel, MetadataModel
 
-    board_json = BoardModel.schema_json(indent=2)
-    compiler_json = CompilerModel.schema_json(indent=2)
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
 
-    path = Path("docs/schema")
+    metadata_json = MetadataModel.schema_json(indent=2)
+    # board_json = BoardModel.schema_json(indent=2,by_alias=True)
+    # compiler_json = CompilerModel.schema_json(indent=2, by_alias=True)
+
+    path = root_path / "docs" / "schema"
     path.mkdir(exist_ok=True)
 
-    with (path / "board.json").open("w") as f:
-        f.write(board_json)
+    with (path / "metadata.schema.json").open("w") as f:
+        f.write(metadata_json)
 
-    with (path / "compiler.json").open("w") as f:
-        f.write(compiler_json)
+    # with (path / "board.schema.json").open("w") as f:
+    #    f.write(board_json)
+
+    # with (path / "compiler.schema.json").open("w") as f:
+    #    f.write(compiler_json)
+
+    tmp_path = root_path / "tmp"
+    tmp_path.mkdir(exist_ok=True)
+
+    with c.cd(str(tmp_path)):
+        node_path = tmp_path / "node-v12.13.1-linux-x64"
+        if not node_path.exists():
+            c.run(
+                "wget https://nodejs.org/dist/v12.13.1/node-v12.13.1-linux-x64.tar.xz"
+            )
+            c.run("tar xvJf node-v12.13.1-linux-x64.tar.xz")
+        os.environ["PATH"] = str(node_path / "bin") + ":" + os.environ["PATH"]
+        c.run("npm install -g @adobe/jsonschema2md")
+        c.run("jsonschema2md -d {0} -o {0}".format(path))
 
 
 @task
@@ -61,3 +83,37 @@ def doc(c):
     "Starts the documentation viewer"
 
     c.run("mkdocs serve")
+
+
+@task
+def fake_board(c, clean=False):
+    "Runs a fake board for integration tests"
+
+    root_path = os.path.dirname(os.path.abspath(__file__))
+    fake_board_path = os.path.join(root_path, "test/fake_board_data")
+    build_path = os.path.join(root_path, "tmp/fakechroot")
+
+    if clean:
+        c.run("rm -rf {0}".format(build_path))
+
+    c.run("mkdir -p {0}".format(build_path))
+
+    with c.cd(build_path):
+        if not os.path.exists(os.path.join(c.cwd, "fakechroot-2.20.1")):
+            c.run(
+                "wget https://github.com/dex4er/fakechroot/releases/download/2.20.1/fakechroot-2.20.1.tar.gz"
+            )
+            c.run("tar xvzf fakechroot-2.20.1.tar.gz")
+        with c.cd("fakechroot-2.20.1"):
+            if not os.path.exists(os.path.join(c.cwd, "configure")):
+                c.run("./autogen")
+
+            if not os.path.exists(os.path.join(c.cwd, "Makefile")):
+                c.run(
+                    "./configure --prefix={0}/fakechroot".format(
+                        fake_board_path
+                    )
+                )
+
+            c.run("make")
+            c.run("make install")

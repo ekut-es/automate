@@ -1,9 +1,12 @@
 from fake_board import board, test_private_key
 
 from fabric import Connection
+import io
 
 
-def test_fake_board(board):
+def test_fake_board(board, monkeypatch):
+    monkeypatch.setattr("sys.stdin", io.StringIO(""))
+
     host = board.host
     port = board.port
     user = "test"
@@ -17,3 +20,6 @@ def test_fake_board(board):
     con.open()
 
     assert con.is_connected == True
+
+    print("ls /")
+    con.run("ls /")
