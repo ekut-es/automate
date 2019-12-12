@@ -4,6 +4,8 @@ import shutil
 
 from typing import Union
 from patchwork.transfers import rsync
+import logging
+import os
 
 
 class BaseBuilder(object):
@@ -34,6 +36,8 @@ class BaseBuilder(object):
         self.srcdir = self.srcdir.absolute()
         self.builddir = self.builddir.absolute()
 
+        self.logger = logging.getLogger(__name__)
+
     def configure(self, c):
         "Configure the build"
 
@@ -59,7 +63,7 @@ class BaseBuilder(object):
 
 
 class CMakeBuilder(BaseBuilder):
-    def configure(self, c):
+    def configure(self, c, cmake_definitions=[]):
         self._mkbuilddir()
 
         toolchain_file = self.builddir / "toolchain.cmake"
@@ -92,12 +96,14 @@ class CMakeBuilder(BaseBuilder):
             tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)\n")
             tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)\n")
 
+        definitions = " ".join(["-D{}".format(d) for d in cmake_definitions])
+
         with c.cd(str(self.builddir)):
-            c.run(
-                "cmake -DCMAKE_BUILD_TYPE='RelWithDebugInfo' -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake {}".format(
-                    self.srcdir
-                )
+            command = "cmake -DCMAKE_BUILD_TYPE='RelWithDebugInfo' -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake {} {}".format(
+                self.srcdir, definitions
             )
+            self.logger.info("Running cmake: {}".format(command))
+            c.run(command)
 
     def build(self, c):
         self._mkbuilddir()
@@ -111,18 +117,73 @@ class CMakeBuilder(BaseBuilder):
         with self.cc.board.connect() as con:
             rsync(
                 con,
-                source=str(self.builddir / "install"),
+                source=str(self.builddir / "install") + "/",
                 target=str(self.prefix),
                 delete=delete,
             )
 
 
 class KernelBuilder(BaseBuilder):
-    def configure(self, c):
-        self._mkbuilddir()
+    def _kernel_desc(self, kernel_id):
+        board = self.cc.board
 
-    def build(self, c, target="all"):
+        kernel_desc = None
+        for kernel in board.os.kernels:
+            if kernel.id == kernel_id:
+                kernel_desc = kernel
+                break
+
+        if kernel_desc is None:
+            raise Exception(
+                "Could not find config with id: {} for board {}".format(
+                    kernel_id, board.id
+                )
+            )
+
+        return kernel_desc
+
+    def configure(self, c, kernel_id):
         self._mkbuilddir()
+        kernel_desc = self._kernel_desc(kernel_id)
+
+        with c.cd(str(self.builddir)):
+            c.run("cp {} .".format(kernel_desc.kernel_source))
+            c.run("tar xvjf {}".format(kernel_desc.kernel_source))
+
+            kernel_archive = Path(kernel_desc.kernel_source).name
+
+            # FIXME make configurable
+            srcdir = kernel_desc.kernel_srcdir
+            arch = (
+                self.cc.machine.value
+                if self.cc.machine.value != "aarch64"
+                else "arm64"
+            )
+            with c.cd(str(srcdir)):
+                c.run("cp {} .config".format(kernel_desc.kernel_config))
+                c.run(
+                    "make ARCH={0} CROSS_COMPILE={1} oldconfig".format(
+                        arch, os.path.join(self.cc.bin_path, self.cc.prefix)
+                    )
+                )
+
+    def build(self, c, kernel_id):
+        self._mkbuilddir()
+        kernel_desc = self._kernel_desc(kernel_id)
+
+        with c.cd(str(self.builddir)):
+            srcdir = kernel_desc.kernel_srcdir
+            arch = (
+                self.cc.machine.value
+                if self.cc.machine.value != "aarch64"
+                else "arm64"
+            )
+            with c.cd(str(srcdir)):
+                c.run(
+                    "make ARCH={0} CROSS_COMPILE={1}".format(
+                        arch, os.path.join(self.cc.bin_path, self.cc.prefix)
+                    )
+                )
 
 
 class MakefileBuilder(BaseBuilder):

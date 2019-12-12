@@ -9,6 +9,6 @@ for BOARD in $BOARDS; do
     automate  cmake.build $BOARD 
     automate  board.lock       $BOARD 
     automate  cmake.install $BOARD
-    automate  board.run        $BOARD ./install/bin/CMakeHelloWorld 
+    automate  board.run        $BOARD ./bin/CMakeHelloWorld 
     automate  board.unlock     $BOARD 
 done

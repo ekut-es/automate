@@ -10,11 +10,11 @@ def _get_builder(c, board, *args, **kwargs):
 
 
 @task
-def configure(c, board, builddir="", srcdir="", prefix=""):
+def configure(c, board, builddir="", srcdir="", prefix="", D=[]):
     builder = _get_builder(
         c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
     )
-    builder.configure(c)
+    builder.configure(c, cmake_definitions=D)
 
 
 @task

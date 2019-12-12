@@ -57,6 +57,10 @@ class Compiler(object):
         return Path(self.model.basedir) / "bin"
 
     @property
+    def prefix(self):
+        return self.model.prefix
+
+    @property
     def cc(self) -> str:
         return self.model.prefix + self.model.cc
 

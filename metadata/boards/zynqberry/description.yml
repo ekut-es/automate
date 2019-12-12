@@ -1,4 +1,10 @@
 board: zynqberry
+
+gateway:
+  host: tichy.informatik.uni-tuebingen.de
+  username: esdata
+
+
 connections:
 - {host: 10.42.0.10, port: 22, username: es}
 cores:
@@ -16,7 +22,6 @@ cores:
   vendor: arm
 description: TE0726 Zynq "ZynqBerry" (Z-7010) Module with Dual-Core Cortex-A9
 doc: []
-gateway: null
 id: zynqberry
 name: zynqberry
 os:

@@ -49,6 +49,7 @@ class KernelModel(DataModelBase):
     commandline: str
     kernel_config: Path
     kernel_source: Path
+    kernel_srcdir: str = ""
     default: bool
 
 
