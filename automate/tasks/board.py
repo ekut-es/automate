@@ -1,4 +1,5 @@
 from fabric import task
+from patchwork.files import exists
 
 import logging
 import random
@@ -38,11 +39,18 @@ def safe_rootfs(c, board):  # pragma: no cover
 
         con.run("uptime")
 
-        result = con.run("echo 1 | sudo tee /proc/sys/kernel/sysrq", hide="out")
-        if result.return_code != 0:
-            raise Exception("Could not enable sysrq triggers")
+        if exists(con, "/proc/sys/kernel/sysrq"):
+            result = con.run(
+                "echo 1 | sudo tee /proc/sys/kernel/sysrq",
+                hide="stdout",
+                pty=True,
+            )
+            if result.return_code != 0:
+                raise Exception("Could not enable sysrq triggers")
+        else:
+            logging.warning("Could not enable sysrq triggers trying it anyway")
 
-        mount_result = con.run("mount", hide="out")
+        mount_result = con.run("mount", hide="stdout")
         if mount_result.return_code != 0:
             raise Exception("Could not get mountpoints")
         mount_output = mount_result.stdout
@@ -87,7 +95,9 @@ def safe_rootfs(c, board):  # pragma: no cover
                     reader_result = thread_executor.submit(reader_func)
 
                     result = con.run(
-                        "echo u | sudo tee /proc/sysrq-trigger", hide="out"
+                        "echo u | sudo tee /proc/sysrq-trigger",
+                        hide="stdout",
+                        pty=True,
                     )
                     if result.return_code != 0:
                         raise Exception(
@@ -96,10 +106,11 @@ def safe_rootfs(c, board):  # pragma: no cover
 
                     with con.forward_remote(port):
                         logging.info("Starting writer")
-                        res = con.sudo(
-                            "dd if={} | gzip -c |nc -N localhost {}".format(
+                        res = con.run(
+                            "sudo dd if={} | gzip -c |nc -N localhost {}".format(
                                 rootdevice, port
-                            )
+                            ),
+                            pty=True,
                         )
                         print("Finished!\n")
 
@@ -109,7 +120,9 @@ def safe_rootfs(c, board):  # pragma: no cover
             except BaseException as e:
                 if image_name.with_suffix(".tmp").exists():
                     c.run("rm {}".format(image_name.with_suffix(".tmp")))
-                raise e
+                logging.error(
+                    "Exception during image writing: {}".format(str(e))
+                )
             finally:
                 print("Rebooting target {}".format(board))
                 bh.reboot(wait=False)
@@ -149,7 +162,7 @@ def build_sysroot(c, board):  # pragma: no cover
                 r'rsync -ar --delete --delete-excluded --exclude="/tmp" --exclude="/home" {}/ {}/'.format(
                     str(tmp_path), str(bh.os.sysroot)
                 ),
-                hide="out",
+                hide="stdout",
                 warn=True,
             )
 
@@ -267,9 +280,9 @@ def install(c, board, package):  # pragma: no cover
         )
         return -1
 
-    apt = "DEBIAN_FRONTEND=noninteractive apt-get install -y {0}"
+    apt = "DEBIAN_FRONTEND=noninteractive sudo apt-get install -y {0}"
     with board.connect() as con:
-        con.sudo(apt.format(package))
+        con.run(apt.format(package))
 
     return 0
 
@@ -282,3 +295,21 @@ def shell(c, board):  # pragma: no cover
 
     with board.connect() as con:
         con.run("$SHELL", pty=True)
+
+
+@task
+def board_ids(c, locked_ok=False):
+    """returns list of board_ids suitable for usage in shell scripts"""
+    for board in c.boards():
+        if locked_ok or not board.is_locked():
+            print(board.id)
+
+
+@task
+def get_kernel_config(c, board, target=""):
+    board = c.board(board)
+    if target:
+        target = Path(target)
+
+    with board.connect() as con:
+        con.get("/proc/config.gz", str(target))

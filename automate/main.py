@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import coloredlogs
 
 from invoke import Program, Collection, Config
 from .config import AutomateConfig
@@ -25,6 +26,14 @@ class AutoTool(Program):
         print("  fabric: {}".format(fabric_version))
         print("  invoke: {}".format(invoke_version))
         print("  paramiko: {}".format(paramiko_version))
+
+    def execute(self):
+        if "logging" in self.config and "level" in self.config.logging:
+            coloredlogs.install(level=self.config.logging.level)
+        else:
+            coloredlog.install(level="DEBUG")
+
+        return super(AutoTool, self).execute()
 
 
 program = AutoTool(

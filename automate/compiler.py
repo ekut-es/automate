@@ -22,6 +22,15 @@ from .model.common import (
     Vendor,
 )
 
+from .builder import (
+    BaseBuilder,
+    CMakeBuilder,
+    KernelBuilder,
+    MakefileBuilder,
+    SPECBuilder,
+    AutotoolsBuilder,
+)
+
 from . import board
 
 
@@ -192,3 +201,21 @@ class CrossCompiler(Compiler):
             flags.append(self.base_flags)
 
         return " ".join(flags)
+
+    def builder(self, typ, *args, **kwargs) -> BaseBuilder:
+        if typ == "cmake":
+            return CMakeBuilder(self, *args, **kwargs)
+        elif typ == "kernel":
+            return KernelBuilder(self, *args, **kwargs)
+        elif typ == "make":
+            return MakefileBuilder(self, *args, **kwargs)
+        elif typ == "spec":
+            return SPECBuilder(self, *args, **kwargs)
+        elif typ == "autotools":
+            return AutotoolsBuilder(self, *args, **kwargs)
+
+        raise Exception("Could not find builder {}".format(typ))
+
+    @property
+    def default_builddir(self):
+        return "build-{}".format(self.board.id)

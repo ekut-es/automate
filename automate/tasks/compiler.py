@@ -23,7 +23,7 @@ def compile(
     cxx = compiler.bin_path / compiler.cxx
 
     if not builddir:
-        builddir = "build-{}".format(board.id)
+        builddir = compiler.default_builddir
 
     build_path = Path(builddir)
     build_path.mkdir(exist_ok=True)

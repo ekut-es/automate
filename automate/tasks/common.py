@@ -38,7 +38,11 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
                 s = connection_to_string(connection)
                 connections.append(s)
 
-            default_compiler = board.compiler()
+            default_compiler_id = ""
+            try:
+                default_compiler_id = board.compiler().id
+            except:
+                pass
 
             board_line = [
                 board.id,
@@ -46,7 +50,7 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
                 len(board.cores),
                 os,
                 ",".join(connections),
-                default_compiler.id,
+                default_compiler_id,
             ]
 
             board_table.append(board_line)

@@ -27,7 +27,6 @@ class Board(object):
     @contextmanager
     def lock(self):
         self.logger.warning("Locking of boards is currently not implemented")
-
         try:
             # TODO: acquire lock
             yield None
@@ -37,6 +36,11 @@ class Board(object):
 
     def unlock(self):
         self.logger.warning("Unlocking of boards is currently not implemented")
+
+    def is_locked(self) -> bool:
+        self.logger.warning("Locking is currently not implemented")
+
+        return False
 
     def compiler(
         self, compiler_id: str = "", toolchain: Toolchain = Toolchain.GCC

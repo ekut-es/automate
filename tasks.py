@@ -7,38 +7,50 @@ import sys
 @task
 def black(c):
     "Runs black code formatter"
-    c.run("black --py36 -l 80 automate test")
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
+    with c.cd(str(root_path)):
+        c.run("black --py36 -l 80 automate test")
 
 
 @task
 def mypy(c):
     "Run static typechecker on the code"
-    c.run("mypy automate")
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
+    with c.cd(str(root_path)):
+        c.run("mypy automate")
 
 
 @task
 def test(c):
     "Run test suite"
-    c.run("pytest --cov automate test --cov-config=pyproject.toml")
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
+    with c.cd(str(root_path)):
+        c.run("pytest --cov automate test --cov-config=pyproject.toml")
 
 
 @task(test)
 def cov(c):
     "Generate html coverage report"
-    c.run("coverage html")
-    c.run("xdg-open htmlcov/index.html")
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
+    with c.cd(str(root_path)):
+        c.run("coverage html")
+        c.run("xdg-open htmlcov/index.html")
 
 
 @task
 def monkeytype(c):
     "Run testsuite and collect dynamic type information"
-    c.run("pytest --monkeytype-output=monkeytype.sqlite3 test")
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
+    with c.cd(str(root_path)):
+        c.run("pytest --monkeytype-output=monkeytype.sqlite3 test")
 
 
 @task
 def pre_commit(c):
     "Installs pre commit hooks"
-    c.run("pre-commit install")
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
+    with c.cd(str(root_path)):
+        c.run("pre-commit install")
 
 
 @task
@@ -82,7 +94,9 @@ def update_schemas(c):
 def doc(c):
     "Starts the documentation viewer"
 
-    c.run("mkdocs serve")
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
+    with c.cd(str(root_path)):
+        c.run("mkdocs serve")
 
 
 @task

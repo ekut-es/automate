@@ -5,6 +5,8 @@ from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.validation import Validator, ValidationError
 import patchwork.files
 import datetime
+from ruamel.yaml import YAML
+from enum import Enum
 
 import logging
 import getpass
@@ -58,7 +60,8 @@ class VendorValidator(Validator):  # pragma: no cover
 
 
 @task
-def add_board(c, user="", host=""):  # pragma: no cover
+def add_board(c, user="", host="", port=22):  # pragma: no cover
+    # TODO: add configuration of gateway
 
     if host == "":
         host = prompt("Host: ")
@@ -67,7 +70,7 @@ def add_board(c, user="", host=""):  # pragma: no cover
         user = prompt("Username: ", default="{}".format(getpass.getuser()))
 
     try:
-        con = Connection(user=user, host=host)
+        con = Connection(user=user, host=host, port=port)
         con.open()
     except AuthenticationException as e:
         print("Could not Authenticate with public key")
@@ -103,8 +106,18 @@ def add_board(c, user="", host=""):  # pragma: no cover
     if result.return_code == 0:
         hostname = result.stdout.strip()
 
-    board_name = prompt("board name: ", default=hostname)
     board_id = prompt("board_id: ", default=hostname)
+    model_file = (
+        Path(c.config.automate.metadata)
+        / "boards"
+        / board_id
+        / "description.yml"
+    )
+    if model_file.exists():
+        logging.error("board with id {0} already exists".format(board_id))
+        return -1
+
+    board_name = prompt("board name: ", default=hostname)
 
     board_model = board_id
     board_model = prompt("board model: ", default=board_model)
@@ -208,9 +221,9 @@ def add_board(c, user="", host=""):  # pragma: no cover
     distribution = prompt("  distribution: ", default=distribution)
     version = prompt("  version: ", default=version)
     description = ""
-    sysroot = prompt("  sysroot: ", default="$(boardroot)/$(board_id)/sysroot")
+    sysroot = prompt("  sysroot: ", default="${boardroot}/${board_id}/sysroot")
     rootfs = prompt(
-        "  rootfs: ", default="$(boardroot)/$(board_id)/$(board_id).img"
+        "  rootfs: ", default="${boardroot}/${board_id}/${board_id}.img"
     )
     multiarch = False
     if distribution in ["ubuntu", "debian"]:
@@ -233,11 +246,33 @@ def add_board(c, user="", host=""):  # pragma: no cover
         description=board_description,
         board=board_model,
         rundir=rundir,
-        connections=[SSHConnectionModel(username=user, host=host)],
+        connections=[SSHConnectionModel(username=user, host=host, port=port)],
         cores=cpu_models,
         os=os_model,
-        model_file=Path("metadata") / "boards" / board_id,
+        model_file=model_file,
         model_file_mtime=datetime.datetime.now(),
     )
 
-    print(board_model)
+    model_file.parent.mkdir(parents=True, exist_ok=True)
+
+    yaml = YAML(typ="unsafe")
+    with model_file.open("w") as mf:
+        d = board_model.dict(exclude={"model_file", "model_file_mtime"})
+
+        def _recurse(d):
+            if isinstance(d, dict):
+                for k, v in d.items():
+                    d[k] = _recurse(v)
+                return d
+            elif isinstance(d, list):
+                return [_recurse(item) for item in d]
+            elif isinstance(d, Enum):
+                return d.value
+            elif isinstance(d, Path):
+                return str(d)
+            else:
+                return d
+
+        d = _recurse(d)
+
+        yaml.dump(d, mf)
