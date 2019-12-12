@@ -1,9 +1,9 @@
 import invoke
 
-from .config import AutomateConfig
-from .loader import ModelLoader
 from .board import Board
 from .compiler import Compiler
+from .config import AutomateConfig
+from .loader import ModelLoader
 
 
 class AutomateContext(invoke.Context):

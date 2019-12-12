@@ -1,4 +1,4 @@
+from .board import *
+from .common import *
 from .compiler import *
 from .metadata import *
-from .common import *
-from .board import *

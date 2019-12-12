@@ -1,8 +1,9 @@
-import pytest
 from collections import Counter
 
-from automate.loader import ModelLoader
+import pytest
+
 from automate.config import AutomateConfig
+from automate.loader import ModelLoader
 
 
 def test_model_load():

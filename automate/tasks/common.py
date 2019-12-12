@@ -1,8 +1,7 @@
+import tabulate
 from invoke import task
 
 from ..utils import connection_to_string
-
-import tabulate
 
 
 @task

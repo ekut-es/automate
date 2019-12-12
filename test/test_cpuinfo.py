@@ -1,4 +1,5 @@
 import os
+
 from automate.utils.cpuinfo import _cpuinfo
 
 

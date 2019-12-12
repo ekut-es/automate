@@ -1,7 +1,7 @@
-from pytest import yield_fixture
+import os
 
 import mockssh
-import os
+from pytest import yield_fixture
 
 root_path = os.path.dirname(os.path.abspath(__file__))
 test_private_key = os.path.join(root_path, "fake_board_data", "test_id_rsa")

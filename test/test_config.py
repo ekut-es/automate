@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 import ruamel.yaml as yaml
 
 from automate.config import AutomateConfig

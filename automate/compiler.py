@@ -1,37 +1,32 @@
 import logging
-
-from typing import List, Union
 from pathlib import Path
+from typing import List, Union
 
-
-from .model import (
-    CompilerModel,
-    BoardModel,
-    MetadataModel,
-    CoreModel,
-    TripleModel,
-)
-from .model.common import (
-    Toolchain,
-    Vendor,
-    ISA,
-    UArch,
-    OS,
-    Machine,
-    Environment,
-    Vendor,
-)
-
+from . import board
 from .builder import (
+    AutotoolsBuilder,
     BaseBuilder,
     CMakeBuilder,
     KernelBuilder,
     MakefileBuilder,
     SPECBuilder,
-    AutotoolsBuilder,
 )
-
-from . import board
+from .model import (
+    BoardModel,
+    CompilerModel,
+    CoreModel,
+    MetadataModel,
+    TripleModel,
+)
+from .model.common import (
+    ISA,
+    OS,
+    Environment,
+    Machine,
+    Toolchain,
+    UArch,
+    Vendor,
+)
 
 
 class Compiler(object):

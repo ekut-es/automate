@@ -1,11 +1,6 @@
-from . import common
-from . import compiler
-from . import board
-from . import admin
-from . import cmake
-from . import kernel
-
 from invoke import Collection
+
+from . import admin, board, cmake, common, compiler, kernel
 
 compiler_tasks = Collection().from_module(compiler)
 board_tasks = Collection().from_module(board)

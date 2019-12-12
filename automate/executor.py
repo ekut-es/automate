@@ -1,4 +1,5 @@
-from invoke import Executor, Call
+from invoke import Call, Executor
+
 from .context import AutomateContext
 
 

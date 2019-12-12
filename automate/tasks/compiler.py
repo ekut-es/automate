@@ -1,6 +1,7 @@
-from invoke import task, Collection
 import logging
 from pathlib import Path
+
+from invoke import Collection, task
 
 
 @task

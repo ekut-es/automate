@@ -1,13 +1,14 @@
-import re
 import collections
-from typing import List, NamedTuple, Tuple, Dict, Union, Any
-from fabric import Connection
 import logging
+import re
+from typing import Any, Dict, List, NamedTuple, Tuple, Union
 
+from fabric import Connection
 
 from ..model import CoreModel
-from .cpuinfo_arm import implementers as arm_implementers, uarch_to_isa
-from ..model.common import ISA, UArch, ISAExtension, Vendor
+from ..model.common import ISA, ISAExtension, UArch, Vendor
+from .cpuinfo_arm import implementers as arm_implementers
+from .cpuinfo_arm import uarch_to_isa
 
 
 def _cpuinfo(text: str) -> List[CoreModel]:

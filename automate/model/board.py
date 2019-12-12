@@ -1,13 +1,13 @@
-from pydantic import BaseModel, Field, HttpUrl
 from enum import Enum
-from typing import List, Dict, Any, Union, Optional
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 import ruamel.yaml as yaml
+from pydantic import BaseModel, Field, HttpUrl
 
 from .common import *
-from .model_base import *
 from .compiler import TripleModel
+from .model_base import *
 
 
 class DocumentationLinkModel(DataModelBase):

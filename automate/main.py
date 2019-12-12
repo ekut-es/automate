@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 import sys
-import coloredlogs
 
-from invoke import Program, Collection, Config
-from .config import AutomateConfig
-from .executor import AutomateExecutor
+import coloredlogs
+from invoke import Collection, Config, Program
 
 from . import __version__ as self_version
 from . import tasks
+from .config import AutomateConfig
+from .executor import AutomateExecutor
 
 
 class AutoTool(Program):

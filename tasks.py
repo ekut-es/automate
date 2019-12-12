@@ -1,10 +1,18 @@
-from invoke import task
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
+
+from invoke import task
 
 
 @task
+def isort(c):
+    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
+    with c.cd(str(root_path)):
+        c.run("isort automate test")
+
+
+@task(isort)
 def black(c):
     "Runs black code formatter"
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))

@@ -1,8 +1,8 @@
-from pydantic import BaseModel
 from datetime import datetime
 from pathlib import Path
-
 from typing import Dict
+
+from pydantic import BaseModel
 
 
 class DataModelBase(BaseModel):

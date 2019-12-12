@@ -1,20 +1,20 @@
-from fabric import task
-from patchwork.files import exists
-
-import logging
-import random
-import subprocess
-import shlex
-import time
-import tempfile
-import re
-import io
-import gzip
-import threading
-import shutil
 import concurrent.futures
 import contextlib
+import gzip
+import io
+import logging
+import random
+import re
+import shlex
+import shutil
+import subprocess
+import tempfile
+import threading
+import time
 from pathlib import Path
+
+from fabric import task
+from patchwork.files import exists
 
 from ..utils import fix_symlinks
 

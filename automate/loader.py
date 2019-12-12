@@ -1,19 +1,16 @@
 import logging
-from glob import glob
 import os
 import string
 from datetime import datetime
-import ruamel.yaml as yaml
+from glob import glob
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from .model import MetadataModel, DataModelBase, LoadedModelBase
+import ruamel.yaml as yaml
+from ruamel.yaml.comments import CommentedMap
 
 from .config import AutomateConfig
-
-from typing import List, Dict, Any, Optional
-from pathlib import Path
-
-
-from ruamel.yaml.comments import CommentedMap
+from .model import DataModelBase, LoadedModelBase, MetadataModel
 
 
 class ModelLoader(object):

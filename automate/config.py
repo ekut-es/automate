@@ -1,11 +1,11 @@
 import configparser
 import logging.config
-import coloredlogs
 import os
-import ruamel.yaml as yaml
 from pathlib import Path
-from typing import Dict, Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
+import coloredlogs
+import ruamel.yaml as yaml
 from invoke.config import Config, merge_dicts
 
 

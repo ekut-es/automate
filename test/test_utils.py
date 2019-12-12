@@ -1,9 +1,10 @@
-from automate.utils import *
-from automate.model import SSHConnectionModel, UARTConnectionModel
-
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
 import pytest
+
+from automate.model import SSHConnectionModel, UARTConnectionModel
+from automate.utils import *
 
 
 def test_connection_to_string():

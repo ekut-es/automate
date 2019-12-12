@@ -1,10 +1,10 @@
-from pydantic import BaseModel, Schema
 from enum import Enum
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
+from pydantic import BaseModel, Schema
 
-from .compiler import CompilerModel
 from .board import BoardModel
+from .compiler import CompilerModel
 from .model_base import *
 
 

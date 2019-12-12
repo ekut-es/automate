@@ -1,27 +1,27 @@
-from fabric import task, Connection
-from paramiko.ssh_exception import AuthenticationException
-from prompt_toolkit import prompt, PromptSession
-from prompt_toolkit.completion import FuzzyWordCompleter
-from prompt_toolkit.validation import Validator, ValidationError
-import patchwork.files
 import datetime
-from ruamel.yaml import YAML
-from enum import Enum
-
-import logging
 import getpass
-
-from ..utils import cpuinfo
-from ..model.common import ISA, UArch, Vendor
-from ..model import (
-    CoreModel,
-    BoardModel,
-    TripleModel,
-    OSModel,
-    ISAExtension,
-    SSHConnectionModel,
-)
+import logging
+from enum import Enum
 from pathlib import Path
+
+import patchwork.files
+from fabric import Connection, task
+from paramiko.ssh_exception import AuthenticationException
+from prompt_toolkit import PromptSession, prompt
+from prompt_toolkit.completion import FuzzyWordCompleter
+from prompt_toolkit.validation import ValidationError, Validator
+from ruamel.yaml import YAML
+
+from ..model import (
+    BoardModel,
+    CoreModel,
+    ISAExtension,
+    OSModel,
+    SSHConnectionModel,
+    TripleModel,
+)
+from ..model.common import ISA, UArch, Vendor
+from ..utils import cpuinfo
 
 
 class ISAValidator(Validator):

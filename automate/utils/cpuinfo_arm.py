@@ -1,6 +1,6 @@
-from ..model.common import Vendor, UArch, ISA
-
 from typing import Dict, Tuple
+
+from ..model.common import ISA, UArch, Vendor
 
 arm_cpus: Dict[int, UArch] = {
     0x810: UArch.ARM810,

@@ -1,12 +1,9 @@
 import logging
-from fabric import Connection
-from contextlib import contextmanager
-from .compiler import CrossCompiler
-from .model.common import Toolchain
-from .model import BoardModel, CompilerModel
-from typing import List, Union, Any
 import time
+from contextlib import contextmanager
+from typing import Any, List, Union
 
+from fabric import Connection
 
 from automate.model.board import (
     CoreModel,
@@ -14,6 +11,10 @@ from automate.model.board import (
     SSHConnectionModel,
     UARTConnectionModel,
 )
+
+from .compiler import CrossCompiler
+from .model import BoardModel, CompilerModel
+from .model.common import Toolchain
 
 
 class Board(object):

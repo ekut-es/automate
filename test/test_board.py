@@ -1,7 +1,8 @@
-from fake_board import board, test_private_key
+import io
 
 from fabric import Connection
-import io
+
+from fake_board import board, test_private_key
 
 
 def test_fake_board(board, monkeypatch):

@@ -1,8 +1,8 @@
-from pathlib import Path
-from typing import Union, List
+import logging
 import os
 import sys
-import logging
+from pathlib import Path
+from typing import List, Union
 
 from ..model.board import SSHConnectionModel, UARTConnectionModel
 

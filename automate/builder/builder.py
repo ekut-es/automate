@@ -1,11 +1,12 @@
-from .. import compiler
-from pathlib import Path
-import shutil
-
-from typing import Union
-from patchwork.transfers import rsync
 import logging
 import os
+import shutil
+from pathlib import Path
+from typing import Union
+
+from patchwork.transfers import rsync
+
+from .. import compiler
 
 
 class BaseBuilder(object):
@@ -120,6 +121,7 @@ class CMakeBuilder(BaseBuilder):
                 source=str(self.builddir / "install") + "/",
                 target=str(self.prefix),
                 delete=delete,
+                rsync_opts="-l",
             )
 
 
