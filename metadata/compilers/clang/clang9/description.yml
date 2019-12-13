@@ -15,8 +15,8 @@ triples:
     environment: gnueabi
     
 toolchain: llvm
-version: 8.0.1
-basedir: /afs/wsi/es/tools/clang/8.0
+version: 9.0.0
+basedir: /afs/wsi/es/tools/clang/9.0
 cc: clang
 cxx: clang++
 asm: llvm-as

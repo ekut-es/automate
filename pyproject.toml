@@ -16,6 +16,7 @@ patchwork = "^1.0"
 pre-commit = "^1.20"
 prompt_toolkit = "^3.0"
 mkdocs-material = "^4.5"
+kconfiglib = "^13.3"
 
 [tool.poetry.dev-dependencies]
 pur = "^5.2"
