@@ -6,6 +6,7 @@ doc/
 schema/
 tmp/
 venv/
+.venv/
 .mypy_cache/
 dist/
 automate.egg-info/
