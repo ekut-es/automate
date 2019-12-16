@@ -1,3 +1,4 @@
+import os
 from collections import Counter
 
 import pytest
@@ -5,9 +6,13 @@ import pytest
 from automate.config import AutomateConfig
 from automate.loader import ModelLoader
 
+root_path = os.path.dirname(os.path.abspath(__file__))
+metadata_path = os.path.join(root_path, "src", "metadata")
+
 
 def test_model_load():
     config = AutomateConfig()
+    config["metadata"] = str(metadata_path)
     loader = ModelLoader(config)
     model = loader.load()
 
