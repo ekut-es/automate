@@ -59,6 +59,61 @@ class VendorValidator(Validator):  # pragma: no cover
             )
 
 
+board_yaml_template = r"""
+name: 
+id: 
+board: 
+description: 
+rundir:
+
+# Links to documentation of these boards
+doc:
+
+# Gateway used for this board
+gateway:
+  host:
+  username:
+
+# Available UART and SSH Connections
+connections:
+  - 
+    host:
+    username:
+
+# Available Cores
+cores:
+  -
+    id:
+    description: 
+    isa:
+    uarch: 
+    vendor: 
+
+# Description of the Board OS and the available kernels
+os:
+  triple:
+    os: 
+    machine: 
+    environment:
+    distribution:
+    release: 
+    description: 
+    sysroot:
+    rootfs: 
+    multiarch: 
+    kernels: 
+      - 
+        id: 
+        description: 
+        version: 
+        commandline: 
+        kernel_srcdir: 
+        kernel_config: 
+        kernel_source: 
+        default:
+"""
+
+
 @task
 def add_board(c, user="", host="", port=22):  # pragma: no cover
     # TODO: add configuration of gateway
@@ -255,7 +310,11 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
 
     model_file.parent.mkdir(parents=True, exist_ok=True)
 
-    yaml = YAML(typ="unsafe")
+    yaml = YAML(typ="rt")
+    yaml.default_flow_style = False
+    yaml.indent(mapping=2, sequence=4, offset=2)
+
+    yaml.load(board_yaml_template)
     with model_file.open("w") as mf:
         d = board_model.dict(exclude={"model_file", "model_file_mtime"})
 

@@ -7,6 +7,7 @@ import random
 import re
 import shlex
 import shutil
+import socket
 import subprocess
 import tempfile
 import threading
@@ -17,6 +18,7 @@ from fabric import task
 from patchwork.files import exists
 
 from ..utils import fix_symlinks
+from ..utils.network import find_local_port
 
 
 @task
@@ -24,7 +26,7 @@ def safe_rootfs(c, board):  # pragma: no cover
     "Safe rootfs image of board to board directory"
     bh = c.board(board)
 
-    port = 12345
+    port = find_local_port()
 
     image_name = Path(bh.os.rootfs)
     image_name.parent.mkdir(parents=True, exist_ok=True)
@@ -33,22 +35,17 @@ def safe_rootfs(c, board):  # pragma: no cover
 
     with bh.lock():
 
-        logging.info("Connecting to target")
+        logging.info("Connecting to target using port {}".format(port))
 
         con = bh.connect()
 
         con.run("uptime")
 
-        if exists(con, "/proc/sys/kernel/sysrq"):
-            result = con.run(
-                "echo 1 | sudo tee /proc/sys/kernel/sysrq",
-                hide="stdout",
-                pty=True,
-            )
-            if result.return_code != 0:
-                raise Exception("Could not enable sysrq triggers")
-        else:
-            logging.warning("Could not enable sysrq triggers trying it anyway")
+        result = con.run(
+            "echo 1 | sudo tee /proc/sys/kernel/sysrq", hide="stdout", pty=True
+        )
+        if result.return_code != 0:
+            raise Exception("Could not enable sysrq triggers")
 
         mount_result = con.run("mount", hide="stdout")
         if mount_result.return_code != 0:
@@ -112,11 +109,13 @@ def safe_rootfs(c, board):  # pragma: no cover
                             ),
                             pty=True,
                         )
-                        print("Finished!\n")
+
+                        logging.info("waiting for reader")
 
                         result = reader_result.result()
                         if result != 0:
                             raise Exception("Could not write image!")
+
             except BaseException as e:
                 if image_name.with_suffix(".tmp").exists():
                     c.run("rm {}".format(image_name.with_suffix(".tmp")))
@@ -124,7 +123,7 @@ def safe_rootfs(c, board):  # pragma: no cover
                     "Exception during image writing: {}".format(str(e))
                 )
             finally:
-                print("Rebooting target {}".format(board))
+                logging.info("Rebooting target {}".format(board))
                 bh.reboot(wait=False)
 
         logging.info("Sparsifying saved image")
@@ -134,7 +133,9 @@ def safe_rootfs(c, board):  # pragma: no cover
                 "mv {0} {1}".format(image_name, image_name.with_suffix(".bak"))
             )
 
+        logging.info("Moving image to result")
         c.run("mv {0} {1}".format(image_name.with_suffix(".tmp"), image_name))
+        print("Finished image saving.")
 
         return 0
 

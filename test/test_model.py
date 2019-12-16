@@ -14,7 +14,7 @@ def test_model_load():
     assert len(model.boards) > 0
     assert len(model.compilers) > 0
 
-    checked_boards = ["jetsontx2", "jetsonagx"]
+    checked_boards = ["jetsontx2", "jetsonagx", "zynqberry"]
     for board in model.boards:
         checked_boards.remove(board.id)
     assert len(checked_boards) == 0
