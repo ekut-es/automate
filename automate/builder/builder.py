@@ -96,6 +96,33 @@ class CMakeBuilder(BaseBuilder):
             tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)\n")
             tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)\n")
             tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)\n")
+            tf.write("\n")
+
+            tf.write(
+                'message("CMAKE_C_FLAGS_DEBUG is ${CMAKE_C_FLAGS_DEBUG}")\n'
+            )
+            tf.write(
+                'message("CMAKE_C_FLAGS_RELEASE is ${CMAKE_C_FLAGS_RELEASE}")\n'
+            )
+            tf.write(
+                'message("CMAKE_C_FLAGS_RELWITHDEBINFO is ${CMAKE_C_FLAGS_RELWITHDEBINFO}")\n'
+            )
+            tf.write(
+                'message("CMAKE_C_FLAGS_MINSIZEREL is ${CMAKE_C_FLAGS_MINSIZEREL}")\n'
+            )
+            tf.write("\n")
+            tf.write(
+                'message("CMAKE_CXX_FLAGS_DEBUG is ${CMAKE_CXX_FLAGS_DEBUG}")\n'
+            )
+            tf.write(
+                'message("CMAKE_CXX_FLAGS_RELEASE is ${CMAKE_CXX_FLAGS_RELEASE}")\n'
+            )
+            tf.write(
+                'message("CMAKE_CXX_FLAGS_RELWITHDEBINFO is ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")\n'
+            )
+            tf.write(
+                'message("CMAKE_CXX_FLAGS_MINSIZEREL is ${CMAKE_CXX_FLAGS_MINSIZEREL}")\n'
+            )
 
         definitions = " ".join(["-D{}".format(d) for d in cmake_definitions])
 

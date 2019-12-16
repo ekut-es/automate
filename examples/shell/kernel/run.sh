@@ -10,4 +10,4 @@ done
 
 echo "Compile and run for $BOARD"
 automate  kernel.configure $BOARD jailhouse $config
-#automate  kernel.build $BOARD jailhouse
+automate  kernel.build $BOARD jailhouse
