@@ -13,7 +13,7 @@ before_script:
   - yum install git sudo python36 -y
   - yum groupinstall 'Development Tools' -y
   - python3.6 -m ensurepip
-  - pip install poetry
+  - python3.6 -m pip install poetry
   - poetry config settings.virtualenvs.in-project true
   - poetry develop
     
