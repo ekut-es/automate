@@ -1,0 +1,24 @@
+image: centos:7
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - .venv
+
+before_script:
+  - yum install epel-release -y
+  - yum install git sudo python36 -y
+  - yum groupinstall 'Development Tools' -y
+  - python3.6 -m ensurepip
+  - pip install poetry
+  - poetry config settings.virtualenvs.in-project true
+  - poetry develop
+    
+test:
+  script:
+    - set -e
+    - poetry run inv mypy
+    - poetry run inv test
