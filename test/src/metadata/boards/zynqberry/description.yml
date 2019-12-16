@@ -1,0 +1,55 @@
+name: zynqberry
+id: zynqberry
+board: zynqberry
+description: TE0726 Zynq "ZynqBerry" (Z-7010) Module with Dual-Core Cortex-A9
+rundir: /home/es/run
+doc: []
+gateway:
+connections:
+  - host: 10.42.0.10
+    username: es
+    port: 22
+cores:
+  - id: 0
+    isa: armv7-a
+    uarch: cortex-a9
+    vendor: arm
+    extensions:
+      - half
+      - thumb
+      - fastmult
+      - vfp
+      - edsp
+      - neon
+      - vfpv3
+      - tls
+      - vfpd32
+    description: 'ARMv7 Processor rev 0 (v7l) (microarchitecture: cortex-a9)'
+  - id: 1
+    isa: armv7-a
+    uarch: cortex-a9
+    vendor: arm
+    extensions:
+      - half
+      - thumb
+      - fastmult
+      - vfp
+      - edsp
+      - neon
+      - vfpv3
+      - tls
+      - vfpd32
+    description: 'ARMv7 Processor rev 0 (v7l) (microarchitecture: cortex-a9)'
+os:
+  triple:
+    machine: arm
+    vendor: unknown
+    os: linux
+    environment: gnueabihf
+  distribution: debian
+  release: ''
+  description: ''
+  sysroot: ${boardroot}/${board_id}/sysroot
+  rootfs: ${boardroot}/${board_id}/${board_id}.img
+  multiarch: true
+  kernels: []

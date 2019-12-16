@@ -1,0 +1,30 @@
+name: clang-80
+id: clang-80
+triples:
+  - 
+    machine: aarch64
+    os: linux
+    environment: gnu
+  -
+    machine: arm
+    os: linux
+    environment: gnueabihf
+  -
+    machine: arm
+    os: linux
+    environment: gnueabi
+    
+toolchain: llvm
+version: 8.0.1
+basedir: /afs/wsi/es/tools/clang/8.0
+cc: clang
+cxx: clang++
+asm: llvm-as
+ld: lld  
+
+isa_map:
+  armv8.1-a: -march=armv8.1-a
+
+uarch_map:
+  cortex-a35: -mcpu=cortex-a35
+
