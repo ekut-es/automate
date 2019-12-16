@@ -22,3 +22,5 @@ test:
     - set -e
     - poetry run inv mypy
     - poetry run inv test
+  tags:
+    - docker
