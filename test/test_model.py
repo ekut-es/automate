@@ -1,3 +1,4 @@
+import logging
 import os
 from collections import Counter
 
@@ -12,7 +13,8 @@ metadata_path = os.path.join(root_path, "src", "metadata")
 
 def test_model_load():
     config = AutomateConfig()
-    config["metadata"] = str(metadata_path)
+    config.automate.metadata = str(metadata_path)
+
     loader = ModelLoader(config)
     model = loader.load()
 

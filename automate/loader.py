@@ -27,10 +27,9 @@ class ModelLoader(object):
         self, pattern: str, recursive: bool = True
     ) -> List[CommentedMap]:
         res = []
-        files = glob(
-            os.path.join(self.config.automate.metadata, pattern),
-            recursive=recursive,
-        )
+        glob_pattern = os.path.join(self.config.automate.metadata, pattern)
+        self.logger.warning("Load glob pattern: {}".format(str(glob_pattern)))
+        files = glob(glob_pattern, recursive=recursive)
 
         for file_name in files:
             self.logger.debug("Loading metadata from {}".format(file_name))
