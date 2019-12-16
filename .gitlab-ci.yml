@@ -6,7 +6,6 @@ variables:
 cache:
   paths:
     - .cache/pip
-    - .venv
 
 before_script:
   - yum install epel-release -y
@@ -14,7 +13,6 @@ before_script:
   - yum groupinstall 'Development Tools' -y
   - python3.6 -m ensurepip
   - python3.6 -m pip install poetry
-  - poetry config settings.virtualenvs.in-project true
   - poetry develop
     
 test:
