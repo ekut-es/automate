@@ -16,6 +16,7 @@ from pathlib import Path
 
 from fabric import task
 from patchwork.files import exists
+from patchwork.transfers import rsync
 
 from ..utils import fix_symlinks
 from ..utils.network import find_local_port
@@ -314,3 +315,14 @@ def get_kernel_config(c, board, target=""):
 
     with board.connect() as con:
         con.get("/proc/config.gz", str(target))
+
+
+@task
+def rsync_to(c, board, source, target="", delete=False):
+    board = c.board(board)
+
+    if not target:
+        target = board.rundir
+
+    with board.connect() as con:
+        rsync(con, source=source, target=target, delete=delete)
