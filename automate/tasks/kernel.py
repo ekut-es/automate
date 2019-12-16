@@ -10,10 +10,10 @@ def _get_builder(c, board, *args, **kwargs):
 
 
 @task
-def configure(c, board, kernel_id):
+def configure(c, board, kernel_id, config_options=[]):
     builder = _get_builder(c, board)
 
-    builder.configure(c, kernel_id)
+    builder.configure(c, kernel_id, config_options)
 
 
 @task

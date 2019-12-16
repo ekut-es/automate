@@ -144,30 +144,57 @@ class KernelBuilder(BaseBuilder):
 
         return kernel_desc
 
-    def configure(self, c, kernel_id):
+    def _arch(self):
+        arch = (
+            self.cc.machine.value
+            if self.cc.machine.value != "aarch64"
+            else "arm64"
+        )
+        return arch
+
+    def _cross_compile(self):
+        cross_compile = os.path.join(self.cc.bin_path, self.cc.prefix)
+
+        return cross_compile
+
+    def configure(self, c, kernel_id, config_options=[]):
         self._mkbuilddir()
         kernel_desc = self._kernel_desc(kernel_id)
 
         with c.cd(str(self.builddir)):
-            c.run("cp {} .".format(kernel_desc.kernel_source))
-            c.run("tar xvjf {}".format(kernel_desc.kernel_source))
+            srcdir = self.builddir / kernel_desc.kernel_srcdir
 
-            kernel_archive = Path(kernel_desc.kernel_source).name
+            if not Path(srcdir).exists():
+                c.run("cp {} .".format(kernel_desc.kernel_source))
+                kernel_archive = Path(kernel_desc.kernel_source).name
+                c.run("tar xvjf {}".format(str(kernel_archive)))
 
-            # FIXME make configurable
-            srcdir = kernel_desc.kernel_srcdir
-            arch = (
-                self.cc.machine.value
-                if self.cc.machine.value != "aarch64"
-                else "arm64"
-            )
             with c.cd(str(srcdir)):
+
                 c.run("cp {} .config".format(kernel_desc.kernel_config))
+
                 c.run(
                     "make ARCH={0} CROSS_COMPILE={1} oldconfig".format(
-                        arch, os.path.join(self.cc.bin_path, self.cc.prefix)
+                        self._arch(), self._cross_compile()
                     )
                 )
+
+                config_fragment = srcdir / ".config_fragment"
+                with config_fragment.open("w") as fragment:
+                    for config_option in config_options:
+                        fragment.write(config_option)
+                        fragment.write("\n")
+
+                with c.prefix(
+                    "export ARCH={0} && export CROSS_COMPILE={1}".format(
+                        self._arch(), self._cross_compile()
+                    )
+                ):
+                    c.run(
+                        "./scripts/kconfig/merge_config.sh .config .config_fragment"
+                    )
+
+                c.run("cp .config {}".format(kernel_desc.kernel_config))
 
     def build(self, c, kernel_id):
         self._mkbuilddir()
@@ -175,15 +202,10 @@ class KernelBuilder(BaseBuilder):
 
         with c.cd(str(self.builddir)):
             srcdir = kernel_desc.kernel_srcdir
-            arch = (
-                self.cc.machine.value
-                if self.cc.machine.value != "aarch64"
-                else "arm64"
-            )
             with c.cd(str(srcdir)):
                 c.run(
                     "make ARCH={0} CROSS_COMPILE={1}".format(
-                        arch, os.path.join(self.cc.bin_path, self.cc.prefix)
+                        self._arch(), self._cross_compile()
                     )
                 )
 
