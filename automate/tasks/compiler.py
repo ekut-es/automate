@@ -36,6 +36,10 @@ def compile(
         if not f.exists():
             raise Exception("{} does not exist".format(f))
 
+        if f.suffix == ".o"
+            objs.append(f)
+            continue
+
         obj = build_path / (f.stem + ".o")
         objs.append(obj)
 
