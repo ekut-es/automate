@@ -36,7 +36,7 @@ def compile(
         if not f.exists():
             raise Exception("{} does not exist".format(f))
 
-        if f.suffix == ".o"
+        if f.suffix == ".o":
             objs.append(f)
             continue
 
