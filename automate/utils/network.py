@@ -30,6 +30,7 @@ pid file=/tmp/rsync-ad-hoc.pid
 max verbosity=4
 path=/
 read only=false
+munge symlinks=false
 """
 
 
