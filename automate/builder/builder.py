@@ -4,9 +4,8 @@ import shutil
 from pathlib import Path
 from typing import Union
 
-from patchwork.transfers import rsync
-
 from .. import compiler
+from ..utils.network import rsync
 
 
 class BaseBuilder(object):
@@ -42,15 +41,15 @@ class BaseBuilder(object):
     def configure(self, c):
         "Configure the build"
 
-        raise NotImplemented("Configure is not implemented")
+        raise NotImplementedError("Configure is not implemented")
 
     def build(self, c):
         "Build target code"
-        raise NotImplemented("Build is not implemented")
+        raise NotImplementedError("Build is not implemented")
 
     def install(self, c):
         "Installs the built binaries on the board"
-        raise NotImplemented("Installation is not implemented")
+        raise NotImplementedError("Installation is not implemented")
 
     def clean(self, c):
         "Removes the builddir"
@@ -67,41 +66,99 @@ class CMakeBuilder(BaseBuilder):
     def configure(self, c, cmake_definitions=[]):
         self._mkbuilddir()
 
-        toolchain_file = self.builddir / "toolchain.cmake"
-        with toolchain_file.open("w") as tf:
-            tf.write("set(CMAKE_SYSTEM_NAME Linux)\n")
-            tf.write(
+        toolchain_file_name = self.builddir / "toolchain.cmake"
+        with toolchain_file_name.open("w") as toolchain_file:
+            toolchain_file.write("set(CMAKE_SYSTEM_NAME Linux)\n")
+            toolchain_file.write(
                 "set(CMAKE_SYSTEM_PROCESSOR {})\n".format(self.cc.machine.value)
             )
-            tf.write("\n")
-            tf.write("set(CMAKE_SYSROOT {})\n".format(self.cc.sysroot))
-            tf.write(
+            toolchain_file.write("\n")
+            toolchain_file.write(
+                "set(CMAKE_SYSROOT {})\n".format(self.cc.sysroot)
+            )
+            toolchain_file.write(
                 "set(CMAKE_STAGING_PREFIX {})\n".format(
                     self.builddir / "install"
                 )
             )
-            tf.write("\n")
-            tf.write(
+            toolchain_file.write("\n")
+            toolchain_file.write(
                 "set(CMAKE_C_COMPILER {}/{})\n".format(
                     self.cc.bin_path, self.cc.cc
                 )
             )
-            tf.write(
+            toolchain_file.write(
                 "set(CMAKE_CXX_COMPILER {}/{})\n".format(
                     self.cc.bin_path, self.cc.cxx
                 )
             )
-            tf.write("\n")
-            tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)\n")
-            tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)\n")
-            tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)\n")
-            tf.write("set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)\n")
-            tf.write("\n")
+            toolchain_file.write("\n")
+            toolchain_file.write(
+                "set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)\n"
+            )
+            toolchain_file.write(
+                "set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)\n"
+            )
+            toolchain_file.write(
+                "set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)\n"
+            )
+            toolchain_file.write(
+                "set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)\n"
+            )
+            toolchain_file.write("\n")
+
+        cache_file_name = self.builddir / "cache.cmake"
+        with cache_file_name.open("w") as cache_file:
+            cache_file.write("#Compiler options \n")
+            cflags = self.cc.cflags
+            cache_file.write(
+                'set(CMAKE_C_FLAGS_DEBUG          "{} -g" CACHE STRING "")\n'.format(
+                    cflags
+                )
+            )
+            cache_file.write(
+                'set(CMAKE_C_FLAGS_MINSIZEREL     "{} -DNDEBUG" CACHE STRING "")\n'.format(
+                    cflags
+                )
+            )
+            cache_file.write(
+                'set(CMAKE_C_FLAGS_RELWITHDEBINFO "{} -g -DNDEBUG" CACHE STRING "")\n'.format(
+                    cflags
+                )
+            )
+            cache_file.write(
+                'set(CMAKE_C_FLAGS_RELEASE        "{} -DNDEBUG" CACHE STRING "")\n'.format(
+                    cflags
+                )
+            )
+            cache_file.write("\n")
+
+            cxxflags = self.cc.cxxflags
+            cache_file.write(
+                'set(CMAKE_CXX_FLAGS_DEBUG          "{} -g" CACHE STRING "")\n'.format(
+                    cxxflags
+                )
+            )
+            cache_file.write(
+                'set(CMAKE_CXX_FLAGS_MINSIZEREL     "{} -DNDEBUG" CACHE STRING "")\n'.format(
+                    cxxflags
+                )
+            )
+            cache_file.write(
+                'set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "{} -g -DNDEBUG" CACHE STRING "")\n'.format(
+                    cxxflags
+                )
+            )
+            cache_file.write(
+                'set(CMAKE_CXX_FLAGS_RELEASE        "{} -DNDEBUG" CACHE STRING "")\n'.format(
+                    cxxflags
+                )
+            )
 
         definitions = " ".join(["-D{}".format(d) for d in cmake_definitions])
 
         with c.cd(str(self.builddir)):
-            command = "cmake -DCMAKE_BUILD_TYPE='RelWithDebugInfo' -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake {} {}".format(
+            command = "cmake -DCMAKE_BUILD_TYPE='RELWITHDEBINFO' -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake -C cache.cmake {} {}".format(
                 self.srcdir, definitions
             )
             self.logger.info("Running cmake: {}".format(command))

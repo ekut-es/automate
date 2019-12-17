@@ -35,41 +35,137 @@ cores:
     isa: armv8.2-a
     uarch: carmel
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+      - atomics
+      - fphp
+      - asimdhp
   -
     id: 1
     isa: armv8.2-a
     uarch: carmel
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+      - atomics
+      - fphp
+      - asimdhp
   -
     id: 2
     isa: armv8.2-a
     uarch: carmel
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+      - atomics
+      - fphp
+      - asimdhp
   -
     id: 3
     isa: armv8.2-a
     uarch: carmel
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+      - atomics
+      - fphp
+      - asimdhp
   -
     id: 4
     isa: armv8.2-a
     uarch: carmel
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+      - atomics
+      - fphp
+      - asimdhp
   -
     id: 5
     isa: armv8.2-a
     uarch: carmel
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+      - atomics
+      - fphp
+      - asimdhp
   -
     id: 6
     isa: armv8.2-a
     uarch: carmel
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+      - atomics
+      - fphp
+      - asimdhp
   -
     id: 7
     isa: armv8.2-a
     uarch: carmel
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+      - atomics
+      - fphp
+      - asimdhp
 
 os:
     triple:

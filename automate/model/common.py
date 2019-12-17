@@ -24,6 +24,9 @@ class ISAExtension(Enum):
     VFP = "vfp"
     VFPD32 = "vfpd32"
     VFPV3 = "vfpv3"
+    ATOMICS = "atomics"
+    FPHP = "fphp"
+    ASIMDHP = "asimdhp"
     UNKNOWN = "unknown"
 
 

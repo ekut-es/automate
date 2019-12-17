@@ -16,9 +16,9 @@ else
     popd
 fi
 
-for BOARD in $BOARDS; do
-    automate board.rsync-to $BOARD opencv_extra/testdata/
-done
+#for BOARD in $BOARDS; do
+#    automate board.rsync-to $BOARD opencv_extra/testdata/
+#done
 
 
 pushd opencv-4.1.2
@@ -29,13 +29,13 @@ for BOARD in $BOARDS; do
     automate  cmake.configure $BOARD -D OPENCV_FORCE_3RDPARTY_BUILD=1 -D INSTALL_TESTS=1
     automate  cmake.build     $BOARD 
     automate  board.lock      $BOARD 
-    automate  cmake.install   $BOARD
-    automate  board.run       $BOARD 'source bin/setup_vars_opencv4.sh  && ./bin/opencv_version'
+#    automate  cmake.install   $BOARD
+#    automate  board.run       $BOARD 'source bin/setup_vars_opencv4.sh  && ./bin/opencv_version'
 
     #Run Benchmarks
-    for benchmark in $BENCHMARKS; do
-	automate board.run $BOARD "source bin/setup_vars_opencv4.sh  && ./bin/$benchmark"
-    done
+#    for benchmark in $BENCHMARKS; do
+#	automate board.run $BOARD "source bin/setup_vars_opencv4.sh  && ./bin/$benchmark"
+#    done
     
     automate  board.unlock    $BOARD 
 done

@@ -5,6 +5,7 @@ To get a common development environment this project uses [poetry](https://poetr
 To get started just run:
 
     :::bash
+	poetry install
     poetry shell
 
 By default poetry installs virtual environments under ~/.cache/pypoetry/virtualenvs

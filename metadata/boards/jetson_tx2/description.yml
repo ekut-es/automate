@@ -38,31 +38,85 @@ cores:
     isa: armv8-a
     uarch: cortex-a57
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
   -
     id: 1
     isa: armv8-a
     uarch: denver2
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
   -
     id: 2
     isa: armv8-a
     uarch: denver2
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
   -
     id: 3
     isa: armv8-a
     uarch: cortex-a57
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
   -
     id: 4
     isa: armv8-a
     uarch: cortex-a57
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
   -
     id: 5
     isa: armv8-a
     uarch: cortex-a57
     vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
  
  
 os:

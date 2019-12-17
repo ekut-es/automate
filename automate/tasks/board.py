@@ -16,10 +16,9 @@ from pathlib import Path
 
 from fabric import task
 from patchwork.files import exists
-from patchwork.transfers import rsync
 
 from ..utils import fix_symlinks
-from ..utils.network import find_local_port
+from ..utils.network import find_local_port, rsync
 
 
 @task
