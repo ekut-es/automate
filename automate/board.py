@@ -96,7 +96,7 @@ class Board(object):
                     gw_user = self.model.gateway.username
                     gw_port = self.model.gateway.port
 
-                    gw_connection = Connection(
+                    gateway_connection = Connection(
                         gw_host,
                         user=gw_user,
                         port=gw_port,
