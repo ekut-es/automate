@@ -26,7 +26,7 @@ for BOARD in $BOARDS; do
     echo "Compile and run for $BOARD"
     # Build all dependencies even if they have been found in sysroot
     # Note the space after -D is unfortunately important
-    automate  cmake.configure $BOARD -D OPENCV_FORCE_3RDPARTY_BUILD=1 -D INSTALL_TESTS=1
+    automate  cmake.configure $BOARD -D OPENCV_FORCE_3RDPARTY_BUILD=1 -D INSTALL_TESTS=1 -D WITH_OPENCL=0
     automate  cmake.build     $BOARD 
     automate  board.lock      $BOARD 
     automate  cmake.install   $BOARD
@@ -34,7 +34,7 @@ for BOARD in $BOARDS; do
 
     #Run Benchmarks
     for benchmark in $BENCHMARKS; do
-	bench_cmd="./bin/$benchmark --gtest_filter='-OCL*' --gtest_output=json:results/${benchmark}.json"
+	bench_cmd="./bin/$benchmark --gtest_output=json:results/${benchmark}.json"
 	echo "Running: ${bench_cmd}"  
 	automate board.run $BOARD "source bin/setup_vars_opencv4.sh  && $bench_cmd" 
     done

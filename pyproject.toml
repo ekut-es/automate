@@ -15,6 +15,7 @@ fabric = "^2.5"
 patchwork = "^1.0"
 pre-commit = "^1.20"
 prompt_toolkit = "^3.0"
+requests = "^2.22"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.740.0"
@@ -29,7 +30,7 @@ mkdocs-material = "^4.5"
 pygments = "^2.5"
 coverage = {version = "^4.5", extras = ["toml"]}
 mock-ssh-server = "^0.8.0"
-isort = "^4.3"
+isort = {version = "^4.3", extras = ["pyproject"]}
 pylint = "^2.4"
 
 

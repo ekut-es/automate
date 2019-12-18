@@ -3,14 +3,21 @@ id: zynqberry
 board: zynqberry
 description: TE0726 Zynq "ZynqBerry" (Z-7010) Module with Dual-Core Cortex-A9
 rundir: /home/es/run
+
 doc: []
+
 gateway:
+  host: tichy.informatik.uni-tuebingen.de
+  username: esdata
+  
 connections:
   - host: 10.42.0.10
     username: es
     port: 22
+
 cores:
   - id: 0
+    description: 'ARMv7 Processor rev 0 (v7l) (microarchitecture: cortex-a9)'
     isa: armv7-a
     uarch: cortex-a9
     vendor: arm
@@ -24,8 +31,9 @@ cores:
       - vfpv3
       - tls
       - vfpd32
-    description: 'ARMv7 Processor rev 0 (v7l) (microarchitecture: cortex-a9)'
+  
   - id: 1
+    description: 'ARMv7 Processor rev 0 (v7l) (microarchitecture: cortex-a9)'
     isa: armv7-a
     uarch: cortex-a9
     vendor: arm
@@ -39,7 +47,7 @@ cores:
       - vfpv3
       - tls
       - vfpd32
-    description: 'ARMv7 Processor rev 0 (v7l) (microarchitecture: cortex-a9)'
+    
 os:
   triple:
     machine: arm
