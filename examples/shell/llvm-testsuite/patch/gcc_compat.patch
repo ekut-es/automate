@@ -1,0 +1,29 @@
+From 328226a61395e699809c8e0b6a40742cf8fa0076 Mon Sep 17 00:00:00 2001
+From: Christoph Gerum <christoph.gerum@uni-tuebingen.de>
+Date: Mon, 16 Dec 2019 14:40:25 +0100
+Subject: [PATCH] Skip -Werror not compatible with gcc if compiler is not clang
+
+---
+ MultiSource/Benchmarks/7zip/CMakeLists.txt | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/MultiSource/Benchmarks/7zip/CMakeLists.txt b/MultiSource/Benchmarks/7zip/CMakeLists.txt
+index 4a4e8a2..b14e6af 100644
+--- a/MultiSource/Benchmarks/7zip/CMakeLists.txt
++++ b/MultiSource/Benchmarks/7zip/CMakeLists.txt
+@@ -1,6 +1,11 @@
+ set(RUN_OPTIONS b)
+ list(APPEND CFLAGS -DBREAK_HANDLER -DUNICODE -D_UNICODE -I${CMAKE_CURRENT_SOURCE_DIR}/C -I${CMAKE_CURRENT_SOURCE_DIR}/CPP/myWindows -I${CMAKE_CURRENT_SOURCE_DIR}/CPP/include_windows -I${CMAKE_CURRENT_SOURCE_DIR}/CPP -I. -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DNDEBUG -D_REENTRANT -DENV_UNIX -D_7ZIP_LARGE_PAGES -pthread)
+-list(APPEND CXXFLAGS -Wno-error=c++11-narrowing -DBREAK_HANDLER -DUNICODE -D_UNICODE -I${CMAKE_CURRENT_SOURCE_DIR}/C -I${CMAKE_CURRENT_SOURCE_DIR}/CPP/myWindows -I${CMAKE_CURRENT_SOURCE_DIR}/CPP/include_windows -I${CMAKE_CURRENT_SOURCE_DIR}/CPP -I. -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DNDEBUG -D_REENTRANT -DENV_UNIX -D_7ZIP_LARGE_PAGES -pthread)
++if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
++  set(EXTRA_CXX_FLAGS  "-Wno-error=c++11-narrowing")
++else () 
++  set(EXTRA_CXX_FLAGS "")
++endif()
++list(APPEND CXXFLAGS  ${EXTRA_CXX_FLAGS} -DBREAK_HANDLER -DUNICODE -D_UNICODE -I${CMAKE_CURRENT_SOURCE_DIR}/C -I${CMAKE_CURRENT_SOURCE_DIR}/CPP/myWindows -I${CMAKE_CURRENT_SOURCE_DIR}/CPP/include_windows -I${CMAKE_CURRENT_SOURCE_DIR}/CPP -I. -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DNDEBUG -D_REENTRANT -DENV_UNIX -D_7ZIP_LARGE_PAGES -pthread)
+ list(APPEND LDFLAGS -lstdc++ -pthread)
+ set(NO_REFERENCE_OUTPUT 1)
+ llvm_multisource(7zip-benchmark
+-- 
+1.8.3.1
+
