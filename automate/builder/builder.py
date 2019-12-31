@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Union
 
 from .. import compiler
+from ..utils.kernel import KernelConfigBuilder
 from ..utils.network import rsync
 
 
@@ -37,6 +38,10 @@ class BaseBuilder(object):
         self.builddir = self.builddir.absolute()
 
         self.logger = logging.getLogger(__name__)
+
+    @property
+    def board(self):
+        return self.cc.board
 
     def configure(self, c):
         "Configure the build"
@@ -215,7 +220,7 @@ class KernelBuilder(BaseBuilder):
 
         return cross_compile
 
-    def configure(self, c, kernel_id, config_options=[]):
+    def configure(self, c, kernel_id):
         self._mkbuilddir()
         kernel_desc = self._kernel_desc(kernel_id)
 
@@ -237,11 +242,12 @@ class KernelBuilder(BaseBuilder):
                     )
                 )
 
+                config_builder = KernelConfigBuilder(self.board, self.cc)
                 config_fragment = srcdir / ".config_fragment"
                 with config_fragment.open("w") as fragment:
-                    for config_option in config_options:
-                        fragment.write(config_option)
-                        fragment.write("\n")
+                    fragment.write(
+                        config_builder.predefined_config_fragment(kernel_id)
+                    )
 
                 with c.prefix(
                     "export ARCH={0} && export CROSS_COMPILE={1}".format(
@@ -266,6 +272,13 @@ class KernelBuilder(BaseBuilder):
                         self._arch(), self._cross_compile()
                     )
                 )
+
+    def install(self, c, kernel_id):
+        kernel_desc = self._kernel_desc(kernel_id)
+        with c.cd(str(self.builddir)):
+            srcdir = kernel_desc.kernel_srcdir
+            with c.cd(str(srcdir)):
+                c.run("echo Installing kernel")
 
 
 class MakefileBuilder(BaseBuilder):

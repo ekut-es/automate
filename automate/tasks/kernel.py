@@ -18,7 +18,7 @@ def _get_builder(c, board, *args, **kwargs):
 def configure(c, board, kernel_id, config_options=[]):
     builder = _get_builder(c, board)
 
-    builder.configure(c, kernel_id, config_options)
+    builder.configure(c, kernel_id)
 
 
 @task
@@ -32,7 +32,7 @@ def build(c, board, kernel_id):
 def install(c, board, kernel_id):
     builder = _get_builder(c, board)
 
-    builder.install(c)
+    builder.install(c, kernel_id)
 
 
 @task
@@ -46,7 +46,7 @@ def clean(c, board, kernel_id):
 def get_board_config(
     c,
     board,
-    kernel_id="default",
+    kernel_id="base",
     tarball_url="",
     force=False,
     config_name="config",
@@ -62,6 +62,7 @@ def get_board_config(
     kernel_config = (
         board.model.model_file.parent / "kernel" / f"{kernel_id}_config"
     )
+
     kernel_source_name = Path(tarball_url).name
     kernel_source_path = (
         Path(c.config.automate["boardroot"])
@@ -86,6 +87,8 @@ def get_board_config(
         version = result.stdout.strip()
 
         logging.info(f"version: {version}")
+
+    kernel_model = KernelModel()
 
 
 __all__ = ["configure", "build", "clean", "install", "from_board"]
