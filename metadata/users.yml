@@ -3,3 +3,8 @@
     mail: christoph.gerum@uni-tuebingen.de
     public_keys:
       - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEAv61/8ZqrfDJ+XvNP3nsxtA0Dim0PMA26bx1LTk3CveCPDMd5EamXHX/h+RyB63mhp42W8gFJvosV0kVkbK7IWvfWFDWdYuMDn7c6K28IEmWaD8mmBdwYFChGDKf+Pdonk60SQdNlKCrvCJzbgTIfdZJyP/D2/BF7mllaBQlSCtc= *"
+- benz:
+    name: "Joscha Benz"
+    mail: joscha-joel.benz@uni-tuebingen.de
+    public_keys:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDShTe0Cz0AcakthK223YEVfNn8ZIPepmwpbqDMSrMhpBmxb28+f9+QGdDt5kZF4pw9ZXhBSu+9dKs8ivqQ4zQkEdPa6kEt46TER2VkiEncdZsGZElkXjHTFz2WZmxdp3o57nqptgWvKbR6EMt53HJJSJ8u7X8v8LMThuE3Lh3ik6Q05pYHmXXbfmCodgH5NsKBFcekD7p5+L8TQyT+3VpTMCiuutRZxTS7IyYDJ21N05tX8MIoRGcKi5Q+bVU3c4aGApCyHHFH1dQTWNgbttr6uN8ydpbAOoAfzJwTi++fXFyYnVNNrE5VQh41JY/dLDiM78Gr/Xzzbhl1+jt+3LkmjucJ+R2Za1xY2Vo2ZMXheNvLiXAS+AYyv0Ho4hdQW52aFOVNTzI/n4vmLC+Q0pVLhqM6TOYHHPxV3hRd6IWGgzsbbebmUtaoKAaIVx/8aEV/eOQ7sWzFtHkpE19egkxA6Og/kWSd6Hg2xSg4PN0BKRJzwoSv4CG+ji9R6fZbP/IHkfx7/oYSLISeFdxe8L23SrCuw1194Ci7lp3jfiqeHFuoIAw0mI2uy5cnaUIra7qKnsedqnzuTqbV7W/3tdMfSom8zCwlPgdTUsV8gf1n21ydj37qQtipqQuWVE8S4OWiGTJDpKIcgJYFMvdXxsnEL3Qs5+q3DjbAp84Hz2DNkw=="
