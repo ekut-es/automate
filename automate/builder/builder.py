@@ -350,7 +350,7 @@ class KernelBuilder(BaseBuilder):
                 build_path / srcdir / "arch" / arch / "boot" / "zImage"
             )
             kernel_image = (
-                build_path / srcdir / "arch" / arch / "boot" / "zImage"
+                build_path / srcdir / "arch" / arch / "boot" / "Image"
             )
             boot_path.mkdir(exist_ok=True)
             c.run("cp {0} {1}".format(str(kernel_zimage), str(boot_path)))
