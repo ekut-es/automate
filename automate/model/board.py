@@ -43,7 +43,8 @@ class CoreModel(DataModelBase):
 
 class UBootModel(DataModelBase):
     loadaddr: str
-    boot_partition: Path
+    image_name: str
+    dtb_image: Path
 
 
 class KernelModel(DataModelBase):

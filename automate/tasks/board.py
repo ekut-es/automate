@@ -208,7 +208,7 @@ def put(c, board, file, remote_path=""):  # pragma: no cover
             remote_file = remote_path / Path(file).name
 
         else:
-            remote_file_path = Path(remote_path)
+            remote_file = Path(remote_path)
 
         con.run("mkdir -p {}".format(str(remote_file.parent)))
         con.put(str(file), str(remote_file))

@@ -71,6 +71,8 @@ os:
       kernel_config: kernel/config
       uboot:
         loadaddr: 0x00008000
-        boot_partition: /dev/mmcblk0p1
+        image_name: image.ub
+        dtb_image: ${boardroot}/${board}/kernel/default.dtb
+       
       default: true
       

@@ -25,7 +25,11 @@ class MachineOption(FilteredKernelOption):
         super(MachineOption, self).__init__(option)
 
     def filter(self, board: "board.Board") -> bool:
-        return board.os.machine in self.machines
+        return board.os.triple.machine in self.machines
+
+
+class PredefinedNotFoundException(Exception):
+    pass
 
 
 class KernelConfigBuilder:
@@ -62,8 +66,16 @@ class KernelConfigBuilder:
                     "CONFIG_CORESIGHT_LINK_AND_SINK_TMC=y", ["aarch64", "arm"]
                 ),
                 MachineOption(
-                    "CONFIG_CORESIGHT_SINK_TPIU=y CONFIG_CORESIGHT_SINK_ETBV10=y",
-                    ["aarch64", "arm"],
+                    "CONFIG_CORESIGHT_SINK_TPIU=y", ["aarch64", "arm"]
+                ),
+                MachineOption(
+                    "CONFIG_CORESIGHT_SINK_ETBV10=y", ["aarch64", "arm"]
+                ),
+                MachineOption(
+                    "CONFIG_CORESIGHT_SOURCE_ETM3X=y", ["aarch64", "arm"]
+                ),
+                MachineOption(
+                    "CONFIG_CORESIGHT_DYNAMIC_REPLICATOR=y", ["aarch64", "arm"]
                 ),
                 # BPF
                 "CONFIG_BPF=y",
@@ -93,7 +105,7 @@ class KernelConfigBuilder:
            An iterable of tuple of string(name) and list of string [kernel config options]
         """
 
-        for k, v in self._predefined_configs:
+        for k, v in self._predefined_configs.items():
             yield (k, self._filter_options(v))
 
     def predefined_config(self, name: str) -> List[str]:
@@ -102,13 +114,15 @@ class KernelConfigBuilder:
             if config_name == name:
                 return config
 
-        raise Exception("Could not find predefined config {}".format(name))
+        raise PredefinedNotFoundException(
+            "Could not find predefined config {}".format(name)
+        )
 
     def predefined_config_fragment(self, name: str) -> str:
         fragment = ""
         try:
             fragment = "\n".join(self.predefined_config(name))
-        except:
+        except PredefinedNotFoundException as e:
             pass
         return fragment
 

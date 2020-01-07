@@ -2,12 +2,69 @@ import logging
 import os
 import shutil
 from pathlib import Path
+from string import Template
 from typing import Union
 
 from .. import compiler
 from ..utils import untar
 from ..utils.kernel import KernelConfigBuilder
 from ..utils.network import rsync
+
+FIT_TEMPLATE = Template(
+    r"""
+/*
+ * Simple U-Boot uImage source file containing a single kernel and FDT blob
+ */
+
+/dts-v1/;
+
+/ {
+	description = "Simple image with single Linux kernel and FDT blob";
+	#address-cells = <1>;
+
+	images {
+		kernel {
+			description = "Linux kernel";
+			data = /incbin/("${kernel_image}");
+			type = "kernel";
+			arch = "${arch}";
+			os = "linux";
+			compression = "none";
+			load = <${loadaddr}>;
+			entry = <${loadaddr}>;
+			hash-1 {
+				algo = "crc32";
+			};
+			hash-2 {
+				algo = "sha1";
+			};
+		};
+		fdt-1 {
+			description = "Flattened Device Tree blob";
+			data = /incbin/("${dtb_image}");
+			type = "flat_dt";
+			arch = "${arch}";
+			compression = "none";
+			hash-1 {
+				algo = "crc32";
+			};
+			hash-2 {
+				algo = "sha1";
+			};
+		};
+	};
+
+	configurations {
+		default = "conf-1";
+		conf-1 {
+			description = "Boot Linux kernel with FDT blob";
+			kernel = "kernel";
+			fdt = "fdt-1";
+		};
+	};
+};
+"""
+)
 
 
 class BaseBuilder(object):
@@ -230,7 +287,9 @@ class KernelBuilder(BaseBuilder):
 
             if not Path(srcdir).exists():
                 c.run("cp {} .".format(kernel_desc.kernel_source))
-                kernel_archive = Path(kernel_desc.kernel_source).name
+                kernel_archive = (
+                    self.builddir / Path(kernel_desc.kernel_source).name
+                )
                 untar(kernel_archive, self.builddir)
 
             with c.cd(str(srcdir)):
@@ -246,9 +305,11 @@ class KernelBuilder(BaseBuilder):
                 config_builder = KernelConfigBuilder(self.board, self.cc)
                 config_fragment = srcdir / ".config_fragment"
                 with config_fragment.open("w") as fragment:
-                    fragment.write(
-                        config_builder.predefined_config_fragment(kernel_id)
+                    fragment_str = config_builder.predefined_config_fragment(
+                        kernel_id
                     )
+                    print(fragment_str)
+                    fragment.write(fragment_str)
 
                 with c.prefix(
                     "export ARCH={0} && export CROSS_COMPILE={1}".format(
@@ -265,28 +326,59 @@ class KernelBuilder(BaseBuilder):
         self._mkbuilddir()
         kernel_desc = self._kernel_desc(kernel_id)
 
+        build_path = Path(self.builddir)
+        boot_path = build_path / "boot"
+
         with c.cd(str(self.builddir)):
             srcdir = kernel_desc.kernel_srcdir
             with c.cd(str(srcdir)):
+
                 c.run(
                     "make ARCH={0} CROSS_COMPILE={1}".format(
                         self._arch(), self._cross_compile()
                     )
                 )
 
-                if kernel_desc.uboot:
-                    c.run(
-                        "make uImage ARCH={0} CROSS_COMPILE={1} LOADADDR={2}".format(
-                            self._arch(),
-                            self._cross_compile(),
-                            kernel_desc.uboot.loadaddr,
-                        )
+                c.run(
+                    "make modules_install ARCH={0} CROSS_COMPILE={1} INSTALL_MOD_PATH={2}".format(
+                        self._arch(), self._cross_compile(), str(build_path)
                     )
+                )
+
+            arch = self._arch()
+            kernel_zimage = (
+                build_path / srcdir / "arch" / arch / "boot" / "zImage"
+            )
+            kernel_image = (
+                build_path / srcdir / "arch" / arch / "boot" / "zImage"
+            )
+            boot_path.mkdir(exist_ok=True)
+            c.run("cp {0} {1}".format(str(kernel_zimage), str(boot_path)))
+            c.run("cp {0} {1}".format(str(kernel_image), str(boot_path)))
+
+            if kernel_desc.uboot:
+                loadaddr = kernel_desc.uboot.loadaddr
+                image_name = kernel_desc.uboot.image_name
+                dtb_image = kernel_desc.uboot.dtb_image
+
+                result = FIT_TEMPLATE.safe_substitute(
+                    {
+                        "loadaddr": loadaddr,
+                        "image_name": image_name,
+                        "dtb_image": dtb_image,
+                        "arch": arch,
+                        "kernel_image": kernel_zimage,
+                    }
+                )
+
+                fit_path = build_path / "fit_image.its"
+                image_path = boot_path / image_name
+
+                with fit_path.open("w") as f:
+                    f.write(result)
 
                 c.run(
-                    "make targz-pkg ARCH={0} CROSS_COMPILE={1}".format(
-                        self._arch(), self._cross_compile()
-                    )
+                    "mkimage -f {0} {1}".format(str(fit_path), str(image_path))
                 )
 
     def install(self, c, kernel_id):
@@ -294,7 +386,12 @@ class KernelBuilder(BaseBuilder):
         with c.cd(str(self.builddir)):
             srcdir = kernel_desc.kernel_srcdir
             with c.cd(str(srcdir)):
-                pass
+
+                c.run(
+                    "make targz-pkg ARCH={0} CROSS_COMPILE={1}".format(
+                        self._arch(), self._cross_compile()
+                    )
+                )
 
 
 class MakefileBuilder(BaseBuilder):
