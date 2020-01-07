@@ -1,3 +1,5 @@
+import os.path
+
 import invoke
 
 from .board import Board
@@ -15,12 +17,20 @@ class AutomateContext(invoke.Context):
 
     def boards(self):
         for board in self.metadata.boards:
-            yield Board(board, self.metadata.compilers)
+            yield Board(
+                board,
+                self.metadata.compilers,
+                os.path.expanduser(self.config.automate.identity),
+            )
 
     def board(self, board_id: str) -> Board:
         for board in self.metadata.boards:
             if board.id == board_id:
-                return Board(board, self.metadata.compilers)
+                return Board(
+                    board,
+                    self.metadata.compilers,
+                    os.path.expanduser(self.config.automate.identity),
+                )
 
         raise Exception(
             "Could not find board {} available boards {}".format(

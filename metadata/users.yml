@@ -10,7 +10,6 @@ boekle:
   public_keys:
     - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPnTRwM8wdJuKh6Yeag9umN+5VtM9kMuqjVwBa32DmYJYhrFmUabm5FjG0nPihHWOFWliO6ajoxV7wpm6WzMvjYxsSDk2GmAOSMcmBE63wIOxxhml6xRIK8vZTcIv1ZFlPNL2/NKgDgaeESpFvAgOGWBr4zMMXYJIIPluSRFMOI5z0BZEeJbv4BQJDNtO9IyuLlGDZosDDVG/AqLUqU2QefDDsv1wVGKFNRE/qOyB2Oe3HLpbdx+cq5E0C3cXznp7l1fI7T0jAEvFgveLOx7SMyPrG8tXUzm1sHnranBkVbvuE38fN8PVU1dCRyNWkSrjiWiRDPjEWy3L4HHaYBvXV runge@judas"
 
-
 gerum:
   name: "Christoph Gerum"
   mail: christoph.gerum@uni-tuebingen.de

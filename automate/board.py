@@ -20,11 +20,12 @@ from .model.common import Toolchain
 
 class Board(object):
     def __init__(
-        self, board: BoardModel, compilers: List[CompilerModel]
+        self, board: BoardModel, compilers: List[CompilerModel], identity: str
     ) -> None:
         self.logger = logging.getLogger(__name__)
         self.model = board
         self.compiler_models = compilers
+        self.identity = identity
 
     @contextmanager
     def lock(self):
@@ -102,6 +103,7 @@ class Board(object):
                         user=gw_user,
                         port=gw_port,
                         connect_timeout=timeout,
+                        connect_kwargs={"key_filename": self.identity},
                     )
 
                 c = Connection(
@@ -110,6 +112,7 @@ class Board(object):
                     port=port,
                     gateway=gateway_connection,
                     connect_timeout=timeout,
+                    connect_kwargs={"key_filename": self.identity},
                 )
                 return c
 

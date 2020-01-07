@@ -1,6 +1,7 @@
 import datetime
 import getpass
 import logging
+import os.path
 from collections import namedtuple
 from enum import Enum
 from pathlib import Path
@@ -32,6 +33,17 @@ def add_users(c):
     loader = ModelLoader(c.config)
     users = loader.load_users()
 
+    def copy_keys(sftp, users, homedir):
+        patchwork.files.directory(con, "~/.ssh", mode="700")
+
+        authorized_keys = homedir / ".ssh" / "authorized_keys"
+        with sftp.open(str(authorized_keys), "w") as authorized_keys_file:
+            for user_id, user in users.users.items():
+                authorized_keys_file.write("# {}\n".format(user_id))
+                for ssh_key in user.public_keys:
+                    ssh_key = ssh_key.strip()
+                    authorized_keys_file.write("{}\n".format(ssh_key))
+
     FrozenGateway = namedtuple("FrozenGateway", ["host", "username", "port"])
 
     gateways = set()
@@ -42,22 +54,23 @@ def add_users(c):
         with board.connect() as con:
 
             sftp = con.sftp()
-
-            patchwork.files.directory(con, "~/.ssh", mode="700")
-
             homedir = board.homedir()
 
-            authorized_keys = homedir / ".ssh" / "authorized_keys"
-
-            with sftp.open(str(authorized_keys), "w") as authorized_keys_file:
-                for user_id, user in users.users.items():
-                    authorized_keys_file.write("# {}\n".format(user_id))
-                    for ssh_key in user.public_keys:
-                        ssh_key = ssh_key.strip()
-                        authorized_keys_file.write("{}\n".format(ssh_key))
+            copy_keys(sftp, users, homedir)
 
     for gw in gateways:
-        print(gw)
+        identity = os.path.expanduser(c.config.automate.identity)
+        with Connection(
+            host=gw.host,
+            user=gw.username,
+            port=gw.port,
+            connect_kwargs={"key_filename": identity},
+        ) as con:
+
+            result = con.run("echo $HOME", hide=True)
+            gw_homedir = Path(result.stdout.strip())
+            sftp = con.sftp()
+            copy_keys(sftp, users, gw_homedir)
 
 
 class ISAValidator(Validator):
