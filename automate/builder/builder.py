@@ -405,5 +405,5 @@ class SPECBuilder(BaseBuilder):
 
 
 class AutotoolsBuilder(BaseBuilder):
-    # TODO: implement autotools builder
+    # TODO: implement spec Builder
     pass
