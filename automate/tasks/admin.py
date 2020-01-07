@@ -1,6 +1,7 @@
 import datetime
 import getpass
 import logging
+from collections import namedtuple
 from enum import Enum
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.validation import ValidationError, Validator
 from ruamel.yaml import YAML
 
+from ..loader import ModelLoader
 from ..model import (
     BoardModel,
     CoreModel,
@@ -22,6 +24,36 @@ from ..model import (
 )
 from ..model.common import ISA, UArch, Vendor
 from ..utils import cpuinfo
+
+
+@task
+def add_users(c):
+    "Add users ssh keys to all boards"
+    loader = ModelLoader(c.config)
+    users = loader.load_users()
+
+    FrozenGateway = namedtuple("FrozenGateway", ["host", "username", "port"])
+
+    gateways = set()
+
+    for board in c.boards():
+        gateways.add(FrozenGateway(**board.gateway.dict()))
+
+        with board.connect() as con:
+
+            con.run("echo $HOME")
+
+            sftp = con.sftp()
+
+            with sftp.open("/tmp/authorized_keys", "w") as authorized_keys_file:
+                for user_id, user in users.users.items():
+                    authorized_keys_file.write("# {}\n".format(user_id))
+                    for ssh_key in user.public_keys:
+                        ssh_key = ssh_key.strip()
+                        authorized_keys_file.write("{}\n".format(ssh_key))
+
+    for gw in gateways:
+        print(gw)
 
 
 class ISAValidator(Validator):

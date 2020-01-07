@@ -10,7 +10,7 @@ import ruamel.yaml as yaml
 from ruamel.yaml.comments import CommentedMap
 
 from .config import AutomateConfig
-from .model import DataModelBase, LoadedModelBase, MetadataModel
+from .model import DataModelBase, LoadedModelBase, MetadataModel, UsersModel
 
 
 class ModelLoader(object):
@@ -123,3 +123,21 @@ class ModelLoader(object):
         self.logger.debug(data_model.dict())
 
         return data_model
+
+    def load_users(self) -> UsersModel:
+        metadata_path = Path(
+            os.path.expanduser(str(self.config.automate.metadata))
+        )
+        users_file = metadata_path / "users.yml"
+
+        with users_file.open() as f:
+            mtime = datetime.utcfromtimestamp(os.path.getmtime(users_file))
+            yaml_dict = yaml.load(f, yaml.RoundTripLoader)
+
+            users_model = UsersModel(
+                users=dict(yaml_dict),
+                model_file=str(users_file),
+                model_file_mtime=mtime,
+            )
+
+        return users_model

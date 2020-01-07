@@ -27,6 +27,3 @@ automate.yml: Test/Example Configuration
 - Autojail Team:
   - Kernel Builds aufsetzen
   - Default Kernel mit kexec bauen und auf Boards installieren
-- Konstantin
-  - Hiwi mit SSH Key Management beauftragen
-  - Abschlussarbeit für Arduino basierten Zugriff auf UARTS und GPIO ausschreiben
