@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-BOARDS="jetsontx2 jetsonagx"
+BOARDS="zynqberry jetsontx2 jetsonagx"
 
 
 for BOARD in $BOARDS; do

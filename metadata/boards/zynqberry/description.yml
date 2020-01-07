@@ -60,4 +60,14 @@ os:
   sysroot: ${boardroot}/${board_id}/sysroot
   rootfs: ${boardroot}/${board_id}/${board_id}.img
   multiarch: true
-  kernels: []
+  kernels:
+    -
+      id: default
+      description: "Standard xilinx kernel with extended build capability"
+      version: 4.14.0-xilinx-v2018.2
+      commandline: console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0p2 rw rootwait
+      kernel_source: ${boardroot}/${board}/kernel/xilinx-v2018.2.tar.gz
+      kernel_srcdir: linux-xlnx-xilinx-v2018.2
+      kernel_config: kernel/config
+      default: true
+      

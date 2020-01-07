@@ -229,8 +229,6 @@ def get(c, board, remote, local=""):  # pragma: no cover
 
         con.get(remote=str(remote), local=str(local))
 
-    raise Exception("Not Implemented")
-
 
 @task
 def lock(c, board):  # pragma: no cover

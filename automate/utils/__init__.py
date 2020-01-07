@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+import tarfile
 from pathlib import Path
 from typing import List, Union
 
@@ -59,3 +60,14 @@ def fix_symlinks(base_path: Path) -> None:
 
             os.unlink(link)
             os.symlink(new_target_rel, link)
+
+
+def untar(tar_path: Union[str, Path], extract_path: Union[str, Path] = "."):
+    tar_path = Path(tar_path)
+    extract_path = Path(extract_path)
+
+    if not extract_path.exists():
+        extract_path.mkdir(parents=True)
+
+    with tarfile.open(name=tar_path, mode="r|*") as tar_file:
+        tar_file.extractall(extract_path)

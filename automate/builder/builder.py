@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Union
 
 from .. import compiler
+from ..utils import untar
 from ..utils.kernel import KernelConfigBuilder
 from ..utils.network import rsync
 
@@ -230,7 +231,7 @@ class KernelBuilder(BaseBuilder):
             if not Path(srcdir).exists():
                 c.run("cp {} .".format(kernel_desc.kernel_source))
                 kernel_archive = Path(kernel_desc.kernel_source).name
-                c.run("tar xvjf {}".format(str(kernel_archive)))
+                untar(kernel_archive, self.builddir)
 
             with c.cd(str(srcdir)):
 
