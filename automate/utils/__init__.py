@@ -62,7 +62,9 @@ def fix_symlinks(base_path: Path) -> None:
             os.symlink(new_target_rel, link)
 
 
-def untar(tar_path: Union[str, Path], extract_path: Union[str, Path] = "."):
+def untar(
+    tar_path: Union[str, Path], extract_path: Union[str, Path] = "."
+) -> None:
     tar_path = Path(tar_path)
     extract_path = Path(extract_path)
 

@@ -1,6 +1,7 @@
 import logging
 import time
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Any, List, Union
 
 from fabric import Connection
@@ -163,6 +164,11 @@ class Board(object):
             return self.wait_for_connection()
 
         return None
+
+    def homedir(self) -> Path:
+        with self.connect() as con:
+            result = con.run("echo $HOME", hide=True)
+            return Path(result.stdout.strip())
 
     def __getattr__(self, attr: str) -> Any:
         """proxy model properties if they are not shadowed by an own property"""

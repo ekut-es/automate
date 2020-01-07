@@ -41,11 +41,15 @@ def add_users(c):
 
         with board.connect() as con:
 
-            con.run("echo $HOME")
-
             sftp = con.sftp()
 
-            with sftp.open("/tmp/authorized_keys", "w") as authorized_keys_file:
+            patchwork.files.directory(con, "~/.ssh", mode="700")
+
+            homedir = board.homedir()
+
+            authorized_keys = homedir / ".ssh" / "authorized_keys"
+
+            with sftp.open(str(authorized_keys), "w") as authorized_keys_file:
                 for user_id, user in users.users.items():
                     authorized_keys_file.write("# {}\n".format(user_id))
                     for ssh_key in user.public_keys:
