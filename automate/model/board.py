@@ -41,6 +41,11 @@ class CoreModel(DataModelBase):
     description: str = ""
 
 
+class UBootModel(DataModelBase):
+    loadaddr: str
+    boot_partition: Path
+
+
 class KernelModel(DataModelBase):
     id: str
     description: str
@@ -50,6 +55,7 @@ class KernelModel(DataModelBase):
     kernel_config: Path
     kernel_source: Path
     kernel_srcdir: str = ""
+    uboot: Optional[UBootModel] = None
     default: bool
 
 

@@ -274,12 +274,27 @@ class KernelBuilder(BaseBuilder):
                     )
                 )
 
+                if kernel_desc.uboot:
+                    c.run(
+                        "make uImage ARCH={0} CROSS_COMPILE={1} LOADADDR={2}".format(
+                            self._arch(),
+                            self._cross_compile(),
+                            kernel_desc.uboot.loadaddr,
+                        )
+                    )
+
+                c.run(
+                    "make targz-pkg ARCH={0} CROSS_COMPILE={1}".format(
+                        self._arch(), self._cross_compile()
+                    )
+                )
+
     def install(self, c, kernel_id):
         kernel_desc = self._kernel_desc(kernel_id)
         with c.cd(str(self.builddir)):
             srcdir = kernel_desc.kernel_srcdir
             with c.cd(str(srcdir)):
-                c.run("echo Installing kernel")
+                pass
 
 
 class MakefileBuilder(BaseBuilder):

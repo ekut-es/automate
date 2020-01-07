@@ -69,5 +69,8 @@ os:
       kernel_source: ${boardroot}/${board}/kernel/xilinx-v2018.2.tar.gz
       kernel_srcdir: linux-xlnx-xilinx-v2018.2
       kernel_config: kernel/config
+      uboot:
+        loadaddr: 0x00008000
+        boot_partition: /dev/mmcblk0p1
       default: true
       
