@@ -1,0 +1,5 @@
+- gerum:
+    name: "Christoph Gerum"
+    mail: christoph.gerum@uni-tuebingen.de
+    public_keys:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEAv61/8ZqrfDJ+XvNP3nsxtA0Dim0PMA26bx1LTk3CveCPDMd5EamXHX/h+RyB63mhp42W8gFJvosV0kVkbK7IWvfWFDWdYuMDn7c6K28IEmWaD8mmBdwYFChGDKf+Pdonk60SQdNlKCrvCJzbgTIfdZJyP/D2/BF7mllaBQlSCtc= *"
