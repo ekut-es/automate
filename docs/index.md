@@ -10,9 +10,17 @@ Install poetry
 Start the development shell
 
     poetry shell
+
+Copy the configuration file:
+
+    cp automate.yml ~/.automate.yml
 	
+Edit '~/.automate.yml' to change value of key metadata to the subdirectory 
+metadata of repository checkout. 
+ 
 List available boards
 
     automate list
+
 
 

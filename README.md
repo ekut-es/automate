@@ -2,14 +2,7 @@
 
 ## Getting Started
 
-Setup virtual environment
-
-    ./setup.sh
-	
-Depending on your shell
-
-    source env.sh   #for bash, zsh
-	source env.csh  #for (t)csh
+See ./docs/index.md
 
 ## Repository-Layout
 
@@ -19,36 +12,13 @@ Depending on your shell
 - automate: Test Automation Main module
   - model: Test Automation Metadata model
   - compiler: Cross-Compiler / Buildsystem Configuration
-- tools: commandline interface
 - examples: Usage examples
-  - sh: examples for usage from bash
+  - shell: examples for usage from bash
   - python: examples for usage from sh
   - notebooks: examples for usage from jupyter-notebooks
 
-config.ini: Test/Example Configuration 
+automate.yml: Test/Example Configuration 
 
-## Configuration File Format
-
-## Compilers
-
-## Boards
-
-### automate
-
-Section automate specifies the main configuration sections. 
-
-Fields: 
-
-- metadata: Metadata Directory to use 
-- identity: ssh_id to use
-
-### Logging
-
-Logger is configured uses the standard logging functionality specified in:
-https://docs.python.org/3.6/library/logging.config.html#configuration-file-format .
-
-
-## Metadata Description
 
 
 # TODO:

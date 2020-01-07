@@ -8,13 +8,6 @@ To get started just run:
 	poetry install
     poetry shell
 
-By default poetry installs virtual environments under ~/.cache/pypoetry/virtualenvs
-you might want to change the storage location of virtual environments to the project directory:
-    
-	:::bash
-    poetry config settings.virtualenvs.in-project true
-
-
 
 To add a dependency use:
 
@@ -40,7 +33,7 @@ The complete list of currently defined tasks can be shown by running
 
 ## Test Suite
 
-The tools have a
+To run the integration tests use: 
 
     :::bash
     inv test
