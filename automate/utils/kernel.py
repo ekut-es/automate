@@ -1,8 +1,7 @@
-from typing import Dict, List, Union
+from typing import Dict, Generator, List, Tuple, Union
 
+from .. import board, compiler
 from ..model.common import Machine
-from .. import board
-from .. import compiler
 
 
 class FilteredKernelOption:
@@ -35,7 +34,7 @@ class KernelConfigBuilder:
     ) -> None:
         self.board = board
         self.cross_compiler = cross_compiler
-        self._predefined_configs: Dict[str, List[str]] = {
+        self._predefined_configs: Dict[str, List[Union[MachineOption, str]]] = {
             "default": [
                 # Base Options
                 "CONFIG_PROC_KCORE=y",
@@ -85,7 +84,9 @@ class KernelConfigBuilder:
 
         return res
 
-    def predefined_configs(self):
+    def predefined_configs(
+        self
+    ) -> Generator[Tuple[str, List[str]], None, None]:
         """Return all predefined configs that are applicable to a board
 
         Returns:
