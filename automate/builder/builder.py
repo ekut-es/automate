@@ -9,62 +9,7 @@ from .. import compiler
 from ..utils import untar
 from ..utils.kernel import KernelConfigBuilder
 from ..utils.network import rsync
-
-FIT_TEMPLATE = Template(
-    r"""
-/*
- * Simple U-Boot uImage source file containing a single kernel and FDT blob
- */
-
-/dts-v1/;
-
-/ {
-	description = "Simple image with single Linux kernel and FDT blob";
-	#address-cells = <1>;
-
-	images {
-		kernel {
-			description = "Linux kernel";
-			data = /incbin/("${kernel_image}");
-			type = "kernel";
-			arch = "${arch}";
-			os = "linux";
-			compression = "none";
-			load = <${loadaddr}>;
-			entry = <${loadaddr}>;
-			hash-1 {
-				algo = "crc32";
-			};
-			hash-2 {
-				algo = "sha1";
-			};
-		};
-		fdt-1 {
-			description = "Flattened Device Tree blob";
-			data = /incbin/("${dtb_image}");
-			type = "flat_dt";
-			arch = "${arch}";
-			compression = "none";
-			hash-1 {
-				algo = "crc32";
-			};
-			hash-2 {
-				algo = "sha1";
-			};
-		};
-	};
-
-	configurations {
-		default = "conf-1";
-		conf-1 {
-			description = "Boot Linux kernel with FDT blob";
-			kernel = "kernel";
-			fdt = "fdt-1";
-		};
-	};
-};
-"""
-)
+from ..utils.uboot import build_ubimage
 
 
 class BaseBuilder(object):
@@ -327,7 +272,9 @@ class KernelBuilder(BaseBuilder):
         kernel_desc = self._kernel_desc(kernel_id)
 
         build_path = Path(self.builddir)
-        boot_path = build_path / "boot"
+        install_path = build_path / "install"
+        object_path = build_path / "build"
+        boot_path = install_path / "boot"
 
         with c.cd(str(self.builddir)):
             srcdir = kernel_desc.kernel_srcdir
@@ -341,7 +288,7 @@ class KernelBuilder(BaseBuilder):
 
                 c.run(
                     "make modules_install ARCH={0} CROSS_COMPILE={1} INSTALL_MOD_PATH={2}".format(
-                        self._arch(), self._cross_compile(), str(build_path)
+                        self._arch(), self._cross_compile(), str(install_path)
                     )
                 )
 
@@ -357,41 +304,26 @@ class KernelBuilder(BaseBuilder):
             c.run("cp {0} {1}".format(str(kernel_image), str(boot_path)))
 
             if kernel_desc.uboot:
-                loadaddr = kernel_desc.uboot.loadaddr
-                image_name = kernel_desc.uboot.image_name
-                dtb_image = kernel_desc.uboot.dtb_image
-
-                result = FIT_TEMPLATE.safe_substitute(
-                    {
-                        "loadaddr": loadaddr,
-                        "image_name": image_name,
-                        "dtb_image": dtb_image,
-                        "arch": arch,
-                        "kernel_image": kernel_zimage,
-                    }
-                )
-
-                fit_path = build_path / "fit_image.its"
-                image_path = boot_path / image_name
-
-                with fit_path.open("w") as f:
-                    f.write(result)
-
-                c.run(
-                    "mkimage -f {0} {1}".format(str(fit_path), str(image_path))
+                build_ubimage(
+                    c,
+                    kernel_desc.uboot,
+                    arch,
+                    build_path,
+                    boot_path,
+                    kernel_zimage,
                 )
 
     def install(self, c, kernel_id):
         kernel_desc = self._kernel_desc(kernel_id)
         with c.cd(str(self.builddir)):
             srcdir = kernel_desc.kernel_srcdir
-            with c.cd(str(srcdir)):
-
-                c.run(
-                    "make targz-pkg ARCH={0} CROSS_COMPILE={1}".format(
-                        self._arch(), self._cross_compile()
-                    )
-                )
+            # with c.cd(str(srcdir)):
+            #
+            #    c.run(
+            #        "make targz-pkg ARCH={0} CROSS_COMPILE={1}".format(
+            #            self._arch(), self._cross_compile()
+            #        )
+            #    )
 
 
 class MakefileBuilder(BaseBuilder):
@@ -405,5 +337,5 @@ class SPECBuilder(BaseBuilder):
 
 
 class AutotoolsBuilder(BaseBuilder):
-    # TODO: implement spec Builder
+    # TODO: implement autotools Builder
     pass
