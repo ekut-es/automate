@@ -8,6 +8,7 @@ set (CMakeHelloWorld_VERSION_MINOR 0)
 #include the subdirectory containing our libs
 add_subdirectory (Hello)
 include_directories(Hello)
+
 #indicate the entry point for the executable
 add_executable (CMakeHelloWorld Hello HelloWorld.cpp)
 
@@ -15,7 +16,6 @@ add_executable (CMakeHelloWorld Hello HelloWorld.cpp)
 target_link_libraries (CMakeHelloWorld Hello)
 
 install (TARGETS CMakeHelloWorld DESTINATION bin)
-
 
 message("CMAKE_C_FLAGS_DEBUG is ${CMAKE_C_FLAGS_DEBUG}")
 message("CMAKE_C_FLAGS_RELEASE is ${CMAKE_C_FLAGS_RELEASE}")
