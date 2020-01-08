@@ -39,8 +39,6 @@ def safe_rootfs(c, board):  # pragma: no cover
 
         con = bh.connect()
 
-        con.run("uptime")
-
         result = con.run(
             "echo 1 | sudo tee /proc/sys/kernel/sysrq", hide="stdout", pty=True
         )
@@ -83,10 +81,7 @@ def safe_rootfs(c, board):  # pragma: no cover
                             shlex.split(reader_cmd), stdout=subprocess.PIPE
                         )
 
-                        decompressor = gzip.GzipFile(
-                            fileobj=reader.stdout, mode="rb"
-                        )
-                        shutil.copyfileobj(decompressor, image_file)
+                        shutil.copyfileobj(reader.stdout, image_file)
                         return reader.wait()
 
                     reader_result = thread_executor.submit(reader_func)
@@ -104,7 +99,7 @@ def safe_rootfs(c, board):  # pragma: no cover
                     with con.forward_remote(port):
                         logging.info("Starting writer")
                         res = con.run(
-                            "sudo dd if={} | gzip -c |nc -N localhost {}".format(
+                            "sudo dd if={} |  nc -N localhost {}".format(
                                 rootdevice, port
                             ),
                             pty=True,
@@ -298,7 +293,11 @@ def shell(c, board):  # pragma: no cover
 
 @task
 def board_ids(c, locked_ok=False):
-    """returns list of board_ids suitable for usage in shell scripts"""
+    """returns list of board_ids suitable for usage in shell scripts
+
+       By default only unlocked boards are returned. To also iterate over locked 
+       boards use -l / --locked-ok
+    """
     for board in c.boards():
         if locked_ok or not board.is_locked():
             print(board.id)
@@ -316,6 +315,8 @@ def get_kernel_config(c, board, target=""):
 
 @task
 def rsync_to(c, board, source, target="", delete=False):
+    """rsync a folder to the target board by default the 
+"""
     board = c.board(board)
 
     if not target:

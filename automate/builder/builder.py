@@ -273,7 +273,6 @@ class KernelBuilder(BaseBuilder):
 
         build_path = Path(self.builddir)
         install_path = build_path / "install"
-        object_path = build_path / "build"
         boot_path = install_path / "boot"
 
         with c.cd(str(self.builddir)):
@@ -316,14 +315,13 @@ class KernelBuilder(BaseBuilder):
     def install(self, c, kernel_id):
         kernel_desc = self._kernel_desc(kernel_id)
         with c.cd(str(self.builddir)):
-            srcdir = kernel_desc.kernel_srcdir
-            # with c.cd(str(srcdir)):
-            #
-            #    c.run(
-            #        "make targz-pkg ARCH={0} CROSS_COMPILE={1}".format(
-            #            self._arch(), self._cross_compile()
-            #        )
-            #    )
+            with c.cd("install"):
+                kernel_package = "kernel-{0}.tar.gz".format(kernel_id)
+                c.run("tar cvzf {0} boot lib".format(kernel_package))
+
+                kernel_dir = kernel_desc.kernel_source.parent
+
+                c.run("cp {0} {1}".format(kernel_package, kernel_dir))
 
 
 class MakefileBuilder(BaseBuilder):
