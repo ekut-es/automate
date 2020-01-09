@@ -24,6 +24,3 @@ automate.yml: Test/Example Configuration
 # TODO:
 
 - Christoph Cross-Compilation flow
-- Autojail Team:
-  - Kernel Builds aufsetzen
-  - Default Kernel mit kexec bauen und auf Boards installieren
