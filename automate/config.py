@@ -25,6 +25,7 @@ class AutomateConfig(Config):
                 "boardroot": os.path.expanduser("~/.automate/boards"),
             },
             "debug": {"level": "INFO"},
+            "tasks": {"collection_name": "autofile"},
         }
 
         return merge_dicts(their_defaults, my_defaults)

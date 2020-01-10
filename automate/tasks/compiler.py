@@ -31,6 +31,7 @@ def compile(
 
     objs = []
     is_cpp = False
+
     # Compile
     for f in (Path(f) for f in files):
         if not f.exists():

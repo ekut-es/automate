@@ -31,14 +31,14 @@ class AutoTool(Program):
         if "logging" in self.config and "level" in self.config.logging:
             coloredlogs.install(level=self.config.logging.level)
         else:
-            coloredlog.install(level="DEBUG")
+            coloredlogs.install(level="DEBUG")
 
         return super(AutoTool, self).execute()
 
 
 program = AutoTool(
     version=self_version,
+    collection=tasks.collection,
     config_class=AutomateConfig,
-    namespace=tasks.collection,
     executor_class=AutomateExecutor,
 )

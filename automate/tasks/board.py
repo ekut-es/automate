@@ -324,3 +324,10 @@ def rsync_to(c, board, source, target="", delete=False):
 
     with board.connect() as con:
         rsync(con, source=source, target=target, delete=delete)
+
+
+@task
+def kexec(c, board, kernel_id="", append="", commandline=""):
+    board = c.board(board)
+
+    board.kexec(kernel_id, append, commandline)

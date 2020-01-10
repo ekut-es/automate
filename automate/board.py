@@ -130,9 +130,10 @@ class Board(object):
         self.logger.info("Rebooting board {}".format(self.id))
 
         with self.connect() as connection:
-            connection.run("sudo shutdown -r now")
-            self.logger.info("Reboot initiated!")
-            time.sleep(3)
+            connection.run("sudo shutdown -r now & exit")
+
+        self.logger.info("Reboot initiated!")
+        time.sleep(3)
 
         if wait:
             return self.wait_for_connection()
@@ -172,6 +173,39 @@ class Board(object):
         with self.connect() as con:
             result = con.run("echo $HOME", hide=True)
             return Path(result.stdout.strip())
+
+    def kexec(
+        self, kernel_id="", append="", commandline="", wait=True
+    ) -> Union[Connection, None]:
+        kernel_config = None
+
+        for config in self.os.kernel:
+            if kernel_id and kernel_id == config.id:
+                kernel_config = config
+            elif not kernel_id and config.default:
+                kernel_config = config
+
+        if kernel_config is None:
+            raise Exception("Could not find kernel config")
+
+        image = kernel_config.image
+        if not commandline:
+            commandline = kernel_config.commandline
+        commandline = commandline + " " + append
+
+        with self.connect() as con:
+            with self.lock():
+                con.run(
+                    "sudo kexec -l {} --command-line='{}'".format(
+                        image, commandline
+                    )
+                )
+                con.run("sudo kexec -e && exit")
+
+                if wait:
+                    return self.wait_for_connection()
+
+        return None
 
     def __getattr__(self, attr: str) -> Any:
         """proxy model properties if they are not shadowed by an own property"""
