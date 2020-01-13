@@ -42,3 +42,10 @@ program = AutoTool(
     config_class=AutomateConfig,
     executor_class=AutomateExecutor,
 )
+
+
+program_run = AutoTool(
+    version=self_version,
+    config_class=AutomateConfig,
+    executor_class=AutomateExecutor,
+)

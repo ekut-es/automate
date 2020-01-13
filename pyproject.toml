@@ -37,6 +37,7 @@ automacdoc = "^0.3.0"
 
 [tool.poetry.scripts]
 automate = 'automate.main:program.run'
+automate-run = 'automate.main:program_run.run'
 
 [tool.isort]
 multi_line_output=3
