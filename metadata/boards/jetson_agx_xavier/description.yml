@@ -187,6 +187,9 @@ os:
         kernel_config: kernel/config
         kernel_source: ${boardroot}/${board_id}/kernel/kernel_src_4.9.tar.bz
         kernel_srcdir: kernel/kernel-4.9
+        image:
+          deploy_path: /boot/Image
+          build_path: kernel/kernel-4.9/arch/aarch64/boot/zImage
         default: true
         
 

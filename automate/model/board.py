@@ -47,6 +47,11 @@ class UBootModel(DataModelBase):
     dtb_image: Path
 
 
+class KernelImageModel(DataModelBase):
+    build_path: Path
+    deploy_path: Path
+
+
 class KernelModel(DataModelBase):
     id: str
     description: str
@@ -57,6 +62,7 @@ class KernelModel(DataModelBase):
     kernel_source: Path
     kernel_srcdir: str = ""
     uboot: Optional[UBootModel] = None
+    image: Optional[KernelImageModel] = None
     default: bool
 
 

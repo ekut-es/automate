@@ -73,6 +73,11 @@ os:
         loadaddr: 0x00008000
         image_name: image.ub
         dtb_image: ${boardroot}/${board}/kernel/default.dtb
-       
+
+      image:
+        deploy_path: /boot/zImage
+        build_path:  build-zynqberry/linux-xlnx-xilinx-v2018.2/arch/arm/boot/zImage
+    
+        
       default: true
       
