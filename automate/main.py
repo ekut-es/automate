@@ -38,7 +38,7 @@ class AutoTool(Program):
 
 program = AutoTool(
     version=self_version,
-    collection=tasks.collection,
+    namespace=tasks.collection,
     config_class=AutomateConfig,
     executor_class=AutomateExecutor,
 )
