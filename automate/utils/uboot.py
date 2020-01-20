@@ -66,7 +66,7 @@ def build_ubimage(
     arch: str,
     build_path: Path,
     boot_path: Path,
-    kernel_zimage: Path,
+    kernel_image: Path,
 ) -> None:
     loadaddr = uboot_desc.loadaddr
     image_name = uboot_desc.image_name
@@ -75,10 +75,10 @@ def build_ubimage(
     result = FIT_TEMPLATE.safe_substitute(
         {
             "loadaddr": loadaddr,
-            "image_name": image_name,
+            "image_name": str(image_name),
             "dtb_image": str(dtb_image),
             "arch": arch,
-            "kernel_image": str(kernel_zimage),
+            "kernel_image": str(kernel_image),
         }
     )
 

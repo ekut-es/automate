@@ -292,15 +292,20 @@ def shell(c, board):  # pragma: no cover
 
 
 @task
-def board_ids(c, locked_ok=False):
+def board_ids(c):
     """returns list of board_ids suitable for usage in shell scripts
+    
+       filter: filter expression for the given board
 
-       By default only unlocked boards are returned. To also iterate over locked 
-       boards use -l / --locked-ok
+               Examples:
+ 
+               board.machine == zynqberry to only run on zynqberry boards
+
+               board.trylock() to only iterate over boards that are currently unlocked, and lock the boards while iterating
+
     """
     for board in c.boards():
-        if locked_ok or not board.is_locked():
-            print(board.id)
+        print(board.id)
 
 
 @task

@@ -59,3 +59,8 @@
 The Buildroot has been generated using the following command:
 
     rsync -arcv es@192.168.55.1:/ /local/data/buildroots/jetsonagx --exclude=/sys --exclude=/etc --exclude=/home --exclude=/proc --exclude=/run --exclude=/lost+found --exclude=/tmp --exclude=/root
+
+
+
+### TODOs: 
+  - Deployment of default kernels

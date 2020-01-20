@@ -43,7 +43,7 @@ class CoreModel(DataModelBase):
 
 class UBootModel(DataModelBase):
     loadaddr: str
-    image_name: str
+    image_name: Path
     dtb_image: Path
 
 
@@ -60,9 +60,9 @@ class KernelModel(DataModelBase):
     commandline: str
     kernel_config: Path
     kernel_source: Path
-    kernel_srcdir: str = ""
+    kernel_srcdir: Path
+    image: KernelImageModel
     uboot: Optional[UBootModel] = None
-    image: Optional[KernelImageModel] = None
     default: bool
 
 
@@ -90,6 +90,10 @@ class BoardModel(LoadedModelBase):
     os: OSModel
 
     def _get_env_dict(self) -> Dict[str, str]:
+        default_dict = dict(super(BoardModel, self)._get_env_dict())
+
         d = {"board": self.board, "board_id": self.id}
 
-        return d
+        default_dict.update(d)
+
+        return default_dict

@@ -43,17 +43,11 @@ class ModelLoader(object):
         return res
 
     def _apply_templates(
-        self,
-        data_model: DataModelBase,
-        env: Dict[str, str],
-        model_file: Optional[Path] = None,
+        self, data_model: DataModelBase, env: Dict[str, str]
     ) -> None:
 
         env = dict(env)
         env.update(data_model._get_env_dict())
-
-        if isinstance(data_model, LoadedModelBase):
-            model_file = data_model.model_file
 
         def do_apply_template(template, env):
             try:
@@ -64,8 +58,8 @@ class ModelLoader(object):
             except ValueError as e:  # pragma: no cover
                 self.logger.error(str(e))
                 self.logger.error(
-                    "During formatting of field {} from {} value: {}".format(
-                        field_name, model_file, field
+                    "During formatting of field {} from {}".format(
+                        field_name, field
                     )
                 )
                 self.logger.error(str(env))
@@ -88,17 +82,14 @@ class ModelLoader(object):
 
                 formatted_path = Path(formatted)
 
-                if not formatted_path.is_absolute():
-                    if model_file is not None:
-                        formatted_path = model_file.parent / formatted_path
                 setattr(data_model, field_name, formatted_path)
 
             elif isinstance(field, DataModelBase):
-                self._apply_templates(field, env, model_file)
+                self._apply_templates(field, env)
             elif isinstance(field, list):
                 for item in field:
                     if isinstance(item, DataModelBase):
-                        self._apply_templates(item, env, model_file)
+                        self._apply_templates(item, env)
 
         return None
 

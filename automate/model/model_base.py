@@ -19,3 +19,9 @@ class DataModelBase(BaseModel):
 class LoadedModelBase(DataModelBase):
     model_file: Path
     model_file_mtime: datetime
+
+    def _get_env_dict(self) -> Dict[str, str]:
+        return {
+            "model_file": str(self.model_file),
+            "model_dir": str(self.model_file.parent),
+        }

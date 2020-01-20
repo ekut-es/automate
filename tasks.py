@@ -78,12 +78,6 @@ def update_schemas(c):
     with (path / "metadata.schema.json").open("w") as f:
         f.write(metadata_json)
 
-    # with (path / "board.schema.json").open("w") as f:
-    #    f.write(board_json)
-
-    # with (path / "compiler.schema.json").open("w") as f:
-    #    f.write(compiler_json)
-
     tmp_path = root_path / "tmp"
     tmp_path.mkdir(exist_ok=True)
 

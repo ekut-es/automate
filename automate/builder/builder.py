@@ -7,7 +7,7 @@ from typing import Union
 
 from .. import compiler
 from ..utils import untar
-from ..utils.kernel import KernelConfigBuilder
+from ..utils.kernel import KernelConfigBuilder, KernelData
 from ..utils.network import rsync
 from ..utils.uboot import build_ubimage
 
@@ -212,6 +212,9 @@ class KernelBuilder(BaseBuilder):
 
         return kernel_desc
 
+    def _kernel_data(self, kernel_id):
+        return KernelData(self.board, self._kernel_desc(kernel_id))
+
     def _arch(self):
         arch = (
             self.cc.machine.value
@@ -276,6 +279,7 @@ class KernelBuilder(BaseBuilder):
         build_path = Path(self.builddir)
         install_path = build_path / "install"
         boot_path = install_path / "boot"
+        c.run("rm -rf {}".format(install_path))
 
         with c.cd(str(self.builddir)):
             srcdir = kernel_desc.kernel_srcdir
@@ -293,37 +297,48 @@ class KernelBuilder(BaseBuilder):
                     )
                 )
 
-            arch = self._arch()
-            kernel_zimage = (
-                build_path / srcdir / "arch" / arch / "boot" / "zImage"
+            kernel_image = build_path / kernel_desc.image.build_path
+            kernel_dest = (
+                install_path / kernel_desc.image.deploy_path.relative_to("/")
             )
-            kernel_image = (
-                build_path / srcdir / "arch" / arch / "boot" / "Image"
-            )
-            boot_path.mkdir(exist_ok=True)
-            c.run("cp {0} {1}".format(str(kernel_zimage), str(boot_path)))
-            c.run("cp {0} {1}".format(str(kernel_image), str(boot_path)))
+
+            kernel_dest.parent.mkdir(parents=True, exist_ok=True)
+            c.run("cp {0} {1}".format(str(kernel_image), str(kernel_dest)))
 
             if kernel_desc.uboot:
                 build_ubimage(
                     c,
                     kernel_desc.uboot,
-                    arch,
+                    self._arch(),
                     build_path,
                     boot_path,
-                    kernel_zimage,
+                    kernel_image,
                 )
 
     def install(self, c, kernel_id):
         kernel_desc = self._kernel_desc(kernel_id)
+        kernel_data = self._kernel_data(kernel_id)
         with c.cd(str(self.builddir)):
+            kernel_dir = kernel_data.shared_data_dir
             with c.cd("install"):
-                kernel_package = "kernel-{0}.tar.gz".format(kernel_id)
-                c.run("tar cvzf {0} boot lib".format(kernel_package))
+                kernel_package = kernel_data.deploy_package_name
 
-                kernel_dir = kernel_desc.kernel_source.parent
+                c.run("tar czf {0} boot lib".format(kernel_package))
+                c.run(
+                    "cp {0} {1}".format(
+                        kernel_package, kernel_data.build_cache_name
+                    )
+                )
 
-                c.run("cp {0} {1}".format(kernel_package, kernel_dir))
+            kernel_top_dir = kernel_desc.kernel_srcdir.parts[0]
+            kernel_build_cache = kernel_data.build_cache_name
+
+            c.run("tar cJf  {} {}".format(kernel_build_cache, kernel_top_dir))
+            c.run(
+                "cp {} {}".format(
+                    kernel_build_cache, kernel_data.build_cache_path
+                )
+            )
 
 
 class MakefileBuilder(BaseBuilder):

@@ -68,7 +68,8 @@ os:
       commandline: console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0p2 rw rootwait
       kernel_source: ${boardroot}/${board}/kernel/xilinx-v2018.2.tar.gz
       kernel_srcdir: linux-xlnx-xilinx-v2018.2
-      kernel_config: kernel/config
+      kernel_config: ${model_dir}/kernel/config
+
       uboot:
         loadaddr: 0x00008000
         image_name: image.ub
@@ -76,8 +77,7 @@ os:
 
       image:
         deploy_path: /boot/zImage
-        build_path:  build-zynqberry/linux-xlnx-xilinx-v2018.2/arch/arm/boot/zImage
-    
+        build_path:  linux-xlnx-xilinx-v2018.2/arch/arm/boot/zImage
         
       default: true
       

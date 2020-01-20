@@ -127,4 +127,39 @@ class KernelConfigBuilder:
         return fragment
 
 
+class KernelData(object):
+    """ Provides collection of calculated kernel data """
+
+    def __init__(self, board, kernel_desc):
+        self.board = board
+        self.kernel_desc = kernel_desc
+
+    @property
+    def shared_data_dir(self):
+        """Location for shared kernel sources and cached deploy and build packages"""
+        kernel_shared_dir = self.kernel_desc.kernel_source.parent
+
+        return kernel_shared_dir
+
+    @property
+    def deploy_package_name(self):
+        """Name of the kernel deploy archive"""
+        return "kernel-{0}.tar.gz".format(self.kernel_desc.id)
+
+    @property
+    def deploy_package_path(self):
+        return self.shared_data_dir / self.deploy_package_name
+
+    @property
+    def build_cache_name(self):
+        """Name of the kernel build cache archive"""
+        return "kernel-build-{}.tar.bz".format(self.kernel_desc.id)
+
+    @property
+    def build_cache_path(self):
+        return self.shared_data_dir / self.build_cache_name
+
+    # TODO: extend usage of kernel data holder for build caches
+
+
 __all__ = ["KernelConfigBuilder"]
