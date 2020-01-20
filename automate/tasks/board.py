@@ -33,7 +33,7 @@ def safe_rootfs(c, board):  # pragma: no cover
 
     print("Cloning rootfs to {}\n".format(image_name))
 
-    with bh.lock():
+    with bh.lock_ctx():
 
         logging.info("Connecting to target using port {}".format(port))
 
@@ -332,7 +332,7 @@ def rsync_to(c, board, source, target="", delete=False):
 
 
 @task
-def kexec(c, board, kernel_id="", append="", commandline=""):
+def kexec(c, board, kernel_id="", append="", commandline="", wait=False):
     board = c.board(board)
 
-    board.kexec(kernel_id, append, commandline)
+    board.kexec(kernel_id, append, commandline, wait=wait)

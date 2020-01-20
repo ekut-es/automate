@@ -28,14 +28,29 @@ class Board(object):
         self.identity = identity
 
     @contextmanager
+    def lock_ctx(self):
+        if not self.has_lock():
+            try:
+                yield self.lock()
+            finally:
+                self.unlock()
+        else:
+            # Return a do nothing context manager
+            try:
+                yield None
+            finally:
+                pass
+
     def lock(self):
         self.logger.warning("Locking of boards is currently not implemented")
-        try:
-            # TODO: acquire lock
-            yield None
-        finally:
-            self.unlock()
+        if self.has_lock():
+            return None
+        else:
+            # TODO: Aquire lock
             pass
+
+    def has_lock(self):
+        return False
 
     def unlock(self):
         self.logger.warning("Unlocking of boards is currently not implemented")
@@ -179,30 +194,41 @@ class Board(object):
     ) -> Union[Connection, None]:
         kernel_config = None
 
-        for config in self.os.kernel:
+        for config in self.os.kernels:
             if kernel_id and kernel_id == config.id:
                 kernel_config = config
+                break
             elif not kernel_id and config.default:
                 kernel_config = config
+                break
 
         if kernel_config is None:
             raise Exception("Could not find kernel config")
 
-        image = kernel_config.image
+        image = str(kernel_config.image.deploy_path)
         if not commandline:
             commandline = kernel_config.commandline
         commandline = commandline + " " + append
 
         with self.connect() as con:
-            with self.lock():
-                con.run(
-                    "sudo kexec -l {} --command-line='{}'".format(
-                        image, commandline
-                    )
+            with self.lock_ctx():
+                cmd = "sudo kexec -l {} --command-line='{}'".format(
+                    image, commandline
                 )
-                con.run("sudo kexec -e && exit")
+
+                self.logger.info("Running {}".format(cmd))
+                con.run(cmd)
+
+                cmd = (
+                    "nohup bash -c 'sleep 1; sudo kexec -e' > /tmp/nohup.out &"
+                )
+                self.logger.info("Running {}".format(cmd))
+                con.run(cmd)
+                self.logger.info("Kexec executed")
+                time.sleep(2.0)
 
                 if wait:
+                    self.logger.info("Waiting for reconnection")
                     return self.wait_for_connection()
 
         return None
