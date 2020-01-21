@@ -135,8 +135,8 @@ class KernelData(object):
         self.kernel_desc = kernel_desc
 
     @property
-    def source_dir(self):
-        return self.kernel_desc.source_dir
+    def srcdir(self):
+        return self.kernel_desc.kernel_srcdir
 
     @property
     def arch(self):
@@ -171,8 +171,6 @@ class KernelData(object):
     @property
     def build_cache_path(self):
         return self.shared_data_dir / self.build_cache_name
-
-    # TODO: extend usage of kernel data holder for build caches
 
 
 __all__ = ["KernelConfigBuilder"]
