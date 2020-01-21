@@ -93,25 +93,30 @@ class ModelLoader(object):
 
         return None
 
-    def load(self) -> MetadataModel:
+    def load(self, expand_templates=True) -> MetadataModel:
         compilers = self._load_metadata_list("compilers/**/description.yml")
         boards = self._load_metadata_list("boards/**/description.yml")
 
         data_model = MetadataModel(compilers=compilers, boards=boards)
 
-        template_env = {
-            "metadata": os.path.expanduser(str(self.config.automate.metadata)),
-            "toolroot": os.path.expanduser(str(self.config.automate.toolroot)),
-            "boardroot": os.path.expanduser(
-                str(self.config.automate.boardroot)
-            ),
-        }
+        if expand_templates:
+            template_env = {
+                "metadata": os.path.expanduser(
+                    str(self.config.automate.metadata)
+                ),
+                "toolroot": os.path.expanduser(
+                    str(self.config.automate.toolroot)
+                ),
+                "boardroot": os.path.expanduser(
+                    str(self.config.automate.boardroot)
+                ),
+            }
 
-        self.logger.debug("Applying templates")
-        self._apply_templates(data_model, template_env)
+            self.logger.debug("Applying templates")
+            self._apply_templates(data_model, template_env)
 
-        self.logger.debug("Datadict after applying templates")
-        self.logger.debug(data_model.dict())
+            self.logger.debug("Datadict after applying templates")
+            self.logger.debug(data_model.dict())
 
         return data_model
 
