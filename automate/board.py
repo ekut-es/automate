@@ -16,6 +16,7 @@ from automate.model.board import (
 from .compiler import CrossCompiler
 from .model import BoardModel, CompilerModel
 from .model.common import Toolchain
+from .utils.kernel import KernelData
 
 
 class Board(object):
@@ -205,6 +206,9 @@ class Board(object):
         if kernel_config is None:
             raise Exception("Could not find kernel config")
 
+        if kernel_config.image is None:
+            raise Exception("Could not find the kernel image entry")
+
         image = str(kernel_config.image.deploy_path)
         if not commandline:
             commandline = kernel_config.commandline
@@ -231,6 +235,12 @@ class Board(object):
                     self.logger.info("Waiting for reconnection")
                     return self.wait_for_connection()
 
+        return None
+
+    def kernel_data(self, id: str):
+        for kernel_desc in self.os.kernels:
+            if kernel_desc.id == id:
+                return KernelData(self, kernel_desc)
         return None
 
     def __getattr__(self, attr: str) -> Any:

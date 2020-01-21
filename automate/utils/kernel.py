@@ -135,6 +135,19 @@ class KernelData(object):
         self.kernel_desc = kernel_desc
 
     @property
+    def source_dir(self):
+        return self.kernel_desc.source_dir
+
+    @property
+    def arch(self):
+        arch = (
+            self.board.os.triple.machine.value
+            if self.board.os.triple.machine.value != "aarch64"
+            else "arm64"
+        )
+        return arch
+
+    @property
     def shared_data_dir(self):
         """Location for shared kernel sources and cached deploy and build packages"""
         kernel_shared_dir = self.kernel_desc.kernel_source.parent
