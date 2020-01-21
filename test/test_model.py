@@ -32,3 +32,13 @@ def test_model_load():
 
     for key, val in c.items():
         assert val == 1
+
+
+def test_model_load_unexpanded():
+
+    config = AutomateConfig()
+    config.automate.metadata = str(metadata_path)
+    loader = ModelLoader(config)
+    model = loader.load(expand_templates=False)
+    for board in model.boards:
+        assert str(board.os.sysroot).startswith("${boardroot}")
