@@ -29,7 +29,8 @@ from ..utils import cpuinfo
 
 @task
 def add_users(c):
-    "Add users ssh keys to all boards"
+    """Add user ssh keys to all boards
+    """
     loader = ModelLoader(c.config)
     users = loader.load_users()
 
@@ -71,6 +72,168 @@ def add_users(c):
             gw_homedir = Path(result.stdout.strip())
             sftp = con.sftp()
             copy_keys(sftp, users, gw_homedir)
+
+
+@task
+def safe_rootfs(c, board):  # pragma: no cover
+    """Safe rootfs image of board
+       
+        -b/--board: target board id
+    """
+    bh = c.board(board)
+
+    port = find_local_port()
+
+    image_name = Path(bh.os.rootfs)
+    image_name.parent.mkdir(parents=True, exist_ok=True)
+
+    print("Cloning rootfs to {}\n".format(image_name))
+
+    with bh.lock_ctx():
+
+        logging.info("Connecting to target using port {}".format(port))
+
+        con = bh.connect()
+
+        result = con.run(
+            "echo 1 | sudo tee /proc/sys/kernel/sysrq", hide="stdout", pty=True
+        )
+        if result.return_code != 0:
+            raise Exception("Could not enable sysrq triggers")
+
+        mount_result = con.run("mount", hide="stdout")
+        if mount_result.return_code != 0:
+            raise Exception("Could not get mountpoints")
+        mount_output = mount_result.stdout
+        mount_table_pattern = re.compile(r"(.*) on (.*) type (.*) \((.*)\)")
+        rootdevice = ""
+        for line in mount_output.splitlines():
+            line = line.strip()
+            match = re.match(mount_table_pattern, line)
+            if match:
+                device = match.group(1).strip()
+                mountpoint = match.group(2).strip()
+                fstype = match.group(3).strip()
+                args = match.group(4).strip()
+
+                if mountpoint == "/":
+                    rootdevice = device
+                    break
+
+        if not rootdevice:
+            raise Exception("Could not find root device for {}".format(board))
+
+        logging.info("Using device: {}".format(rootdevice))
+
+        with concurrent.futures.ThreadPoolExecutor() as thread_executor:
+            try:
+                with open(image_name.with_suffix(".tmp"), "wb") as image_file:
+                    logging.info("Starting listener")
+
+                    def reader_func():
+
+                        reader_cmd = "nc -l {}".format(port)
+                        reader = subprocess.Popen(
+                            shlex.split(reader_cmd), stdout=subprocess.PIPE
+                        )
+
+                        shutil.copyfileobj(reader.stdout, image_file)
+                        return reader.wait()
+
+                    reader_result = thread_executor.submit(reader_func)
+
+                    result = con.run(
+                        "echo u | sudo tee /proc/sysrq-trigger",
+                        hide="stdout",
+                        pty=True,
+                    )
+                    if result.return_code != 0:
+                        raise Exception(
+                            "Could not remount file systems read only"
+                        )
+
+                    with con.forward_remote(port):
+                        logging.info("Starting writer")
+                        res = con.run(
+                            "sudo dd if={} |  nc -N localhost {}".format(
+                                rootdevice, port
+                            ),
+                            pty=True,
+                        )
+
+                        logging.info("waiting for reader")
+
+                        result = reader_result.result()
+                        if result != 0:
+                            raise Exception("Could not write image!")
+
+            except BaseException as e:
+                if image_name.with_suffix(".tmp").exists():
+                    c.run("rm {}".format(image_name.with_suffix(".tmp")))
+                logging.error(
+                    "Exception during image writing: {}".format(str(e))
+                )
+            finally:
+                logging.info("Rebooting target {}".format(board))
+                bh.reboot(wait=False)
+
+        logging.info("Sparsifying saved image")
+        c.run("fallocate -d {0}".format(image_name.with_suffix(".tmp")))
+        if image_name.exists():
+            c.run(
+                "mv {0} {1}".format(image_name, image_name.with_suffix(".bak"))
+            )
+
+        logging.info("Moving image to result")
+        c.run("mv {0} {1}".format(image_name.with_suffix(".tmp"), image_name))
+        print("Finished image saving.")
+
+        return 0
+
+
+@task
+def build_sysroot(c, board):  # pragma: no cover
+    """Build compiler sysroot for board
+       
+        -b/--board: target board id
+    """
+
+    bh = c.board(board)
+
+    image_path = Path(bh.os.rootfs)
+    if not image_path.exists():
+        safe_rootfs(c, board)
+
+    try:
+        tmp_path = Path(tempfile.mkdtemp())
+        logging.debug("Using mountpoint {}".format(tmp_path))
+
+        c.run("sudo mount -l {} {}".format(str(image_path), str(tmp_path)))
+
+        bh.os.sysroot.mkdir(exist_ok=True, parents=True)
+
+        try:
+            rsync_result = c.run(
+                r'rsync -ar --delete --delete-excluded --exclude="/tmp" --exclude="/home" {}/ {}/'.format(
+                    str(tmp_path), str(bh.os.sysroot)
+                ),
+                hide="stdout",
+                warn=True,
+            )
+
+            fix_symlinks(bh.os.sysroot)
+
+        except BaseException as e:
+            print(e)
+            raise e
+        finally:
+            c.run("sudo umount {}".format(tmp_path))
+
+    except BaseException as e:
+        print(e)
+        raise e
+    finally:
+        c.run("sudo rmdir {}".format(tmp_path))
 
 
 class ISAValidator(Validator):
@@ -382,5 +545,4 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
                 return d
 
         d = _recurse(d)
-
         yaml.dump(d, mf)

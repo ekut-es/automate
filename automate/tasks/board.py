@@ -22,164 +22,13 @@ from ..utils.network import find_local_port, rsync
 
 
 @task
-def safe_rootfs(c, board):  # pragma: no cover
-    "Safe rootfs image of board to board directory"
-    bh = c.board(board)
-
-    port = find_local_port()
-
-    image_name = Path(bh.os.rootfs)
-    image_name.parent.mkdir(parents=True, exist_ok=True)
-
-    print("Cloning rootfs to {}\n".format(image_name))
-
-    with bh.lock_ctx():
-
-        logging.info("Connecting to target using port {}".format(port))
-
-        con = bh.connect()
-
-        result = con.run(
-            "echo 1 | sudo tee /proc/sys/kernel/sysrq", hide="stdout", pty=True
-        )
-        if result.return_code != 0:
-            raise Exception("Could not enable sysrq triggers")
-
-        mount_result = con.run("mount", hide="stdout")
-        if mount_result.return_code != 0:
-            raise Exception("Could not get mountpoints")
-        mount_output = mount_result.stdout
-        mount_table_pattern = re.compile(r"(.*) on (.*) type (.*) \((.*)\)")
-        rootdevice = ""
-        for line in mount_output.splitlines():
-            line = line.strip()
-            match = re.match(mount_table_pattern, line)
-            if match:
-                device = match.group(1).strip()
-                mountpoint = match.group(2).strip()
-                fstype = match.group(3).strip()
-                args = match.group(4).strip()
-
-                if mountpoint == "/":
-                    rootdevice = device
-                    break
-
-        if not rootdevice:
-            raise Exception("Could not find root device for {}".format(board))
-
-        logging.info("Using device: {}".format(rootdevice))
-
-        with concurrent.futures.ThreadPoolExecutor() as thread_executor:
-            try:
-                with open(image_name.with_suffix(".tmp"), "wb") as image_file:
-                    logging.info("Starting listener")
-
-                    def reader_func():
-
-                        reader_cmd = "nc -l {}".format(port)
-                        reader = subprocess.Popen(
-                            shlex.split(reader_cmd), stdout=subprocess.PIPE
-                        )
-
-                        shutil.copyfileobj(reader.stdout, image_file)
-                        return reader.wait()
-
-                    reader_result = thread_executor.submit(reader_func)
-
-                    result = con.run(
-                        "echo u | sudo tee /proc/sysrq-trigger",
-                        hide="stdout",
-                        pty=True,
-                    )
-                    if result.return_code != 0:
-                        raise Exception(
-                            "Could not remount file systems read only"
-                        )
-
-                    with con.forward_remote(port):
-                        logging.info("Starting writer")
-                        res = con.run(
-                            "sudo dd if={} |  nc -N localhost {}".format(
-                                rootdevice, port
-                            ),
-                            pty=True,
-                        )
-
-                        logging.info("waiting for reader")
-
-                        result = reader_result.result()
-                        if result != 0:
-                            raise Exception("Could not write image!")
-
-            except BaseException as e:
-                if image_name.with_suffix(".tmp").exists():
-                    c.run("rm {}".format(image_name.with_suffix(".tmp")))
-                logging.error(
-                    "Exception during image writing: {}".format(str(e))
-                )
-            finally:
-                logging.info("Rebooting target {}".format(board))
-                bh.reboot(wait=False)
-
-        logging.info("Sparsifying saved image")
-        c.run("fallocate -d {0}".format(image_name.with_suffix(".tmp")))
-        if image_name.exists():
-            c.run(
-                "mv {0} {1}".format(image_name, image_name.with_suffix(".bak"))
-            )
-
-        logging.info("Moving image to result")
-        c.run("mv {0} {1}".format(image_name.with_suffix(".tmp"), image_name))
-        print("Finished image saving.")
-
-        return 0
-
-
-@task
-def build_sysroot(c, board):  # pragma: no cover
-    "Build a sysroot for the given board"
-
-    bh = c.board(board)
-
-    image_path = Path(bh.os.rootfs)
-    if not image_path.exists():
-        safe_rootfs(c, board)
-
-    try:
-        tmp_path = Path(tempfile.mkdtemp())
-        logging.debug("Using mountpoint {}".format(tmp_path))
-
-        c.run("sudo mount -l {} {}".format(str(image_path), str(tmp_path)))
-
-        bh.os.sysroot.mkdir(exist_ok=True, parents=True)
-
-        try:
-            rsync_result = c.run(
-                r'rsync -ar --delete --delete-excluded --exclude="/tmp" --exclude="/home" {}/ {}/'.format(
-                    str(tmp_path), str(bh.os.sysroot)
-                ),
-                hide="stdout",
-                warn=True,
-            )
-
-            fix_symlinks(bh.os.sysroot)
-
-        except BaseException as e:
-            print(e)
-            raise e
-        finally:
-            c.run("sudo umount {}".format(tmp_path))
-
-    except BaseException as e:
-        print(e)
-        raise e
-    finally:
-        c.run("sudo rmdir {}".format(tmp_path))
-
-
-@task
 def run(c, board, command, cwd=""):  # pragma: no cover
-    "Run command remotely"
+    """Run command remotely
+    
+        -b/--board: target board id
+        -c/--command: command to run
+        --cwd: working directory of the command
+    """
 
     bh = c.board(board)
 
@@ -194,7 +43,12 @@ def run(c, board, command, cwd=""):  # pragma: no cover
 
 @task
 def put(c, board, file, remote_path=""):  # pragma: no cover
-    "Put file on the board"
+    """Put file on the board
+     
+        -b/--board: target board id
+        -f/--file: local file
+        -r/--remote: remote file path (default is board specific rundir)
+    """
 
     bh = c.board(board)
     with bh.connect() as con:
@@ -211,7 +65,12 @@ def put(c, board, file, remote_path=""):  # pragma: no cover
 
 @task
 def get(c, board, remote, local=""):  # pragma: no cover
-    "get file from the board"
+    """Get file from board
+       
+        -b/--board: target board id
+        -r/--remote: remote file path
+        -l/--local:  local folder or filename (default is current working directory)
+    """
 
     bh = c.board(board)
     with bh.connect() as con:
@@ -226,22 +85,32 @@ def get(c, board, remote, local=""):  # pragma: no cover
 
 
 @task
-def lock(c, board):  # pragma: no cover
+def lock(c, board, timeout="1h"):  # pragma: no cover
+    """Lock board
+
+        -b/--board: target board id
+        -t/--timeout: timeout for the lock
+    """
     board = c.board(board)
-    board.lock()
+    board.lock(timeout=timeout)
 
 
 @task
 def unlock(c, board):  # pragma: no cover
+    """Unlock board
+
+       -b/--board: target board id 
+    """
     board = c.board(board)
     board.unlock()
 
 
 @task
 def reboot(c, board, wait=False):  # pragma: no cover
-    """Reboots the board
+    """Reboot  board
        
-       If -w / --wait is given waits untile the boards is reachable via ssh again
+        -b/--board: target board id
+        -w/--wait block until the board is reachable via ssh again
     """
 
     board = c.board(board)
@@ -250,9 +119,10 @@ def reboot(c, board, wait=False):  # pragma: no cover
 
 @task
 def reset(c, board, wait=False):  # pragma: no cover
-    """Does a hard reset of the board
-    
-       If -w / --wait is given waits until the board is reachable again
+    """Hard reset board
+       
+        -b/--board: target board id
+        -w/--wait: block until the board is reachable again
     """
 
     board = c.board(board)
@@ -261,7 +131,11 @@ def reset(c, board, wait=False):  # pragma: no cover
 
 @task
 def install(c, board, package):  # pragma: no cover
-    """Installs a package on the board"""
+    """Install a package on the board
+
+        -b/--board: target board id
+        -p/--package: package
+    """
 
     board = c.board(board)
 
@@ -283,7 +157,10 @@ def install(c, board, package):  # pragma: no cover
 
 @task
 def shell(c, board):  # pragma: no cover
-    """Starts a remote shell on the given board"""
+    """Start a remote shell 
+
+        -b/--board: target board id
+    """
 
     board = c.board(board)
 
@@ -292,36 +169,41 @@ def shell(c, board):  # pragma: no cover
 
 
 @task
-def board_ids(c):
+def board_ids(c, filter=""):
     """returns list of board_ids suitable for usage in shell scripts
     
-       filter: filter expression for the given board
+       -f/--filter: filter expression for boards
+
+               Filter expression is prepended with 'lambda board:  ' and then evaluated as a python function
+               board is an object of class Board, only returns board_ids if filter expression is true
 
                Examples:
  
-               board.machine == zynqberry to only run on zynqberry boards
+               board.machine == 'zynqberry' to only run on zynqberry boards
 
                board.trylock() to only iterate over boards that are currently unlocked, and lock the boards while iterating
-
     """
-    for board in c.boards():
+
+    if filter:
+        filter = "lambda board: " + filter
+        filter = eval(filter)
+    else:
+        filter = lambda board: True
+
+    for board in (board for board in c.boards() if filter(board)):
         print(board.id)
-
-
-@task
-def get_kernel_config(c, board, target=""):
-    board = c.board(board)
-    if target:
-        target = Path(target)
-
-    with board.connect() as con:
-        con.get("/proc/config.gz", str(target))
 
 
 @task
 def rsync_to(c, board, source, target="", delete=False):
     """rsync a folder to the target board by default the 
-"""
+    
+       
+       -b/--board: target board id
+       -s/--source: source folder/file
+       -t/--target: target folder/file default is configured rundir on the board
+       -d/--delete: delete files from target that do not exist in the source 
+    """
     board = c.board(board)
 
     if not target:
@@ -333,6 +215,14 @@ def rsync_to(c, board, source, target="", delete=False):
 
 @task
 def kexec(c, board, kernel_id="", append="", commandline="", wait=False):
+    """Start the Linux kernel using kexec
+    
+       -b/--board: target board id
+       -k/--kernel-id: target kernel id
+       -a/--append: Append the given string to the commandline
+       -w/--wait: wait until board is reachable via ssh again
+    """
+
     board = c.board(board)
 
     board.kexec(kernel_id, append, commandline, wait=wait)

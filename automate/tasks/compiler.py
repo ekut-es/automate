@@ -27,7 +27,7 @@ def compile(
         builddir = compiler.default_builddir
 
     build_path = Path(builddir)
-    build_path.mkdir(exist_ok=True)
+    build_path.mkdir(exist_ok=True, parents=True)
 
     objs = []
     is_cpp = False

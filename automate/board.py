@@ -32,7 +32,7 @@ class Board(object):
     def lock_ctx(self):
         if not self.has_lock():
             try:
-                yield self.lock()
+                yield self.lock(timeout="1h")
             finally:
                 self.unlock()
         else:
@@ -42,7 +42,7 @@ class Board(object):
             finally:
                 pass
 
-    def lock(self):
+    def lock(self, timeout="1h"):
         self.logger.warning("Locking of boards is currently not implemented")
         if self.has_lock():
             return None
@@ -50,11 +50,14 @@ class Board(object):
             # TODO: Aquire lock
             pass
 
-    def has_lock(self):
+    def has_lock(self) -> bool:
         return False
 
     def unlock(self):
         self.logger.warning("Unlocking of boards is currently not implemented")
+
+    def trylock(self):
+        return False
 
     def is_locked(self) -> bool:
         self.logger.warning("Locking is currently not implemented")

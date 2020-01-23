@@ -216,5 +216,5 @@ class CrossCompiler(Compiler):
         raise Exception("Could not find builder {}".format(typ))
 
     @property
-    def default_builddir(self):
-        return "build-{}".format(self.board.id)
+    def default_builddir(self) -> Path:
+        return Path("builds") / str(self.board.id)
