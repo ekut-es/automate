@@ -17,3 +17,8 @@ gerum:
     - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEAv61/8ZqrfDJ+XvNP3nsxtA0Dim0PMA26bx1LTk3CveCPDMd5EamXHX/h+RyB63mhp42W8gFJvosV0kVkbK7IWvfWFDWdYuMDn7c6K28IEmWaD8mmBdwYFChGDKf+Pdonk60SQdNlKCrvCJzbgTIfdZJyP/D2/BF7mllaBQlSCtc= *"
 
 
+volmdenn:
+    name: "Dennis Volm"
+    mail: dennis.volm@student.uni-tuebingen.de
+    public_keys:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHVfqEqR6dHAwEe0pZfTiiCMlQE3KNooVz4FlXcWNeXEeOl0CaBvQh2rysU3jWpnCb/9nsC2N55XdgZBrB9tUEBi4e849N3K6Sr34gfpykRcI16KP5i3Y8LA1sLlChlZS+5d3sMQ886Lb4rgWCk+pNOopegiVi1eeEUd+3pNGgRX/RTMhixLHP7UJIC1cSSaV/3M2LFxzsCLfK8AIO+lv5sTlOmhUDUVMoM48p9d/JVDnHLaWIjjosX4EgLK1Se9o6R11wVCbNqRwaiTd0KRMstDMQb5k7RnEbT+oS4zKZRWIrYhe5N3Sar5PbrlcK7kJir5F14sRBZcKyaOC/tk6X volmdenn@ducky"
