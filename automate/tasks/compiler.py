@@ -10,7 +10,13 @@ def compile(
 ):  # pragma: no cover
     """Compiles multiple source files to a target specific executable
 
-       Output will be placed in: build-{board_id} by default
+       Output will be placed in: build/{board_id} by default
+
+       -b/--board: taget board
+       -f/--files: source code files supports C/C++/Object Code files 
+                   .cc, .cxx, .cpp, .C, .c++ are interpreted as C++
+                   .o and .obj as Object Code (are only linked in)
+                   the rest is given to the C Compiler  
     """
 
     board = c.board(board)

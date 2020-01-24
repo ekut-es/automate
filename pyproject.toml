@@ -16,6 +16,7 @@ patchwork = "^1.0"
 pre-commit = "^1.20"
 prompt_toolkit = "^3.0"
 requests = "^2.22"
+pydoc-markdown = "^2.0.5"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.740.0"

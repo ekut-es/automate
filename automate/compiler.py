@@ -3,14 +3,7 @@ from pathlib import Path
 from typing import List, Union
 
 from . import board
-from .builder import (
-    AutotoolsBuilder,
-    BaseBuilder,
-    CMakeBuilder,
-    KernelBuilder,
-    MakefileBuilder,
-    SPECBuilder,
-)
+from .builder import BaseBuilder, CMakeBuilder, KernelBuilder, MakefileBuilder
 from .model import (
     BoardModel,
     CompilerModel,
@@ -208,10 +201,6 @@ class CrossCompiler(Compiler):
             return KernelBuilder(self, *args, **kwargs)
         elif typ == "make":
             return MakefileBuilder(self, *args, **kwargs)
-        elif typ == "spec":
-            return SPECBuilder(self, *args, **kwargs)
-        elif typ == "autotools":
-            return AutotoolsBuilder(self, *args, **kwargs)
 
         raise Exception("Could not find builder {}".format(typ))
 
