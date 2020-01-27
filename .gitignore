@@ -16,3 +16,4 @@ der_schrank/
 build-*/
 builds/
 htmlcov
+_build/

@@ -130,6 +130,15 @@ class Board(object):
     def connect(self, type: str = "ssh", timeout: int = 30) -> Connection:
         """
         Return a fabric.Connection to the board.
+
+        # Arguments
+        type: connection type currently only "ssh" is supportted
+        timeout: timeout unitl connection should be established
+        
+        # Returns
+        
+        /fabric.Connection/ to the board
+
         """
 
         if type != "ssh":
@@ -174,8 +183,11 @@ class Board(object):
     def reboot(self, wait=True) -> Union[Connection, None]:
         """ Starts a new connection to the device and initiates a reboot
 
-           If wait is true tries to start a new connection, 
-           waits until connecting succeeds. And returns a new connection.
+        # Arguments
+        wait: If wait is true tries to start a new connection, 
+              waits until connecting succeeds, and returns a new connection.
+        # Returns
+        If wait was given a new connection is Returned
         """
 
         self.logger.info("Rebooting board {}".format(self.id))
@@ -191,8 +203,13 @@ class Board(object):
 
         return None
 
-    def wait_for_connection(self):
-        """Wait until a successful ssh connection to the board can be established"""
+    def wait_for_connection(self) -> Connection:
+        """Wait until a successful ssh connection to the board can be established
+
+        # Returns
+        A new fabric.Connection object
+
+        """
 
         self.logger.info("waiting for reconnection")
         connected = False
@@ -207,7 +224,9 @@ class Board(object):
 
     def reset(self, wait=True) -> Union[Connection, None]:
         """Hard-Reset the board
-        
+
+        TODO: Currently not implemented
+
         # Arguments
         wait: if true wait until the board is connectible again
 
@@ -231,6 +250,12 @@ class Board(object):
         return None
 
     def homedir(self) -> Path:
+        """ Return the home directory of the connected user 
+        
+        # Returns
+
+        pathlib.Path: home directory
+        """
         with self.connect() as con:
             result = con.run("echo $HOME", hide=True)
             return Path(result.stdout.strip())
@@ -238,6 +263,17 @@ class Board(object):
     def kexec(
         self, kernel_id="", append="", commandline="", wait=True
     ) -> Union[Connection, None]:
+        """ Start a board kernel using kexec 
+
+        # Arguments
+        kernel_id: id of the kernel to boot
+        append: string of addition kernel commandline flags
+        commandline: completely new kernel commandline
+        wait: block unitl board is reachable via ssh again and reconnect
+        
+        # Returns
+        if wait was given a new fabric.Connection is returned
+        """
         kernel_config = None
 
         for config in self.os.kernels:
@@ -283,6 +319,15 @@ class Board(object):
         return None
 
     def kernel_data(self, id: str) -> Union[KernelData, None]:
+        """ Information about the installed kernels 
+
+        # Arguments
+        id: kernel id for which information should be returned
+        
+        # Returns
+        KernelData object for the kernel configration
+        
+        """
 
         for kernel_desc in self.os.kernels:
             if kernel_desc.id == id:
