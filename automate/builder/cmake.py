@@ -1,5 +1,6 @@
 from typing import List
 
+from ..utils.network import rsync
 from .builder import BaseBuilder
 
 
@@ -112,11 +113,11 @@ class CMakeBuilder(BaseBuilder):
         with c.cd(str(self.builddir)):
             c.run("cmake --build  .")
 
-    def install(self, c, delete=False):
+    def install(self, c):
         with c.cd(str(self.builddir)):
             c.run("cmake  --build . --target install")
 
-    def deploy(self, c):
+    def deploy(self, c, delete=False):
         with self.cc.board.connect() as con:
             rsync(
                 con,

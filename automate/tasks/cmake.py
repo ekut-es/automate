@@ -41,4 +41,12 @@ def clean(c, board, builddir="", srcdir="", prefix=""):
     builder.clean(c)
 
 
-__all__ = ["configure", "build", "clean", "install"]
+@task
+def deploy(c, board, builddir="", srcdir="", prefix=""):
+    builder = _get_builder(
+        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
+    )
+    builder.deploy(c)
+
+
+__all__ = ["configure", "build", "clean", "install", "deploy"]
