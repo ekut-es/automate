@@ -60,6 +60,8 @@ class MakefileBuilder(BaseBuilder):
         """
 
         with self.cc.board.connect() as con:
+            with con.cd(str(self.cc.board.rundir)):
+                con.run(f"mkdir -p {self.srcdir.name}")
             rsync(
                 con,
                 source=str(self.builddir / self.srcdir.name) + "/",

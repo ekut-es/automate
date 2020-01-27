@@ -40,6 +40,7 @@ def rsync(
     target: str,
     exclude: Iterable[str] = (),
     delete: bool = False,
+    verbose: bool = False,
     rsync_opts: str = "",
 ) -> None:
 
@@ -57,9 +58,11 @@ def rsync(
             delete_flag = "--delete" if delete else ""
 
             exclude_opts = " ".join(["--exclude %s" % e for e in exclude])
+            if verbose:
+                rsync_opts = "-v " + rsync_opts
 
             remote_path = f"rsync://localhost:{local_port}/files/{target}"
-            rsync_cmd = f"rsync {delete_flag} {exclude_opts} -pthrvz {rsync_opts} {source} {remote_path}"
+            rsync_cmd = f"rsync {delete_flag} {exclude_opts} -pthrz {rsync_opts} {source} {remote_path}"
             logging.info("Running {}".format(rsync_cmd))
 
             con.local(rsync_cmd)
