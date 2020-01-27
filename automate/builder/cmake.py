@@ -99,11 +99,9 @@ class CMakeBuilder(BaseBuilder):
 
         definitions = " ".join(["-D{}".format(d) for d in cmake_definitions])
 
-        install_prefix = self.board.rundir
-
         with c.cd(str(self.builddir)):
             command = "cmake -DCMAKE_INSTALL_RPATH={2}/lib -DCMAKE_BUILD_TYPE='RELWITHDEBINFO' -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake -C cache.cmake {0} {1}".format(
-                self.srcdir, definitions, install_prefix
+                self.srcdir, definitions, self.prefix
             )
             self.logger.info("Running cmake: {}".format(command))
             c.run(command)
@@ -118,6 +116,7 @@ class CMakeBuilder(BaseBuilder):
             c.run("cmake  --build . --target install")
 
     def deploy(self, c, delete=False):
+        print("Rsyncing with prefix", self.prefix)
         with self.cc.board.connect() as con:
             rsync(
                 con,

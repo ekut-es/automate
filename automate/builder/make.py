@@ -29,7 +29,7 @@ class MakefileBuilder(BaseBuilder):
         buildvars["CFLAGS"] = self.cc.cflags
         buildvars["CXXFLAGS"] = self.cc.cxxflags
         buildvars["LDFLAGS"] = self.cc.ldflags
-        buildvars["LDLIBS"] = ""
+        buildvars["LDLIBS"] = self.cc.libs
 
         with self.buildvars_filename.open("w") as buildvars_file:
             yaml = YAML(typ="unsafe")
