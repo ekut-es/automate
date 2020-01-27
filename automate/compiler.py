@@ -98,7 +98,8 @@ class CrossCompiler(Compiler):
         )
         self.check_multiarch = True
         self.core = 0
-        self.opt_flags = "-O2"
+        # self.opt_flags = "-O2"
+        self.opt_flags = ""
 
     @property
     def os(self) -> OS:
@@ -140,6 +141,7 @@ class CrossCompiler(Compiler):
 
     @property
     def sysroot(self) -> Union[Path, str]:
+        """Sysroot flag for this compiler"""
         if not Path(self.board.os.sysroot).exists():
             self.logger.warning(
                 "Could not find sysroot {} using generic sysroot".format(
@@ -151,6 +153,8 @@ class CrossCompiler(Compiler):
 
     @property
     def valid(self) -> bool:
+        """Boolean flag wether this compiler is expected to generate working executables
+        """
         os_triple = (
             self.board.os.triple.os,
             self.board.os.triple.machine,
@@ -168,6 +172,8 @@ class CrossCompiler(Compiler):
 
     @property
     def base_flags(self) -> str:
+        """basic flags shared between  C/C++ compiler and Linker
+        """
         flags = []
 
         if self.uarch_or_isa_flags:
@@ -180,6 +186,8 @@ class CrossCompiler(Compiler):
 
     @property
     def cflags(self) -> str:
+        """CFLAGS for this compiler
+        """
         flags = []
 
         if self.opt_flags:
@@ -193,10 +201,16 @@ class CrossCompiler(Compiler):
 
     @property
     def cxxflags(self) -> str:
+        """CXXFLAGS for this compiler
+        """
         return self.cflags
 
     @property
     def ldflags(self):
+        """LDFLAGS for this compiler
+        
+        These flags are appended to the linker commandline before object files
+        """
         flags = []
 
         base_flags = self.base_flags
@@ -205,7 +219,25 @@ class CrossCompiler(Compiler):
 
         return " ".join(flags)
 
+    @property
+    def libs(self):
+        """LIBFLAGS for this compiler 
+
+        These flags are appended to the linker driver commandline after the objectfiles
+        """
+
     def builder(self, typ, *args, **kwargs) -> BaseBuilder:
+        """ Return a builder object for this compiler
+
+        # Arguments
+        typ: Type of the buildsystem to use choices are cmake, kernel, make
+        *args: list of positional arguments for Builder.__init__
+        **kwargs: list of keyword argumntes for Builder.__init__
+        
+        # Returns
+        configured builder object
+        """
+
         if typ == "cmake":
             return CMakeBuilder(self, *args, **kwargs)
         elif typ == "kernel":
