@@ -1,0 +1,41 @@
+site_name: Automate docs
+
+generate:
+  - api/board.md:
+      - automate.board++
+  - api/compiler.md:
+      - automate.compiler++
+  - api/builder/make.md:
+      - automate.builder.make++
+  - api/builder/cmake.md:
+      - automate.builder.cmake++
+  - api/builder/kernel.md:
+      - automate.builder.kernel++
+
+pages:
+  - Index: index.md 
+  - API: 
+    - automate.board:
+        - Board API: api/board.md
+    - automate.compiler:
+        - Compiler API: api/compiler.md
+    - automate.builder:
+        automate.builder.make:
+          - Makefile Builder API: api/builder/make.md
+        automate.builder.cmake:
+          - CMake Builder API: api/builder/cmake.md
+        automate.builder.kernel:
+          - Kernel Builder API: api/builder/kernel.md
+  - Commandline Interface: commandline.md
+  - Metadata Model: model.md
+  - Setup:
+      - Gateway: gateway.md
+  - Development: development.md
+  
+docs_dir: docs
+theme: 'material'
+loader:   pydocmd.loader.PythonLoader
+preprocessor: pydocmd.preprocessor.Preprocessor
+    
+markdown_extensions:
+  - codehilite

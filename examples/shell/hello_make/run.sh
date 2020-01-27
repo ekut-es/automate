@@ -5,9 +5,10 @@ BOARDS=$(automate board.board-ids)
 
 for BOARD in $BOARDS; do
     echo "Compile and run for $BOARD"
-    automate  compiler.compile $BOARD -f dhry_1.c -f dhry_2.c -o dhry
+    automate  make.configure   $BOARD -s hello_make 
+    automate  make.build       $BOARD 
     automate  board.lock       $BOARD 
-    automate  board.put        $BOARD builds/$BOARD/dhry
-    automate  board.run        $BOARD ./dhry
+    automate  make.deploy      $BOARD
+    automate  board.run        $BOARD ./hello_make/hello 
     automate  board.unlock     $BOARD 
 done

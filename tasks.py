@@ -99,7 +99,7 @@ def doc(c):
 
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
-        c.run("mkdocs serve")
+        c.run("pydocmd serve")
 
 
 @task

@@ -6,7 +6,11 @@ To get started:
 Install poetry
 
     python3 -m pip install poetry --user
-	
+
+Install automate in development mode:
+
+    poetry install 
+
 Start the development shell
 
     poetry shell
@@ -22,5 +26,8 @@ List available boards
 
     automate list
 
+View Documentation 
+
+    inv doc
 
 

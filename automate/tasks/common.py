@@ -13,7 +13,11 @@ def show_context(c):  # pragma: no cover
 
 @task
 def list(c, boards=False, compilers=False):  # pragma: no cover
-    "List available boards and compilers"
+    """List available boards and compilers
+
+      -b/--boards: only list boards
+      -c/--compilers: only list compilers
+    """
 
     if not boards and not compilers:
         boards = True

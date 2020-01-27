@@ -4,17 +4,17 @@ from fabric import task
 def _get_builder(c, board, *args, **kwargs):
     board = c.board(board)
     cc = board.compiler()
-    builder = cc.builder("cmake", *args, **kwargs)
+    builder = cc.builder("make", *args, **kwargs)
 
     return builder
 
 
 @task
-def configure(c, board, builddir="", srcdir="", prefix="", D=[]):
+def configure(c, board, builddir="", srcdir="", prefix=""):
     builder = _get_builder(
         c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
     )
-    builder.configure(c, cmake_definitions=D)
+    builder.configure(c)
 
 
 @task

@@ -10,8 +10,19 @@ def compile(
 ):  # pragma: no cover
     """Compiles multiple source files to a target specific executable
 
-       Output will be placed in: build-{board_id} by default
+       Output will be placed in: build/{board_id} by default
+
+       -b/--board: taget board
+       -f/--files: source code files supports C/C++/Object Code files 
+                   .cc, .cxx, .cpp, .C, .c++ are interpreted as C++
+                   .o and .obj as Object Code (are only linked in)
+                   the rest is given to the C Compiler  
     """
+
+    logging.warning(
+        "Using compile tasks to build binaries is probably not safe"
+    )
+    logging.warning("It might make sense to switch to one of the builders")
 
     board = c.board(board)
     compiler = board.compiler(compiler)
@@ -27,7 +38,7 @@ def compile(
         builddir = compiler.default_builddir
 
     build_path = Path(builddir)
-    build_path.mkdir(exist_ok=True)
+    build_path.mkdir(exist_ok=True, parents=True)
 
     objs = []
     is_cpp = False

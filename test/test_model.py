@@ -42,3 +42,13 @@ def test_model_load_unexpanded():
     model = loader.load(expand_templates=False)
     for board in model.boards:
         assert str(board.os.sysroot).startswith("${boardroot}")
+
+
+def test_model_load_users():
+    config = AutomateConfig()
+    config.automate.metadata = str(metadata_path)
+    loader = ModelLoader(config)
+
+    users = loader.load_users()
+    assert len(users.users) > 0
+    assert "gerum" in users.users
