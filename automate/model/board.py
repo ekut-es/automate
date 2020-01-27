@@ -2,7 +2,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-import ruamel.yaml as yaml
 from pydantic import BaseModel, Field, HttpUrl
 
 from .common import *

@@ -12,7 +12,7 @@ from paramiko.ssh_exception import AuthenticationException
 from prompt_toolkit import PromptSession, prompt
 from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.validation import ValidationError, Validator
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML  # type: ignore
 
 from ..loader import ModelLoader
 from ..model import (

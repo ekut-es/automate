@@ -13,8 +13,7 @@ generate:
       - automate.builder.kernel++
 
 pages:
-  - Index: index.md
-  - Metadata Model: model.md
+  - Index: index.md 
   - API: 
     - automate.board:
         - Board API: api/board.md
@@ -23,16 +22,20 @@ pages:
     - automate.builder:
         automate.builder.make:
           - Makefile Builder API: api/builder/make.md
+        automate.builder.cmake:
           - CMake Builder API: api/builder/cmake.md
+        automate.builder.kernel:
           - Kernel Builder API: api/builder/kernel.md
   - Commandline Interface: commandline.md
+  - Metadata Model: model.md
+  - Setup:
+      - Gateway: gateway.md
   - Development: development.md
-  - Gateway: gateway.md
-
+  
 docs_dir: docs
 theme: 'material'
 loader:   pydocmd.loader.PythonLoader
 preprocessor: pydocmd.preprocessor.Preprocessor
     
--markdown_extensions:
--  - codehilite
+markdown_extensions:
+  - codehilite

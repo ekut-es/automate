@@ -20,6 +20,14 @@ from .utils.kernel import KernelData
 
 
 class Board(object):
+    """ Automation Class for script based interaction with boards:
+
+    Provides access to:
+       - board data
+       - board automation: upload, execution, reboot, reset, ...
+       - board specific cross compilers
+    """
+
     def __init__(
         self, board: BoardModel, compilers: List[CompilerModel], identity: str
     ) -> None:
@@ -29,10 +37,10 @@ class Board(object):
         self.identity = identity
 
     @contextmanager
-    def lock_ctx(self):
+    def lock_ctx(self, timeout: str = "1h"):
         if not self.has_lock():
             try:
-                yield self.lock(timeout="1h")
+                yield self.lock(timeout=timeout)
             finally:
                 self.unlock()
         else:
@@ -67,6 +75,18 @@ class Board(object):
     def compiler(
         self, compiler_id: str = "", toolchain: Toolchain = Toolchain.GCC
     ) -> CrossCompiler:
+        """ Build a Cross Compiler Object for this board 
+
+        By default uses newest gcc compiler available in metadata.
+
+        # Arguments
+           compiler_id: use a specifc compiler id
+           toolchain:  use newest configured compiler
+
+        # Returns
+           Object of class #automate.compiler.CrossCompiler configured to run builds for this board
+        """
+
         sorted_models = reversed(
             sorted(self.compiler_models, key=lambda x: x.version)
         )
@@ -90,6 +110,15 @@ class Board(object):
     def compilers(
         self, toolchain: Union[Toolchain, None] = None
     ) -> List[CrossCompiler]:
+        """ Build list of cross compiler objects configured for this board
+
+        # Arguments
+        toolchain: Only build cross compilers from the given toolchain
+
+        # Returns
+        List of configured cross compilers
+        """
+
         res = []
         for model in self.compiler_models:
             cc = CrossCompiler(model, self)
@@ -98,7 +127,10 @@ class Board(object):
                     res.append(cc)
         return res
 
-    def connect(self, type: str = "ssh", timeout: int = 10) -> Connection:
+    def connect(self, type: str = "ssh", timeout: int = 30) -> Connection:
+        """
+        Return a fabric.Connection to the board.
+        """
 
         if type != "ssh":
             raise Exception("Currently only ssh connections are supported")
@@ -160,6 +192,8 @@ class Board(object):
         return None
 
     def wait_for_connection(self):
+        """Wait until a successful ssh connection to the board can be established"""
+
         self.logger.info("waiting for reconnection")
         connected = False
         while not connected:
@@ -172,6 +206,14 @@ class Board(object):
                 time.sleep(3)
 
     def reset(self, wait=True) -> Union[Connection, None]:
+        """Hard-Reset the board
+        
+        # Arguments
+        wait: if true wait until the board is connectible again
+
+        # Returns
+        If wait was true a new Connection object
+        """
         self.logger.warning(
             "True resets are currently not implemented, trying a reboot instead"
         )
@@ -240,7 +282,8 @@ class Board(object):
 
         return None
 
-    def kernel_data(self, id: str):
+    def kernel_data(self, id: str) -> Union[KernelData, None]:
+
         for kernel_desc in self.os.kernels:
             if kernel_desc.id == id:
                 return KernelData(self, kernel_desc)

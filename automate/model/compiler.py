@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Any, Dict, List
 
-import ruamel.yaml as yaml
 from pydantic import BaseModel, Field
 
 from .common import *

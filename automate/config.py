@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 import coloredlogs
-import ruamel.yaml as yaml
 from invoke.config import Config, merge_dicts
 
 
