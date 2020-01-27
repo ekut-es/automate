@@ -30,46 +30,57 @@ class Compiler(object):
 
     @property
     def triples(self) -> List[TripleModel]:
+        """ List of supported triples """
         return self.model.triples
 
     @property
     def version(self) -> str:
+        """Compiler version"""
         return self.model.version
 
     @property
     def multiarch(self) -> bool:
+        """Wether this compiler supports multiarch rootfs"""
         return self.model.multiarch
 
     @property
     def bin_path(self) -> Path:
+        """Installation path of compiler tools"""
         return Path(self.model.basedir) / "bin"
 
     @property
     def prefix(self):
+        """Prefix of compiler tools eg: arm-linux-gnueabihf"""
         return self.model.prefix
 
     @property
     def cc(self) -> str:
+        """Binary name of C compiler"""
         return self.model.prefix + self.model.cc
 
     @property
     def cxx(self) -> str:
+        """Binary name of C++ compiler"""
         return self.model.prefix + self.model.cxx
 
     @property
     def asm(self) -> str:
+        """Binary name of assembler"""
         return self.model.prefix + self.model.asm
 
     @property
     def ld(self) -> str:
+        """Binary name of Linker"""
         return self.model.prefix + self.model.ld
 
     @property
     def toolchain(self) -> Toolchain:
+        """Toolchain family of the compiler eg. LLVM or GCC"""
         return self.model.toolchain
 
     @property
     def id(self) -> str:
+        """Unique identifier of compiler in metadata"""
         return self.model.id
 
 

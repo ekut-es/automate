@@ -19,6 +19,11 @@ def compile(
                    the rest is given to the C Compiler  
     """
 
+    logging.warning(
+        "Using compile tasks to build binaries is probably not safe"
+    )
+    logging.warning("It might make sense to switch to one of the builders")
+
     board = c.board(board)
     compiler = board.compiler(compiler)
 
