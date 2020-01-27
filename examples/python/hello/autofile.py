@@ -36,5 +36,5 @@ def all(c):
         build(c, board.id)
 
     for board in c.boards():
-        print(f"run for board {board.id}")
+        print(f"Run for {board.id}")
         run(c, board.id)

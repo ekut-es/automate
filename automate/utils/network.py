@@ -9,7 +9,11 @@ import fabric
 
 
 def find_local_port() -> int:
-    """ Returns a locally bindable port number """
+    """ Returns a locally bindable port number 
+
+    # Returns
+    port number [int]
+    """
 
     while True:
         port = random.randint(1024, 65536)
@@ -43,6 +47,23 @@ def rsync(
     verbose: bool = False,
     rsync_opts: str = "",
 ) -> None:
+    """ RSync files or folders to board 
+
+    1. Starts a remote rsync forwards
+    2. Forwards rsync server ports over gateway
+    3. runs rsync -pthrz <source> <target>
+    4. stops remote rsync daemon
+
+    rsync server is run as the connections default user, so can not modify files and folders for which this user does not have access rights 
+
+    # Arguments
+    con: fabric.Connection to board
+    source: local path should end in "/" if the complete folder is synced
+    target: remote_path
+    exclude: iterable of exclude patterns
+    verbose: if True print transfered files to stdout
+    rsync_opts: string of additional rsync options
+    """
 
     local_port = find_local_port()
 
