@@ -55,7 +55,8 @@ class MakefileBuilder(BaseBuilder):
         
            Just copies build_directory/srcdir_name to the rundir
 
-           #Arguments 
+           # Arguments 
+
            delete: if true delete non existant files from the board
         """
 

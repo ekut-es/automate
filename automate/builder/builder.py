@@ -34,7 +34,7 @@ class BaseBuilder(object):
         if prefix:
             self.prefix = Path(prefix)
         else:
-            self.prefix = Path(cc.board.rundir)
+            self.prefix = Path(cc.board.rundir) / self.srcdir.name
 
         self.prefix = self.prefix.absolute()
         self.srcdir = self.srcdir.absolute()

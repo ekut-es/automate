@@ -231,8 +231,8 @@ class CrossCompiler(Compiler):
 
         # Arguments
         typ: Type of the buildsystem to use choices are cmake, kernel, make
-        *args: list of positional arguments for Builder.__init__
-        **kwargs: list of keyword argumntes for Builder.__init__
+        *args: positional arguments for Builder.__init__
+        **kwargs: keyword arguments for Builder.__init__
         
         # Returns
         configured builder object
