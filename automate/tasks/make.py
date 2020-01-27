@@ -1,7 +1,7 @@
 from fabric import task
 
 
-def _get_builder(c, board, *args, **kwargs):
+def _get_builder(c, board, *args, **kwargs):  # pragma: no cover
     board = c.board(board)
     cc = board.compiler()
     builder = cc.builder("make", *args, **kwargs)
@@ -10,7 +10,7 @@ def _get_builder(c, board, *args, **kwargs):
 
 
 @task
-def configure(c, board, builddir="", srcdir="", prefix=""):
+def configure(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     builder = _get_builder(
         c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
     )
@@ -18,7 +18,7 @@ def configure(c, board, builddir="", srcdir="", prefix=""):
 
 
 @task
-def build(c, board, builddir="", srcdir="", prefix=""):
+def build(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     builder = _get_builder(
         c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
     )
@@ -26,7 +26,7 @@ def build(c, board, builddir="", srcdir="", prefix=""):
 
 
 @task
-def install(c, board, builddir="", srcdir="", prefix=""):
+def install(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     builder = _get_builder(
         c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
     )
@@ -34,7 +34,7 @@ def install(c, board, builddir="", srcdir="", prefix=""):
 
 
 @task
-def clean(c, board, builddir="", srcdir="", prefix=""):
+def clean(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     builder = _get_builder(
         c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
     )
@@ -42,7 +42,7 @@ def clean(c, board, builddir="", srcdir="", prefix=""):
 
 
 @task
-def deploy(c, board, builddir="", srcdir="", prefix=""):
+def deploy(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     builder = _get_builder(
         c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
     )

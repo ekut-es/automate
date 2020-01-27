@@ -28,7 +28,7 @@ from ..utils import cpuinfo
 
 
 @task
-def add_users(c):
+def add_users(c):  # pragma: no cover
     """Add user ssh keys to all boards
     """
     loader = ModelLoader(c.config)
