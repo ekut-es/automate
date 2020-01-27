@@ -220,11 +220,13 @@ class CrossCompiler(Compiler):
         return " ".join(flags)
 
     @property
-    def libs(self):
+    def libs(self) -> str:
         """LIBFLAGS for this compiler 
 
         These flags are appended to the linker driver commandline after the objectfiles
         """
+
+        return ""
 
     def builder(self, typ, *args, **kwargs) -> BaseBuilder:
         """ Return a builder object for this compiler

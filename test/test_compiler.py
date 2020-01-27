@@ -29,7 +29,7 @@ def zynqberry_cc():
     raise Exception("Could not find zynqberry")
 
 
-def test_zynqberry_cc_properties(zynqberry_cc):
+def test_zynqberry_cc_compiler_properties(zynqberry_cc):
     cc = zynqberry_cc
     assert cc.board.id == "zynqberry"
     assert len(cc.triples) == 1
@@ -45,3 +45,16 @@ def test_zynqberry_cc_properties(zynqberry_cc):
     assert cc.ld == "arm-linux-gnueabihf-ld"
     assert cc.toolchain == automate.model.common.Toolchain.GCC
     assert cc.id == "aarch32hf-gcc74"
+
+
+def test_zynqberry_cc_cross_compiler_properties(zynqberry_cc):
+    cc = zynqberry_cc
+
+    assert cc.os == automate.model.common.OS.LINUX
+    assert cc.machine == automate.model.common.Machine.AARCH32
+    assert cc.environment == automate.model.common.Environment.GNUEABIHF
+    assert cc.isa_flags == "-march=armv7-a"
+    assert cc.uarch_flags == "-mcpu=cortex-a9"
+    assert cc.valid == True
+    assert cc.libs == ""
+    assert cc.default_builddir == Path("builds/zynqberry")
