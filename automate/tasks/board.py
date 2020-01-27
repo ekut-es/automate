@@ -169,7 +169,7 @@ def shell(c, board):  # pragma: no cover
 
 
 @task
-def board_ids(c, filter=""):
+def board_ids(c, filter=""):  # pragma: no cover
     """returns list of board_ids suitable for usage in shell scripts
     
        -f/--filter: filter expression for boards
@@ -195,7 +195,7 @@ def board_ids(c, filter=""):
 
 
 @task
-def rsync_to(c, board, source, target="", delete=False):
+def rsync_to(c, board, source, target="", delete=False):  # pragma: no cover
     """rsync a folder to the target board by default the 
     
        
@@ -214,7 +214,9 @@ def rsync_to(c, board, source, target="", delete=False):
 
 
 @task
-def kexec(c, board, kernel_id="", append="", commandline="", wait=False):
+def kexec(
+    c, board, kernel_id="", append="", commandline="", wait=False
+):  # pragma: no cover
     """Start the Linux kernel using kexec
     
        -b/--board: target board id

@@ -6,7 +6,7 @@ import requests
 from fabric import task
 
 
-def _get_builder(c, board, *args, **kwargs):
+def _get_builder(c, board, *args, **kwargs):  # pragma: no cover
     board = c.board(board)
     cc = board.compiler()
     builder = cc.builder("kernel", *args, **kwargs)
@@ -15,28 +15,28 @@ def _get_builder(c, board, *args, **kwargs):
 
 
 @task
-def configure(c, board, kernel_id, config_options=[]):
+def configure(c, board, kernel_id, config_options=[]):  # pragma: no cover
     builder = _get_builder(c, board)
 
     builder.configure(c, kernel_id)
 
 
 @task
-def build(c, board, kernel_id):
+def build(c, board, kernel_id):  # pragma: no cover
     builder = _get_builder(c, board)
 
     builder.build(c, kernel_id)
 
 
 @task
-def install(c, board, kernel_id):
+def install(c, board, kernel_id):  # pragma: no cover
     builder = _get_builder(c, board)
 
     builder.install(c, kernel_id)
 
 
 @task
-def clean(c, board, kernel_id):
+def clean(c, board, kernel_id):  # pragma: no cover
     builder = _get_builder(c, board)
 
     builder.clean(c)
@@ -50,7 +50,7 @@ def get_board_config(
     tarball_url="",
     force=False,
     config_name="config",
-):
+):  # pragma: no cover
     board = c.board(board)
 
     if kernel_id in set((kernel.id for kernel in board.os.kernels)):
