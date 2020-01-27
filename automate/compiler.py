@@ -217,4 +217,7 @@ class CrossCompiler(Compiler):
 
     @property
     def default_builddir(self) -> Path:
+        """ The default build directory for this cross compiler / board combinarion 
+            For now this is just "<cwd>/builds/<board_id>"
+        """
         return Path("builds") / str(self.board.id)
