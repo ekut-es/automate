@@ -10,6 +10,7 @@ from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 
 from .config import AutomateConfig
+from .database import Database
 from .model import DataModelBase, LoadedModelBase, MetadataModel, UsersModel
 
 
