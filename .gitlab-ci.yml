@@ -3,9 +3,9 @@ image: centos:7
 
 before_script:
   - yum install epel-release -y
-  - yum install git sudo python36 -y
+  - yum install git sudo python36 python36-devel -y
   - yum groupinstall 'Development Tools' -y
-  - yum install postgresql-devel -y 
+  - yum install postgresql-devel -y
   - python3.6 -m ensurepip
   - python3.6 -m pip install poetry
   - poetry install -E postgres
