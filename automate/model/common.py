@@ -27,6 +27,10 @@ class ISAExtension(Enum):
     ATOMICS = "atomics"
     FPHP = "fphp"
     ASIMDHP = "asimdhp"
+    VFPV4 = "vfpv4"
+    IDIVA = "idiva"
+    IDIVT = "idivt"
+    LPAE = "lpae"
     UNKNOWN = "unknown"
 
 
