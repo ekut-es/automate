@@ -6,7 +6,7 @@ from glob import glob
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import ruamel.yaml as yaml
+from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 
 from .config import AutomateConfig
@@ -20,6 +20,7 @@ class ModelLoader(object):
         self.logger.debug(
             "Metadata Loader for {}".format(self.config.automate.metadata)
         )
+        self.yaml = YAML()
 
         self.model = None
 
@@ -35,7 +36,7 @@ class ModelLoader(object):
             self.logger.debug("Loading metadata from {}".format(file_name))
             with open(file_name) as f:
                 mtime = datetime.utcfromtimestamp(os.path.getmtime(file_name))
-                yaml_dict = yaml.load(f, yaml.RoundTripLoader)
+                yaml_dict = self.yaml.load(f)
                 yaml_dict["model_file"] = file_name
                 yaml_dict["model_file_mtime"] = mtime
                 res.append(yaml_dict)
@@ -128,7 +129,7 @@ class ModelLoader(object):
 
         with users_file.open() as f:
             mtime = datetime.utcfromtimestamp(os.path.getmtime(users_file))
-            yaml_dict = yaml.load(f, yaml.RoundTripLoader)
+            yaml_dict = self.yaml.load(f)
 
             users_model = UsersModel(
                 users=dict(yaml_dict),

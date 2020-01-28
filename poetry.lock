@@ -838,6 +838,17 @@ version = "1.14.0"
 
 [[package]]
 category = "dev"
+description = "A web-based viewer for Python profiler output"
+name = "snakeviz"
+optional = false
+python-versions = "*"
+version = "2.0.1"
+
+[package.dependencies]
+tornado = ">=2.0"
+
+[[package]]
+category = "dev"
 description = "String case converter."
 name = "stringcase"
 optional = false
@@ -950,7 +961,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools"]
 
 [metadata]
-content-hash = "f40c072fbcbcde92148640902392962f815fe6f6f9a98feac7a0d7bbd22c779e"
+content-hash = "311cb2d6e8948224d1dbd33e601930851da959d3d71fb1a8870d8d29cb8e8ae7"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1435,6 +1446,10 @@ retype = [
 six = [
     {file = "six-1.14.0-py2.py3-none-any.whl", hash = "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"},
     {file = "six-1.14.0.tar.gz", hash = "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a"},
+]
+snakeviz = [
+    {file = "snakeviz-2.0.1-py2.py3-none-any.whl", hash = "sha256:5e30f144edb17d875b46cb5f82bd3e67fb5018e534ecc1a94e092ef3ce932c25"},
+    {file = "snakeviz-2.0.1.tar.gz", hash = "sha256:80acc9c204aeb1e089f209a4c79bb5940dc40b6536a5184c1778a3f448634885"},
 ]
 stringcase = [
     {file = "stringcase-1.2.0.tar.gz", hash = "sha256:48a06980661908efe8d9d34eab2b6c13aefa2163b3ced26972902e3bdfd87008"},

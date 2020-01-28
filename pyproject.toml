@@ -32,6 +32,7 @@ coverage = {version = "^4.5", extras = ["toml"]}
 mock-ssh-server = "^0.8.0"
 isort = {version = "^4.3", extras = ["pyproject"]}
 pylint = "^2.4"
+snakeviz = "^2.0.1"
 
 
 [tool.poetry.scripts]

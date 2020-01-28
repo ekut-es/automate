@@ -1,4 +1,6 @@
 import logging
+import shlex
+import subprocess
 from pathlib import Path
 from typing import List, Union
 
@@ -42,6 +44,10 @@ class Compiler(object):
     def multiarch(self) -> bool:
         """Wether this compiler supports multiarch rootfs"""
         return self.model.multiarch
+
+    @property
+    def basedir(self) -> Path:
+        return Path(self.model.basedir)
 
     @property
     def bin_path(self) -> Path:
@@ -100,6 +106,12 @@ class CrossCompiler(Compiler):
         self.core = 0
         # self.opt_flags = "-O2"
         self.opt_flags = ""
+
+    @property
+    def gcc_toolchain(self) -> Union[None, "CrossCompiler"]:
+        if self.toolchain == Toolchain.LLVM:
+            return self.board.compiler(toolchain=Toolchain.GCC)
+        return None
 
     @property
     def os(self) -> OS:
@@ -176,6 +188,13 @@ class CrossCompiler(Compiler):
         """
         flags = []
 
+        if self.toolchain == Toolchain.LLVM:
+            assert self.gcc_toolchain is not None
+            flags.append(f"--gcc-toolchain={self.gcc_toolchain.basedir}")
+
+            for include in self._system_includes():
+                flags.append(f"-isystem {include}")
+
         if self.uarch_or_isa_flags:
             flags.append(self.uarch_or_isa_flags)
 
@@ -227,6 +246,29 @@ class CrossCompiler(Compiler):
         """
 
         return ""
+
+    def _system_includes(self) -> List[str]:
+        if self.toolchain == Toolchain.LLVM:
+            assert self.gcc_toolchain is not None
+            return self.gcc_toolchain._system_includes()
+        includes = []
+
+        command = f'"{self.bin_path}/{self.cc}" {self.cflags} -E -Wp,-v -'
+
+        p = subprocess.Popen(
+            shlex.split(command),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+        )
+
+        stdout, stderr = p.communicate("".encode("utf-8"))
+        stderr_dec = stderr.decode("utf-8")
+        for line in stderr_dec.split("\n"):
+            line = line.strip()
+            if line.startswith("/"):
+                includes.append(line)
+        return includes
 
     def builder(self, typ, *args, **kwargs) -> BaseBuilder:
         """ Return a builder object for this compiler
