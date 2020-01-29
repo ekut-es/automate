@@ -10,13 +10,22 @@ from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
 
 from .config import AutomateConfig
-from .database import Database
-from .model import DataModelBase, LoadedModelBase, MetadataModel, UsersModel
+from .model import (
+    BoardModel,
+    CompilerModel,
+    DataModelBase,
+    LoadedModelBase,
+    MetadataModel,
+    UsersModel,
+)
 
 
 class ModelLoader(object):
-    def __init__(self, config: AutomateConfig) -> None:
+    def __init__(self, config: AutomateConfig, database=None) -> None:
+
         self.config = config
+        self.database = database
+
         self.logger = logging.getLogger(__name__)
         self.logger.debug(
             "Metadata Loader for {}".format(self.config.automate.metadata)
@@ -43,6 +52,18 @@ class ModelLoader(object):
                 res.append(yaml_dict)
 
         return res
+
+    def _merge_metadata(self, *args):
+        merged_list = []
+        merged_ids = set()
+        for arg in args:
+            for item in arg:
+                if item.id in merged_ids:
+                    continue
+                merged_list.append(item)
+                merged_ids.add(item.id)
+
+        return merged_list
 
     def _apply_templates(
         self, data_model: DataModelBase, env: Dict[str, str]
@@ -97,7 +118,14 @@ class ModelLoader(object):
 
     def load(self, expand_templates=True) -> MetadataModel:
         compilers = self._load_metadata_list("compilers/**/description.yml")
+        compilers = [CompilerModel(**c) for c in compilers]
+
         boards = self._load_metadata_list("boards/**/description.yml")
+        boards = [BoardModel(**b) for b in boards]
+
+        if self.database:
+            database_boards = self.database.get_all_boards()
+            boards = self._merge_metadata(boards, database_boards)
 
         data_model = MetadataModel(compilers=compilers, boards=boards)
 

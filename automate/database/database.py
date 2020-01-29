@@ -26,7 +26,7 @@ from automate.model import (
 class Database:
     def __init__(self, host, port, db, user, password):
         self.connection_string = "host={} port={} dbname={} user={} password={}".format(
-            host, port, database, user, password
+            host, port, db, user, password
         )
 
         try:
@@ -44,7 +44,7 @@ class Database:
 
         self.j = JinjaSql(param_style="pyformat")
 
-        self.QUERIES_DIR = "queries"
+        self.QUERIES_DIR = join(dirname(__file__), "queries")
 
         self.all_boards_query = self.__load_query("select_all_boards")
         self.all_cpu_cores_for_board_query = self.__load_query(

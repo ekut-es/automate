@@ -1,10 +1,16 @@
+import logging
 import os.path
+from typing import Any, List
 
 import invoke
+from fabric import Connection
+from paramiko.ssh_exception import AuthenticationException
+from prompt_toolkit import prompt
 
 from .board import Board
 from .compiler import Compiler
 from .config import AutomateConfig
+from .database import Database
 from .loader import ModelLoader
 
 
@@ -12,8 +18,58 @@ class AutomateContext(invoke.Context):
     def __init__(self, config: AutomateConfig):
         super(AutomateContext, self).__init__(config)
 
-        loader = ModelLoader(config)
+        self.logger = logging.getLogger(__name__)
+        self.logger.debug("Context init")
+
+        self.forward_connections: List[Connection] = []
+        if hasattr(config.automate, "forwards") and config.automate.forwards:
+            # self._setup_forwards()
+            pass
+        self.database = None
+        if hasattr(config.automate, "database") and config.automate.database:
+            self.logger.info("Setup database connection")
+            self.database = Database(
+                self.config.automate.database.host,
+                self.config.automate.database.port,
+                self.config.automate.database.db,
+                self.config.automate.database.user,
+                self.config.automate.database.password,
+            )
+
+        loader = ModelLoader(config, database=self.database)
         self.metadata = loader.load()
+
+    def __del__(self):
+        for connection in self.forward_connections:
+            connection.close()
+
+    def _setup_forwards(self):
+        for forward in self.config.automate.forwards:
+            self.logger.info(
+                f'forwarding {forward["local_port"]} to {forward["host"]}:{forward["remote_port"]}'
+            )
+            try:
+                connection = Connection(forward["host"], user=forward["user"])
+                connection.open()
+            except AuthenticationException as e:
+                password = prompt(
+                    "Password for {}@{}: ".format(
+                        forward["user"], forward["host"]
+                    ),
+                    is_password=True,
+                )
+                connection = Connection(
+                    user=forward["user"],
+                    host=forward["host"],
+                    connect_kwargs={"password": password},
+                )
+                connection.open()
+
+            connection.forward_local(
+                local_port=forward["local_port"],
+                remote_port=forward["remote_port"],
+            )
+            self.forward_connections.append(connection)
 
     def boards(self):
         for board in self.metadata.boards:
