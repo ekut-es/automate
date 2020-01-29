@@ -8,11 +8,20 @@ before_script:
   - yum install postgresql-devel -y
   - python3.6 -m ensurepip
   - python3.6 -m pip install poetry
-  - poetry install -E postgres
   
 test:
   script:
     - set -e
+    - poetry install
+    - poetry run inv mypy
+    - poetry run inv test
+  tags:
+    - docker
+
+test_with_db:
+  script:
+    - set -e
+    - poetry install -E postgres
     - poetry run inv mypy
     - poetry run inv test
   tags:
