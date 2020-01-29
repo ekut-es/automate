@@ -56,7 +56,7 @@ class KernelConfigBuilder:
                     "CONFIG_CORESIGHT_LINKS_AND_SINKS=y", ["aarch64", "arm"]
                 ),
                 MachineOption(
-                    "CONFIG CONFIG_CORESIGHT_SOURCE_ETM4X=y", ["aarch64", "arm"]
+                    "CONFIG_CORESIGHT_SOURCE_ETM4X=y", ["aarch64", "arm"]
                 ),
                 MachineOption("CONFIG_CORESIGHT_STM=y", ["aarch64", "arm"]),
                 MachineOption(
