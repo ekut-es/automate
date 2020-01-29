@@ -4,6 +4,10 @@ import getpass
 import logging
 import os.path
 import re
+import shlex
+import shutil
+import subprocess
+import tempfile
 from collections import namedtuple
 from enum import Enum
 from pathlib import Path
@@ -180,8 +184,7 @@ def safe_rootfs(c, board):  # pragma: no cover
                 logging.info("Rebooting target {}".format(board))
                 bh.reboot(wait=False)
 
-        logging.info("Sparsifying saved image")
-        c.run("fallocate -d {0}".format(image_name.with_suffix(".tmp")))
+        logging.info("Backup existing image")
         if image_name.exists():
             c.run(
                 "mv {0} {1}".format(image_name, image_name.with_suffix(".bak"))
