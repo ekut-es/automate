@@ -25,7 +25,7 @@ class AutomateContext(invoke.Context):
         if hasattr(config.automate, "forwards") and config.automate.forwards:
             # self._setup_forwards()
             pass
-        self.database = None
+        database = None
         if hasattr(config.automate, "database") and config.automate.database:
             self.logger.info("Setup database connection")
             self.database = Database(
@@ -36,7 +36,7 @@ class AutomateContext(invoke.Context):
                 self.config.automate.database.password,
             )
 
-        loader = ModelLoader(config, database=self.database)
+        loader = ModelLoader(config, database=database)
         self.metadata = loader.load()
 
     def __del__(self):
