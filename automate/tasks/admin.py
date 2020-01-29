@@ -30,7 +30,7 @@ from ..model import (
     TripleModel,
 )
 from ..model.common import ISA, UArch, Vendor
-from ..utils import cpuinfo
+from ..utils import cpuinfo, fix_symlinks
 from ..utils.network import find_local_port
 
 
