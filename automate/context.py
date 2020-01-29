@@ -10,7 +10,7 @@ from prompt_toolkit import prompt
 from .board import Board
 from .compiler import Compiler
 from .config import AutomateConfig
-from .database import Database
+from .database import Database, database_enabled
 from .loader import ModelLoader
 
 
@@ -26,15 +26,21 @@ class AutomateContext(invoke.Context):
             # self._setup_forwards()
             pass
         database = None
+
         if hasattr(config.automate, "database") and config.automate.database:
-            self.logger.info("Setup database connection")
-            self.database = Database(
-                self.config.automate.database.host,
-                self.config.automate.database.port,
-                self.config.automate.database.db,
-                self.config.automate.database.user,
-                self.config.automate.database.password,
-            )
+            if database_enabled():
+                self.logger.info("Setup database connection")
+                self.database = Database(
+                    self.config.automate.database.host,
+                    self.config.automate.database.port,
+                    self.config.automate.database.db,
+                    self.config.automate.database.user,
+                    self.config.automate.database.password,
+                )
+            else:
+                self.logger.warning(
+                    "You have configured a database but the required "
+                )
 
         loader = ModelLoader(config, database=database)
         self.metadata = loader.load()

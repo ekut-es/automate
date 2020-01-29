@@ -5,12 +5,7 @@ import sys
 from datetime import datetime
 from os.path import dirname, join
 
-import psycopg2
-import psycopg2.extras
-from dotenv import load_dotenv
-from jinjasql import JinjaSql
-
-from automate.model import (
+from ..model import (
     BoardModel,
     CoreModel,
     DocumentationLinkModel,
@@ -21,6 +16,20 @@ from automate.model import (
     TripleModel,
     UBootModel,
 )
+
+try:
+    import psycopg2
+    import psycopg2.extras
+    from dotenv import load_dotenv
+    from jinjasql import JinjaSql
+
+    enabled = True
+except:
+    enabled = False
+
+
+def database_enabled() -> bool:
+    return enabled
 
 
 class Database:

@@ -9,6 +9,8 @@ from invoke.config import Config, merge_dicts
 
 
 class AutomateConfig(Config):
+    """Encapsulates ~/.automate.yml"""
+
     prefix = "automate"
     env_prefix = "AUTOMATE"
 
