@@ -191,15 +191,35 @@ class CrossCompiler(Compiler):
         if self.toolchain == Toolchain.LLVM:
             assert self.gcc_toolchain is not None
             flags.append(f"--gcc-toolchain={self.gcc_toolchain.basedir}")
-
-            for include in self._system_includes():
-                flags.append(f"-isystem {include}")
+            flags.append(f"-ccc-gcc-name {self.gcc_toolchain.cc}")
+            flags.append("--rtlib=libgcc")
+            flags.append("--stdlib=libstdc++")
+            os_triple = self.board.os.triple
+            flags.append(
+                f"-target {os_triple.machine.value}-{os_triple.os.value}-{os_triple.environment.value}"
+            )
 
         if self.uarch_or_isa_flags:
             flags.append(self.uarch_or_isa_flags)
 
         if self.sysroot:
             flags.append("--sysroot={}".format(self.sysroot))
+        else:
+            if self.toolchain == Toolchain.LLVM:
+                assert self.gcc_toolchain is not None
+                command = f'"{self.gcc_toolchain.bin_path}/{self.gcc_toolchain.cc}" -print-sysroot'
+
+                p = subprocess.Popen(
+                    shlex.split(command),
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    stdin=subprocess.PIPE,
+                )
+
+                stdout, stderr = p.communicate()
+                stdout_dec = stdout.decode("utf-8")
+                sysroot = stdout_dec.strip()
+                flags.append(f"--sysroot={sysroot}")
 
         return " ".join(flags)
 
@@ -243,6 +263,7 @@ class CrossCompiler(Compiler):
         """LIBFLAGS for this compiler 
 
         These flags are appended to the linker driver commandline after the objectfiles
+        Currently not used
         """
 
         return ""

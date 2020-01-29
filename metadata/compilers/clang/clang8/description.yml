@@ -21,6 +21,7 @@ cc: clang
 cxx: clang++
 asm: llvm-as
 ld: lld  
+multiarch: True
 
 isa_map:
   armv8.1-a: -march=armv8.1-a
