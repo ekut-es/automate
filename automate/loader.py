@@ -22,6 +22,12 @@ from .model import (
 
 class ModelLoader(object):
     def __init__(self, config: AutomateConfig, database=None) -> None:
+        """ Initialize model loader
+        
+            # Parameters 
+            config: AutomateConfig object to use for search of metadata locations
+            database: optional database connnection
+        """
 
         self.config = config
         self.database = database
@@ -37,6 +43,12 @@ class ModelLoader(object):
     def _load_metadata_list(
         self, pattern: str, recursive: bool = True
     ) -> List[CommentedMap]:
+        """ Parse yaml files for metadata information 
+            
+            # Arguments
+            pattern: glob_pattern to search for metadata files
+            recursive: wether search allows ** in glob patterns to recurse into subdirectories
+        """
         res = []
         glob_pattern = os.path.join(self.config.automate.metadata, pattern)
         self.logger.debug("Load glob pattern: {}".format(str(glob_pattern)))
@@ -54,6 +66,7 @@ class ModelLoader(object):
         return res
 
     def _merge_metadata(self, *args):
+        """ Merge multiple lists of Models """
         merged_list = []
         merged_ids = set()
         for arg in args:
@@ -68,6 +81,7 @@ class ModelLoader(object):
     def _apply_templates(
         self, data_model: DataModelBase, env: Dict[str, str]
     ) -> None:
+        """ Expand template parameters from env in strings from data_model """
 
         env = dict(env)
         env.update(data_model._get_env_dict())
@@ -117,6 +131,17 @@ class ModelLoader(object):
         return None
 
     def load(self, expand_templates=True) -> MetadataModel:
+        """ Load Metadata model 
+        
+            # Arguments:
+                expand_templates: boolean if true ${var} templates Paths are replaced by their respective configuration value
+               
+            # Templates
+            Expand templates currently expands the following templates
+            ${metadata}: metadata location from config
+            ${toolroot}: toolroot from config  used to give relative paths for compilers
+            ${boardroot}: boardroot from config used to store kernel_sources, rootfs_images, board sysroots, cached_builds 
+        """
         compilers = self._load_metadata_list("compilers/**/description.yml")
         compilers = [CompilerModel(**c) for c in compilers]
 
@@ -151,6 +176,7 @@ class ModelLoader(object):
         return data_model
 
     def load_users(self) -> UsersModel:
+        """ Load user data """
         metadata_path = Path(
             os.path.expanduser(str(self.config.automate.metadata))
         )

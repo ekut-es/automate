@@ -109,41 +109,52 @@ class CrossCompiler(Compiler):
 
     @property
     def gcc_toolchain(self) -> Union[None, "CrossCompiler"]:
+        """GCC toolchain to use for LLVM based cross compilers
+
+        The gcc toolchain is used to provide the linker, 
+        and the runtime libraries libgcc and libstdc++
+        """
         if self.toolchain == Toolchain.LLVM:
             return self.board.compiler(toolchain=Toolchain.GCC)
         return None
 
     @property
     def os(self) -> OS:
+        """OS part of compiler target triple"""
         os = self.board.os.triple.os
         assert isinstance(os, OS)
         return os
 
     @property
     def machine(self) -> Machine:
+        """Machine part of compiler target triple"""
         m = self.board.os.triple.machine
         assert isinstance(m, Machine)
         return m
 
     @property
     def environment(self) -> Environment:
+        """Environment part of compiler target triple"""
         e = self.board.os.triple.environment
         assert isinstance(e, Environment)
         return e
 
     @property
     def isa_flags(self) -> str:
+        """Default isa specific flags for this board"""
         isa = self.board.cores[self.core].isa
         return self.model.isa_map.get(isa, "")
 
     @property
     def uarch_flags(self) -> str:
+        """Default microarchitecture specific flags for this board"""
         uarch = self.board.cores[self.core].uarch
         ret = self.model.uarch_map.get(uarch, "")
         return str(ret)
 
     @property
     def uarch_or_isa_flags(self) -> str:
+        """Default flags machine specific flags for this board"""
         core = self.board.cores[self.core]
         flag = self.uarch_flags
         if not flag:
@@ -269,6 +280,7 @@ class CrossCompiler(Compiler):
         return ""
 
     def _system_includes(self) -> List[str]:
+        """ TODO: remove """
         if self.toolchain == Toolchain.LLVM:
             assert self.gcc_toolchain is not None
             return self.gcc_toolchain._system_includes()
