@@ -80,6 +80,7 @@ class AutomateContext(invoke.Context):
     def boards(self):
         for board in self.metadata.boards:
             yield Board(
+                self,
                 board,
                 self.metadata.compilers,
                 os.path.expanduser(self.config.automate.identity),
@@ -89,6 +90,7 @@ class AutomateContext(invoke.Context):
         for board in self.metadata.boards:
             if board.id == board_id:
                 return Board(
+                    self,
                     board,
                     self.metadata.compilers,
                     os.path.expanduser(self.config.automate.identity),
@@ -102,13 +104,13 @@ class AutomateContext(invoke.Context):
 
     def compilers(self):
         for compiler in self.metadata.compilers:
-            yield Compiler(compiler)
+            yield Compiler(self, compiler)
 
     def compiler(self, compiler_id: str) -> Compiler:
 
         for compiler in self.metadata.compilers:
             if compiler.id == compiler_id:
-                return Compiler(compiler)
+                return Compiler(self, compiler)
 
         raise Exception(
             "Could not find compiler {} available compilers {}".format(

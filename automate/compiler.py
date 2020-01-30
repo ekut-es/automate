@@ -2,7 +2,7 @@ import logging
 import shlex
 import subprocess
 from pathlib import Path
-from typing import List, Union
+from typing import TYPE_CHECKING, List, Union
 
 from . import board
 from .builder import BaseBuilder, CMakeBuilder, KernelBuilder, MakefileBuilder
@@ -23,12 +23,20 @@ from .model.common import (
     Vendor,
 )
 
+if TYPE_CHECKING:
+    import automate.context
+
 
 class Compiler(object):
     """Represents an unconfigured generic compiler"""
 
-    def __init__(self, compiler: CompilerModel):
+    def __init__(
+        self,
+        context: "automate.context.AutomateContext",
+        compiler: CompilerModel,
+    ):
         self.model = compiler
+        self.context = context
 
     @property
     def triples(self) -> List[TripleModel]:
@@ -93,8 +101,13 @@ class Compiler(object):
 class CrossCompiler(Compiler):
     """Represents a Compiler with board specific configuration"""
 
-    def __init__(self, compiler: CompilerModel, board: "board.Board") -> None:
-        super(CrossCompiler, self).__init__(compiler)
+    def __init__(
+        self,
+        context: "automate.context.AutomateContext",
+        compiler: CompilerModel,
+        board: "board.Board",
+    ) -> None:
+        super(CrossCompiler, self).__init__(context, compiler)
 
         self.logger = logging.getLogger(__name__)
         self.board = board
@@ -104,8 +117,11 @@ class CrossCompiler(Compiler):
         )
         self.check_multiarch = True
         self.core = 0
-        # self.opt_flags = "-O2"
-        self.opt_flags = ""
+        self._flags: List[str] = []
+        self._cflags: List[str] = []
+        self._cxxflags: List[str] = []
+        self._ldflags: List[str] = []
+        self._libs: List[str] = []
 
     @property
     def gcc_toolchain(self) -> Union[None, "CrossCompiler"]:
@@ -240,12 +256,12 @@ class CrossCompiler(Compiler):
         """
         flags = []
 
-        if self.opt_flags:
-            flags.append(self.opt_flags)
-
         base_flags = self.base_flags
         if base_flags:
             flags.append(base_flags)
+
+        if self._cflags:
+            flags.extend(self._cflags)
 
         return " ".join(flags)
 
@@ -253,7 +269,17 @@ class CrossCompiler(Compiler):
     def cxxflags(self) -> str:
         """CXXFLAGS for this compiler
         """
-        return self.cflags
+
+        flags = []
+
+        base_flags = self.base_flags
+        if base_flags:
+            flags.append(base_flags)
+
+        if self._cxxflags:
+            flags.extend(self._cxxflags)
+
+        return " ".join(flags)
 
     @property
     def ldflags(self):
@@ -267,6 +293,9 @@ class CrossCompiler(Compiler):
         if self.base_flags:
             flags.append(self.base_flags)
 
+        if self._ldflags:
+            flags.extend(self._ldflags)
+
         return " ".join(flags)
 
     @property
@@ -277,7 +306,12 @@ class CrossCompiler(Compiler):
         Currently not used
         """
 
-        return ""
+        libs: List[str] = []
+
+        if self._libs:
+            libs.extend(self._libs)
+
+        return " ".join(libs)
 
     def _system_includes(self) -> List[str]:
         """ TODO: remove """

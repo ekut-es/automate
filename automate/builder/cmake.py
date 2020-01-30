@@ -5,7 +5,7 @@ from .builder import BaseBuilder
 
 
 class CMakeBuilder(BaseBuilder):
-    def configure(self, c, cmake_definitions=[]):
+    def configure(self, c, cmake_definitions: List[str] = []):
         self._mkbuilddir()
 
         toolchain_file_name = self.builddir / "toolchain.cmake"

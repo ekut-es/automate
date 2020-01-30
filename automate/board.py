@@ -2,7 +2,7 @@ import logging
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, List, Union
+from typing import TYPE_CHECKING, Any, List, Union
 
 from fabric import Connection
 
@@ -18,6 +18,9 @@ from .model import BoardModel, CompilerModel
 from .model.common import Toolchain
 from .utils.kernel import KernelData
 
+if TYPE_CHECKING:
+    import automate.context
+
 
 class Board(object):
     """ Automation Class for script based interaction with boards:
@@ -29,9 +32,14 @@ class Board(object):
     """
 
     def __init__(
-        self, board: BoardModel, compilers: List[CompilerModel], identity: str
+        self,
+        context: "automate.context.AutomateContext",
+        board: BoardModel,
+        compilers: List[CompilerModel],
+        identity: str,
     ) -> None:
         self.logger = logging.getLogger(__name__)
+        self.context = context
         self.model = board
         self.compiler_models = compilers
         self.identity = identity
@@ -93,11 +101,11 @@ class Board(object):
         for compiler_model in sorted_models:
             if compiler_id != "":
                 if compiler_id == compiler_model.id:
-                    cc = CrossCompiler(compiler_model, self)
+                    cc = CrossCompiler(self.context, compiler_model, self)
                     if cc.valid:
                         return cc
             else:
-                cc = CrossCompiler(compiler_model, self)
+                cc = CrossCompiler(self.context, compiler_model, self)
                 if cc.toolchain == toolchain and cc.valid:
                     return cc
 
@@ -121,7 +129,7 @@ class Board(object):
 
         res = []
         for model in self.compiler_models:
-            cc = CrossCompiler(model, self)
+            cc = CrossCompiler(self.context, model, self)
             if (cc.toolchain == toolchain) or (toolchain is None):
                 if cc.valid:
                     res.append(cc)
