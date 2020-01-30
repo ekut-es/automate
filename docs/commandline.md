@@ -230,3 +230,13 @@ We currently have the following buildsystems available:
 _cmake_: for cmake based software builds
 _make_: for makefile based software builds
 _kernel_: to build linux kernels using the kbuild build system
+
+
+
+# Administration tasks
+
+TBD
+
+# Examples 
+
+Examples for commandline usage can be found in _examples/shell_ folder of the project. 

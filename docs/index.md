@@ -11,6 +11,10 @@ Install automate in development mode:
 
     poetry install 
 
+To enable experimental database support use:
+
+    poetry install -E postgres
+
 Start the development shell
 
     poetry shell
