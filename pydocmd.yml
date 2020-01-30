@@ -13,7 +13,7 @@ generate:
       - automate.builder.kernel++
   - api/context.md:
       - automate.context++
-  - api/configuration.md:
+  - api/config.md:
       - automate.config++
 
 pages:
@@ -26,6 +26,8 @@ pages:
         - Board API: api/board.md
     - automate.compiler:
         - Compiler API: api/compiler.md
+    - automate.config:
+        - Configuration API: api/config.md
     - automate.builder:
         automate.builder.make:
           - Makefile Builder API: api/builder/make.md
@@ -36,6 +38,7 @@ pages:
   - Commandline Interface: commandline.md
   - Metadata Model: model.md
   - Setup:
+      - Boards: boards.md
       - Gateway: gateway.md
   - Development: development.md
   
