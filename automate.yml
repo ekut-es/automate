@@ -1,7 +1,5 @@
-
-
 automate:
-  metadata: /local/data/der_schrank/metadata
+  metadata: /local/data/automate/metadata #This line needs to be changed to Metadata folder in the automate checkout 
   identity: ~/.ssh/id_rsa
   toolroot: /afs/wsi/es/tools/
   boardroot: /nfs/es-genial/schrank/boards/
