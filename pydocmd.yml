@@ -11,10 +11,17 @@ generate:
       - automate.builder.cmake++
   - api/builder/kernel.md:
       - automate.builder.kernel++
+  - api/context.md:
+      - automate.context++
+  - api/configuration.md:
+      - automate.config++
 
 pages:
-  - Index: index.md 
-  - API: 
+  - Index: index.md
+  - Configuration: configuration.md
+  - API:
+    - automate.context:
+        - Context API: api/context.md
     - automate.board:
         - Board API: api/board.md
     - automate.compiler:
