@@ -58,17 +58,3 @@ def test_zynqberry_cc_cross_compiler_properties(zynqberry_cc):
     assert cc.valid == True
     assert cc.libs == ""
     assert cc.default_builddir == Path("builds/zynqberry")
-
-
-def test_zynqberry_cc_has_builders(zynqberry_cc):
-    cc = zynqberry_cc
-
-    make_builder = zynqberry_cc.builder("make")
-    cmake_builder = zynqberry_cc.builder("cmake")
-    kernel_builder = zynqberry_cc.builder("kernel")
-
-    assert isinstance(make_builder, automate.builder.MakefileBuilder)
-    assert isinstance(cmake_builder, automate.builder.CMakeBuilder)
-    assert isinstance(kernel_builder, automate.builder.KernelBuilder)
-    with raises(Exception):
-        zynqberry_cc.builder("unknown")
