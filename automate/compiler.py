@@ -231,6 +231,9 @@ class CrossCompiler(Compiler):
         if self.sysroot:
             flags.append("--sysroot={}".format(self.sysroot))
         else:
+            # Current llvm installations do not find a correct libc
+            # so we call die underlying gcc to find its sysroot
+            # and set it explicitly
             if self.toolchain == Toolchain.LLVM:
                 assert self.gcc_toolchain is not None
                 command = f'"{self.gcc_toolchain.bin_path}/{self.gcc_toolchain.cc}" -print-sysroot'
