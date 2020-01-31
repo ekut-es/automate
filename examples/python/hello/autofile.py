@@ -6,11 +6,17 @@ def build(c, board_id):
     "Builds run cmake"
 
     board = c.board(board_id)
-    builder = board.compiler().builder("make", srcdir="hello")
-    builder.configure(c)
-    builder.build(c)
-    builder.install(c)
-    builder.deploy(c)
+    builder = board.builder("make")
+    builder.configure(cross_compiler=board.compiler(), srcdir="hello")
+    builder.build()
+    builder.install()
+
+    with board.connect() as con:
+        with board.lock_ctx():
+            with con.cd(str(board.rundir)):
+                con.run("rm -rf hello")
+
+    builder.deploy()
 
     return True
 

@@ -247,6 +247,9 @@ class CrossCompiler(Compiler):
                 sysroot = stdout_dec.strip()
                 flags.append(f"--sysroot={sysroot}")
 
+        if self._flags:
+            flags.extend(self._flags)
+
         return " ".join(flags)
 
     @property
