@@ -1,52 +1,48 @@
+from pathlib import Path
+
 from fabric import task
-
-
-def _get_builder(c, board, *args, **kwargs):  # pragma: no cover
-    board = c.board(board)
-    cc = board.compiler()
-    builder = cc.builder("make", *args, **kwargs)
-
-    return builder
 
 
 @task
 def configure(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
-    builder.configure(c)
+
+    board = c.board(board)
+    cc = board.compiler()
+    builder = board.builder("make", builddir=builddir)
+
+    builder.configure(cc, srcdir=Path(srcdir), prefix=Path(prefix))
 
 
 @task
-def build(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
-    builder.build(c)
+def build(c, board, builddir=""):  # pragma: no cover
+    board = c.board(board)
+    builder = board.builder("make", builddir=builddir)
+
+    builder.build()
 
 
 @task
-def install(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
-    builder.install(c)
+def install(c, board, builddir=""):  # pragma: no cover
+    board = c.board(board)
+    builder = board.builder("make", builddir=builddir)
+
+    builder.install()
 
 
 @task
-def clean(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
-    builder.clean(c)
+def clean(c, board, builddir=""):  # pragma: no cover
+    board = c.board(board)
+    builder = board.builder("make", builddir=builddir)
+
+    builder.clean()
 
 
 @task
-def deploy(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
-    builder.deploy(c)
+def deploy(c, board, builddir=""):  # pragma: no cover
+    board = c.board(board)
+    builder = board.builder("make", builddir=builddir)
+
+    builder.deploy()
 
 
 __all__ = ["configure", "build", "clean", "install", "deploy"]

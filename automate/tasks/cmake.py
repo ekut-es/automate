@@ -1,12 +1,6 @@
+from pathlib import Path
+
 from fabric import task
-
-
-def _get_builder(c, board, *args, **kwargs):  # pragma: no cover
-    board = c.board(board)
-    cc = board.compiler()
-    builder = cc.builder("cmake", *args, **kwargs)
-
-    return builder
 
 
 @task
@@ -15,27 +9,33 @@ def configure(
 ):  # pragma: no cover
     """ Configure a cmake project for the build
     """
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
+
+    board = c.board(board)
+    cc = board.compiler()
+    builder = board.builder("cmake", builddir=builddir)
+
+    builder.configure(
+        cc, srcdir=Path(srcdir), prefix=Path(prefix), cmake_definitions=[]
     )
-    builder.configure(c, cmake_definitions=D)
 
 
 @task
 def build(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     """build a cmake project for the board"""
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
+
+    board = c.board(board)
+    builder = board.builder("cmake", builddir=builddir)
+
     builder.build(c)
 
 
 @task
 def install(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     """install cmake project for deployment"""
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
+
+    board = c.board(board)
+    builder = board.builder("cmake", builddir=builddir)
+
     builder.install(c)
 
 
@@ -43,9 +43,8 @@ def install(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
 def deploy(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     """Deploy installed cmake project on board"""
 
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
+    board = c.board(board)
+    builder = board.builder("cmake", builddir=builddir)
 
     builder.deploy(c)
 
@@ -54,9 +53,8 @@ def deploy(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
 def clean(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
     """Remove the build directory"""
 
-    builder = _get_builder(
-        c, board, builddir=builddir, srcdir=srcdir, prefix=prefix
-    )
+    board = c.board(board)
+    builder = board.builder("cmake", builddir=builddir)
 
     builder.clean(c)
 

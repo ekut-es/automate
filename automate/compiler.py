@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
 
 from . import board
-from .builder import BaseBuilder, CMakeBuilder, KernelBuilder, MakefileBuilder
 from .model import (
     BoardModel,
     CompilerModel,
@@ -336,27 +335,6 @@ class CrossCompiler(Compiler):
             if line.startswith("/"):
                 includes.append(line)
         return includes
-
-    def builder(self, typ, *args, **kwargs) -> BaseBuilder:
-        """ Return a builder object for this compiler
-
-        # Arguments
-        typ: Type of the buildsystem to use choices are cmake, kernel, make
-        *args: positional arguments for Builder.__init__
-        **kwargs: keyword arguments for Builder.__init__
-        
-        # Returns
-        configured builder object
-        """
-
-        if typ == "cmake":
-            return CMakeBuilder(self, *args, **kwargs)
-        elif typ == "kernel":
-            return KernelBuilder(self, *args, **kwargs)
-        elif typ == "make":
-            return MakefileBuilder(self, *args, **kwargs)
-
-        raise Exception("Could not find builder {}".format(typ))
 
     @property
     def default_builddir(self) -> Path:

@@ -13,6 +13,7 @@ from automate.model.board import (
     UARTConnectionModel,
 )
 
+from .builder import BaseBuilder, CMakeBuilder, KernelBuilder, MakefileBuilder
 from .compiler import CrossCompiler
 from .model import BoardModel, CompilerModel
 from .model.common import Toolchain
@@ -341,6 +342,26 @@ class Board(object):
             if kernel_desc.id == id:
                 return KernelData(self, kernel_desc)
         return None
+
+    def builder(self, typ, builddir: Union[Path, str] = "") -> BaseBuilder:
+        """ Return a builder object for this board
+
+        # Arguments
+        typ: Type of the buildsystem to use choices are cmake, kernel, make
+        
+        
+        # Returns
+        configured builder object
+        """
+
+        if typ == "cmake":
+            return CMakeBuilder(self.context, self, builddir)
+        elif typ == "kernel":
+            return KernelBuilder(self.context, self, builddir)
+        elif typ == "make":
+            return MakefileBuilder(self.context, self, builddir)
+
+        raise Exception("Could not find builder {}".format(typ))
 
     def __getattr__(self, attr: str) -> Any:
         """proxy model properties if they are not shadowed by an own property"""

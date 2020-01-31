@@ -11,7 +11,7 @@ from .builder import BaseBuilder
 
 class KernelBuilder(BaseBuilder):
     def _kernel_desc(self, kernel_id):
-        board = self.cc.board
+        board = self.board
 
         kernel_desc = None
         for kernel in board.os.kernels:

@@ -8,49 +8,52 @@ from .builder import BaseBuilder
 
 
 class MakefileBuilder(BaseBuilder):
-    @property
-    def buildvars_filename(self):
-        buildvars_fname = self.builddir / "buildvars.yml"
-        return buildvars_fname
-
-    def configure(self, c):
+    def configure(self, cross_compiler=None, srcdir="", prefix=""):
         """ Configure a makefile build
         
             1. Copy source directory to build directory 
             2. Record build variables in build_directory/buildvars.yml
         """
 
+        if cross_compiler is None:
+            cross_compiler = self.board.compiler()
+
+        if srcdir:
+            self.state.srcdir = Path(srcdir).absolute()
+
+        if prefix:
+            self.state.prefix = Path(prefix).absolute()
+
         self._mkbuilddir()
-        c.run(f"rsync -ar --delete {self.srcdir} {self.builddir}")
+        self.context.run(f"rsync -ar --delete {self.srcdir} {self.builddir}")
 
         buildvars = {}
-        buildvars["CC"] = self.cc.bin_path / self.cc.cc
-        buildvars["CXX"] = self.cc.bin_path / self.cc.cxx
-        buildvars["CFLAGS"] = self.cc.cflags
-        buildvars["CXXFLAGS"] = self.cc.cxxflags
-        buildvars["LDFLAGS"] = self.cc.ldflags
-        buildvars["LDLIBS"] = self.cc.libs
+        buildvars["CC"] = cross_compiler.bin_path / cross_compiler.cc
+        buildvars["CXX"] = cross_compiler.bin_path / cross_compiler.cxx
+        buildvars["CFLAGS"] = cross_compiler.cflags
+        buildvars["CXXFLAGS"] = cross_compiler.cxxflags
+        buildvars["LDFLAGS"] = cross_compiler.ldflags
+        buildvars["LDLIBS"] = cross_compiler.libs
 
-        with self.buildvars_filename.open("w") as buildvars_file:
-            yaml = YAML(typ="unsafe")
-            yaml.dump(buildvars, buildvars_file)
+        self.state.buildvars = buildvars
 
-    def build(self, c):
+        self._save_state()
+
+    def build(self):
         """Run make with default target and set BUILDVARS for board"""
-        yaml = YAML(typ="unsafe")
-        with self.buildvars_filename.open("r") as buildvars_file:
-            buildvars = yaml.load(buildvars_file)
 
-        with c.cd(str(self.builddir / self.srcdir.name)):
-            c.run(
+        buildvars = self.state.buildvars
+
+        with self.context.cd(str(self.builddir / self.srcdir.name)):
+            self.context.run(
                 f"make CC=\"{buildvars['CC']}\" CXX=\"{buildvars['CXX']}\" CFLAGS=\"{buildvars['CFLAGS']}\" CXXFLAGS=\"{buildvars['CXXFLAGS']}\" LDFLAGS=\"{buildvars['LDFLAGS']}\" LDLIBS=\"{buildvars['LDLIBS']}\""
             )
 
-    def install(self, c):
+    def install(self):
         """Do nothing"""
         logging.warning("Install does nothing with make builder")
 
-    def deploy(self, c, delete=False):
+    def deploy(self, delete=False):
         """Deploy package on board
         
            Just copies build_directory/srcdir_name to the rundir
@@ -60,13 +63,13 @@ class MakefileBuilder(BaseBuilder):
            delete: if true delete non existant files from the board
         """
 
-        with self.cc.board.connect() as con:
-            with con.cd(str(self.cc.board.rundir)):
+        with self.board.connect() as con:
+            with con.cd(str(self.board.rundir)):
                 con.run(f"mkdir -p {self.srcdir.name}")
             rsync(
                 con,
                 source=str(self.builddir / self.srcdir.name) + "/",
-                target=str(self.cc.board.rundir / self.srcdir.name),
+                target=str(self.board.rundir / self.srcdir.name),
                 delete=delete,
                 rsync_opts="-l",
             )

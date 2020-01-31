@@ -1,22 +1,41 @@
-from typing import List
+from pathlib import Path
+from typing import TYPE_CHECKING, List
 
 from ..utils.network import rsync
 from .builder import BaseBuilder
 
+if TYPE_CHECKING:
+    import automate.compiler
+    import automate.board
+
 
 class CMakeBuilder(BaseBuilder):
-    def configure(self, c, cmake_definitions: List[str] = []):
+    def configure(
+        self, cross_compiler=None, srcdir="", prefix="", cmake_definitions=[]
+    ):
+
+        if cross_compiler is None:
+            cross_compiler = self.board.compiler()
+
+        if srcdir:
+            self.state.srcdir = Path(srcdir).absolute()
+
+        if self.prefix:
+            self.state.prefix = Path(prefix).absolute()
+
         self._mkbuilddir()
 
         toolchain_file_name = self.builddir / "toolchain.cmake"
         with toolchain_file_name.open("w") as toolchain_file:
             toolchain_file.write("set(CMAKE_SYSTEM_NAME Linux)\n")
             toolchain_file.write(
-                "set(CMAKE_SYSTEM_PROCESSOR {})\n".format(self.cc.machine.value)
+                "set(CMAKE_SYSTEM_PROCESSOR {})\n".format(
+                    cross_compiler.machine.value
+                )
             )
             toolchain_file.write("\n")
             toolchain_file.write(
-                "set(CMAKE_SYSROOT {})\n".format(self.cc.sysroot)
+                "set(CMAKE_SYSROOT {})\n".format(cross_compiler.sysroot)
             )
             toolchain_file.write(
                 "set(CMAKE_STAGING_PREFIX {})\n".format(
@@ -26,12 +45,12 @@ class CMakeBuilder(BaseBuilder):
             toolchain_file.write("\n")
             toolchain_file.write(
                 "set(CMAKE_C_COMPILER {}/{})\n".format(
-                    self.cc.bin_path, self.cc.cc
+                    cross_compiler.bin_path, cross_compiler.cc
                 )
             )
             toolchain_file.write(
                 "set(CMAKE_CXX_COMPILER {}/{})\n".format(
-                    self.cc.bin_path, self.cc.cxx
+                    cross_compiler.bin_path, cross_compiler.cxx
                 )
             )
             toolchain_file.write("\n")
@@ -52,7 +71,7 @@ class CMakeBuilder(BaseBuilder):
         cache_file_name = self.builddir / "cache.cmake"
         with cache_file_name.open("w") as cache_file:
             cache_file.write("#Compiler options \n")
-            cflags = self.cc.cflags
+            cflags = cross_compiler.cflags
             cache_file.write(
                 'set(CMAKE_C_FLAGS_DEBUG          "{} -g" CACHE STRING "")\n'.format(
                     cflags
@@ -75,7 +94,7 @@ class CMakeBuilder(BaseBuilder):
             )
             cache_file.write("\n")
 
-            cxxflags = self.cc.cxxflags
+            cxxflags = cross_compiler.cxxflags
             cache_file.write(
                 'set(CMAKE_CXX_FLAGS_DEBUG          "{} -g" CACHE STRING "")\n'.format(
                     cxxflags
@@ -99,25 +118,25 @@ class CMakeBuilder(BaseBuilder):
 
         definitions = " ".join(["-D{}".format(d) for d in cmake_definitions])
 
-        with c.cd(str(self.builddir)):
+        with self.context.cd(str(self.builddir)):
             command = "cmake -DCMAKE_INSTALL_RPATH={2}/lib -DCMAKE_BUILD_TYPE='RELWITHDEBINFO' -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake -C cache.cmake {0} {1}".format(
                 self.srcdir, definitions, self.prefix
             )
             self.logger.info("Running cmake: {}".format(command))
-            c.run(command)
+            self.context.run(command)
 
     def build(self, c):
         self._mkbuilddir()
-        with c.cd(str(self.builddir)):
-            c.run("cmake --build  .")
+        with self.context.cd(str(self.builddir)):
+            self.context.run("cmake --build  .")
 
     def install(self, c):
-        with c.cd(str(self.builddir)):
-            c.run("cmake  --build . --target install")
+        with self.context.cd(str(self.builddir)):
+            self.context.run("cmake  --build . --target install")
 
     def deploy(self, c, delete=False):
         print("Rsyncing with prefix", self.prefix)
-        with self.cc.board.connect() as con:
+        with self.board.connect() as con:
             rsync(
                 con,
                 source=str(self.builddir / "install") + "/",
