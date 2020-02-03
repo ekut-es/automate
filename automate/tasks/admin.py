@@ -57,7 +57,8 @@ def add_users(c):  # pragma: no cover
     gateways = set()
 
     for board in c.boards():
-        gateways.add(FrozenGateway(**board.gateway.dict()))
+        if board.gateway is not None:
+            gateways.add(FrozenGateway(**board.gateway.dict()))
 
         with board.connect() as con:
 
@@ -355,9 +356,10 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
         )
         con.open()
 
+        identity = os.path.expanduser(c.config.automate.identity)
         keyfile = prompt(
             "SSH Public key file: ",
-            default=str(c["identity"]) + ".pub",
+            default=str(identity) + ".pub",
             is_password=False,
         )
 

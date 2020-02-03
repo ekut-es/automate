@@ -10,6 +10,7 @@ class ISAExtension(Enum):
     AES = "aes"
     ASIMD = "asimd"
     CRC32 = "crc32"
+    CPUID = "cpuid"
     EDSP = "edsp"
     EVTSTRM = "evtstrm"
     FASTMULT = "fastmult"
