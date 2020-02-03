@@ -18,6 +18,7 @@ from .compiler import CrossCompiler
 from .model import BoardModel, CompilerModel
 from .model.common import Toolchain
 from .utils.kernel import KernelData
+from .utils.network import connect
 
 if TYPE_CHECKING:
     import automate.context
@@ -37,13 +38,13 @@ class Board(object):
         context: "automate.context.AutomateContext",
         board: BoardModel,
         compilers: List[CompilerModel],
-        identity: str,
+        identity: Union[Path, str],
     ) -> None:
         self.logger = logging.getLogger(__name__)
         self.context = context
         self.model = board
         self.compiler_models = compilers
-        self.identity = identity
+        self.identity = Path(identity).absolute()
 
     @contextmanager
     def lock_ctx(self, timeout: str = "1h"):
@@ -167,21 +168,21 @@ class Board(object):
                     gw_user = self.model.gateway.username
                     gw_port = self.model.gateway.port
 
-                    gateway_connection = Connection(
+                    gateway_connection = connect(
                         gw_host,
-                        user=gw_user,
-                        port=gw_port,
-                        connect_timeout=timeout,
-                        connect_kwargs={"key_filename": self.identity},
+                        gw_user,
+                        gw_port,
+                        identity=self.identity,
+                        timeout=timeout,
                     )
 
-                c = Connection(
-                    host=host,
-                    user=user,
-                    port=port,
+                c = connect(
+                    host,
+                    user,
+                    port,
+                    identity=self.identity,
                     gateway=gateway_connection,
-                    connect_timeout=timeout,
-                    connect_kwargs={"key_filename": self.identity},
+                    timeout=timeout,
                 )
                 return c
 

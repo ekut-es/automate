@@ -19,6 +19,7 @@ python-dotenv = {version = "^0.10.5", optional = true}
 psycopg2 = {version = "^2.8.4", optional = true}
 pydot = {version = "^1.4.1", optional = true}
 jinjasql = {version = "^0.1.7", optional = true}
+keyring = "^21.1.0"
 
 [tool.poetry.extras]
 postgres = ["python-dotenv", "pydot", "psycopg2", "jinjasql"]

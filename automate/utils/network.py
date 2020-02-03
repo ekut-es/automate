@@ -3,9 +3,88 @@ import os
 import random
 import socket
 from io import StringIO
-from typing import Iterable
+from pathlib import Path
+from typing import Iterable, Optional
 
 import fabric
+import keyring
+from paramiko.ssh_exception import AuthenticationException
+from prompt_toolkit import prompt
+
+
+def connect(
+    host: str,
+    user: str,
+    port: int = 22,
+    identity: Optional[Path] = None,
+    passwd_allowed: bool = False,
+    passwd_retries: int = 3,
+    keyring_allowed: bool = True,
+    gateway: Optional[fabric.Connection] = None,
+    timeout: int = 30,
+) -> fabric.Connection:
+    """ Get a fabric connection to a remote host 
+
+        # Arguments
+        host: hostname or ip address
+        username: on remote host
+        port: ssh port for connection
+        identity: Path to ssh private key
+        passwd_allowed: if True use password if ssh public key authentication fails
+        passwd_retries: number of retries for password authentication
+        keyring_allowed: if True store passwords in system keyring
+        gateway: fabric.Connection to use as gateway
+        timeout: timeout for connections in seconds
+
+        # Returns
+        a fabric.Connection to the host
+    """
+
+    try:
+        kwargs = {"key_filename": str(identity.absolute())} if identity else {}
+        connection = fabric.Connection(
+            host,
+            user=user,
+            port=port,
+            connect_timeout=timeout,
+            gateway=gateway,
+            connect_kwargs=kwargs,
+        )
+        connection.open()
+    except AuthenticationException as e:
+        if passwd_allowed:
+
+            keyring_service = f"automatessh:{host}:{port}"
+
+            for retry in range(passwd_retries):
+                password = None
+                if retry == 0 and keyring_allowed:
+                    password = keyring.get_password(keyring_service, user)
+                if password is None:
+                    password = prompt(
+                        "Password for {}@{}: ".format(user, host),
+                        is_password=True,
+                    )
+                try:
+                    connection = fabric.Connection(
+                        user=user,
+                        host=host,
+                        port=port,
+                        gateway=gateway,
+                        connect_timeout=timeout,
+                        connect_kwargs={"password": password},
+                    )
+                    connection.open()
+                except AuthenticationException as e:
+                    continue
+
+                if keyring_allowed:
+                    keyring.set_password(keyring_service, user, password)
+                break
+        else:
+            raise e
+
+    return connection
 
 
 def find_local_port() -> int:

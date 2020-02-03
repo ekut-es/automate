@@ -4,14 +4,13 @@ from typing import Any, List
 
 import invoke
 from fabric import Connection
-from paramiko.ssh_exception import AuthenticationException
-from prompt_toolkit import prompt
 
 from .board import Board
 from .compiler import Compiler
 from .config import AutomateConfig
 from .database import Database, database_enabled
 from .loader import ModelLoader
+from .utils.network import connect
 
 
 class AutomateContext(invoke.Context):
@@ -22,8 +21,9 @@ class AutomateContext(invoke.Context):
         self.logger.debug("Context init")
 
         self.forward_connections: List[Connection] = []
+        self.forward: List[Any] = []
         if hasattr(config.automate, "forwards") and config.automate.forwards:
-            # self._setup_forwards()
+            self._setup_forwards()
             pass
         database = None
 
@@ -54,27 +54,20 @@ class AutomateContext(invoke.Context):
             self.logger.info(
                 f'forwarding {forward["local_port"]} to {forward["host"]}:{forward["remote_port"]}'
             )
-            try:
-                connection = Connection(forward["host"], user=forward["user"])
-                connection.open()
-            except AuthenticationException as e:
-                password = prompt(
-                    "Password for {}@{}: ".format(
-                        forward["user"], forward["host"]
-                    ),
-                    is_password=True,
-                )
-                connection = Connection(
-                    user=forward["user"],
-                    host=forward["host"],
-                    connect_kwargs={"password": password},
-                )
-                connection.open()
 
-            connection.forward_local(
+            connection = connect(
+                forward["host"],
+                forward["user"],
+                forward.get("port", 22),
+                passwd_allowed=True,
+            )
+
+            fw = connection.forward_local(
                 local_port=forward["local_port"],
                 remote_port=forward["remote_port"],
             )
+
+            self.forward.append(fw)
             self.forward_connections.append(connection)
 
     def boards(self):
