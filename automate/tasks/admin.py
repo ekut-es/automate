@@ -191,6 +191,9 @@ def safe_rootfs(c, board):  # pragma: no cover
                 "mv {0} {1}".format(image_name, image_name.with_suffix(".bak"))
             )
 
+        logging.info("Fsck image")
+        c.run("fsck -p {}".format(image_name.with_suffix(".tmp")))
+
         logging.info("Moving image to result")
         c.run("mv {0} {1}".format(image_name.with_suffix(".tmp"), image_name))
         print("Finished image saving.")
