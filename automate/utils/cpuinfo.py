@@ -82,7 +82,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
                 current_dict["isa"] = uarch_to_isa[current_dict["uarch"]]
         current_dict["description"] = current_dict[
             "description"
-        ] + " (microarchitecture: {})".format(current_dict["uarch"].value)
+        ] + " (microarchitecture: {})".format(current_dict["uarch"])
         cpus.append(CoreModel(**current_dict))
 
     return cpus
