@@ -2,6 +2,8 @@ from pathlib import Path
 
 from fabric import task
 
+from ..model.common import Toolchain
+
 
 @task
 def configure(
@@ -18,15 +20,20 @@ def configure(
     sysroot=True,
     isa=True,
     uarch=True,
+    toolchain="gcc",
+    compiler_id="",
 ):  # pragma: no cover
 
     board = c.board(board)
-    cc = board.compiler()
+
+    toolchain = Toolchain(toolchain) if toolchain else Toolchain.GCC
+
+    cc = board.compiler(toolchain=toolchain, compiler_id=compiler_id)
     cc.configure(
         flags=flags,
         cflags=cflags,
         cxxflags=cxxflags,
-        ldflagx=ldflags,
+        ldflags=ldflags,
         uarch_opt=uarch,
         isa_opt=isa,
         enable_sysroot=sysroot,

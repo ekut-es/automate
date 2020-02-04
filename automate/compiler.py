@@ -121,6 +121,29 @@ class CrossCompiler(Compiler):
         self._cxxflags: List[str] = []
         self._ldflags: List[str] = []
         self._libs: List[str] = []
+        self._enable_sysroot = True
+        self._isa_opt = True
+        self._uarch_opt = True
+
+    def configure(
+        self,
+        flags: str = "",
+        cflags: str = "",
+        cxxflags: str = "",
+        ldflags: str = "",
+        libs: str = "",
+        uarch_opt=True,
+        isa_opt=True,
+        enable_sysroot=True,
+    ):
+        self._flags = shlex.split(flags)
+        self._cflags = shlex.split(cflags)
+        self._cxxflags = shlex.split(cxxflags)
+        self._ldflags = shlex.split(ldflags)
+        self._libs = shlex.split(libs)
+        self._isa_opt = isa_opt
+        self._uarch_opt = uarch_opt
+        self._enable_sysroot = enable_sysroot
 
     @property
     def gcc_toolchain(self) -> Union[None, "CrossCompiler"]:
@@ -156,20 +179,27 @@ class CrossCompiler(Compiler):
 
     @property
     def isa_flags(self) -> str:
-        """Default isa specific flags for this board"""
+        """Default isa specific flags for this board if enabled"""
+
+        if not self._isa_opt:
+            return ""
+
         isa = self.board.cores[self.core].isa
         return self.model.isa_map.get(isa, "")
 
     @property
     def uarch_flags(self) -> str:
-        """Default microarchitecture specific flags for this board"""
+        """Default microarchitecture specific flags for this board if enabled"""
+        if not self._uarch_opt:
+            return ""
+
         uarch = self.board.cores[self.core].uarch
         ret = self.model.uarch_map.get(uarch, "")
         return str(ret)
 
     @property
     def uarch_or_isa_flags(self) -> str:
-        """Default flags machine specific flags for this board"""
+        """Default flags machine specific flags for this board if enabled"""
         core = self.board.cores[self.core]
         flag = self.uarch_flags
         if not flag:
@@ -218,8 +248,6 @@ class CrossCompiler(Compiler):
             assert self.gcc_toolchain is not None
             flags.append(f"--gcc-toolchain={self.gcc_toolchain.basedir}")
             flags.append(f"-ccc-gcc-name {self.gcc_toolchain.cc}")
-            flags.append("--rtlib=libgcc")
-            flags.append("--stdlib=libstdc++")
             os_triple = self.board.os.triple
             flags.append(
                 f"-target {os_triple.machine.value}-{os_triple.os.value}-{os_triple.environment.value}"
@@ -297,6 +325,10 @@ class CrossCompiler(Compiler):
         base_flags = self.base_flags
         if self.base_flags:
             flags.append(self.base_flags)
+
+        if self.toolchain == Toolchain.LLVM:
+            flags.append("--rtlib=libgcc")
+            flags.append("--stdlib=libstdc++")
 
         if self._ldflags:
             flags.extend(self._ldflags)
