@@ -84,7 +84,7 @@ class Database:
         board_models = []
 
         for board in boards:
-
+            print(board)
             query, bind_params = self.j.prepare_query(
                 self.all_cpu_cores_for_board_query, {"board_id": board["id"]}
             )
@@ -136,7 +136,7 @@ class Database:
 
                 kernel_model = KernelModel(
                     **{
-                        "id": 0,  # TODO what does id represent?
+                        "name": "",   # A name uniquely identifies a a triple of kernel_configuration/commandline/kernel_source code 
                         "description": kernel["description"],
                         "version": kernel["version"],
                         "commandline": kernel["command_line"],
@@ -186,7 +186,7 @@ class Database:
             for cpu_core in cpu_cores:
                 cpu_core_model = CoreModel(
                     **{
-                        "id": cpu_core["os_id"],
+                        "num": cpu_core["os_id"],
                         "isa": cpu_core["isa"],
                         "uarch": cpu_core["uarch"],
                         "vendor": cpu_core["implementer"],
@@ -206,15 +206,10 @@ class Database:
 
             board_model = BoardModel(
                 **{
-                    "model_file": "/dev/null",  # TODO remove
-                    "model_file_mtime": datetime.strptime(
-                        "2020-01-22 13:40:23", "%Y-%m-%d %H:%M:%S"
-                    ),  # TODO remove
                     "name": board["name"],
-                    "id": board["hostname"],
                     "board": board["hostname"],
                     "description": board["description"],
-                    "rundir": "",  # TODO what is it?
+                    "rundir": "",  # Should probably be moved to connection
                     "doc": documentation_link_models,
                     "connections": [ssh_connection_model],
                     "cores": cpu_core_models,
@@ -233,19 +228,17 @@ class Database:
         cpu_extensions = set()
 
         for cpu_core in board_model.cores:
-            cpu_isas.add(cpu_core.isa.value)
-            cpu_implementers.add(cpu_core.vendor.value)
+            cpu_isas.add(cpu_core.isa)
+            cpu_implementers.add(cpu_core.vendor)
             cpu_uarchs.append(
                 {
-                    "id": cpu_core.uarch.value + cpu_core.vendor.value,
-                    "name": cpu_core.uarch.value,
-                    "vendor": cpu_core.vendor.value,
+                    "id": cpu_core.uarch + cpu_core.vendor,
+                    "name": cpu_core.uarch,
+                    "vendor": cpu_core.vendor,
                 }
             )
             cpu_extensions.update(cpu_core.extensions)
 
-        cpu_uarchs = list({v["id"]: v for v in cpu_uarchs}.values())
-        cpu_extensions = [x.value for x in cpu_extensions]
 
         query, bind_params = self.j.prepare_query(
             self.insert_board_query,
@@ -253,7 +246,7 @@ class Database:
                 "soc_name": additional_data["soc_name"],
                 "foundry_name": additional_data["foundry_name"],
                 "technology": additional_data["technology"],
-                "hostname": board_model.id,
+                "hostname": board_model.name,
                 "board": board_model,
                 "power_connector_name": additional_data["power_connector_name"],
                 "voltage": additional_data["voltage"],

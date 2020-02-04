@@ -12,6 +12,7 @@ from ruamel.yaml.comments import CommentedMap
 from .config import AutomateConfig
 from .model import (
     BoardModel,
+    BoardModelFS, 
     CompilerModel,
     DataModelBase,
     LoadedModelBase,
@@ -68,14 +69,15 @@ class ModelLoader(object):
     def _merge_metadata(self, *args):
         """ Merge multiple lists of Models """
         merged_list = []
-        merged_ids = set()
+        merged_names = set()
         for arg in args:
             for item in arg:
-                if item.id in merged_ids:
+                if item.name in merged_names:
                     continue
                 merged_list.append(item)
-                merged_ids.add(item.id)
+                merged_names.add(item.name)
 
+        merged_list.sort(key = lambda x: x.name)
         return merged_list
 
     def _apply_templates(
@@ -89,7 +91,7 @@ class ModelLoader(object):
         def do_apply_template(template, env):
             try:
                 self.logger.debug("Template is: {}".format(template.template))
-                formatted = template.substitute(env)
+                formatted = template.safe_substitute(env)
                 self.logger.debug("Formatted field: {}".format(formatted))
                 return formatted
             except ValueError as e:  # pragma: no cover
@@ -146,13 +148,13 @@ class ModelLoader(object):
         compilers = [CompilerModel(**c) for c in compilers]
 
         boards = self._load_metadata_list("boards/**/description.yml")
-        boards = [BoardModel(**b) for b in boards]
+        boards = [BoardModelFS(**b) for b in boards]
 
         if self.database:
             self.logger.info("getting boards from database")
             database_boards = self.database.get_all_boards()
             self.logger.debug(
-                "Boards %s", " ".join((b.id for b in database_boards))
+                "Boards %s", " ".join((b.name for b in database_boards))
             )
             boards = self._merge_metadata(boards, database_boards)
 

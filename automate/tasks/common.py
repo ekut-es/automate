@@ -26,7 +26,7 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
     if boards:
         board_table = []
         board_header = [
-            "ID",
+            "Name",
             "Machine",
             "Cores",
             "OS",
@@ -41,19 +41,19 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
                 s = connection_to_string(connection)
                 connections.append(s)
 
-            default_compiler_id = ""
+            default_compiler_name = ""
             try:
-                default_compiler_id = board.compiler().id
+                default_compiler_name = board.compiler().name
             except:
                 pass
 
             board_line = [
-                board.id,
+                board.name,
                 board.board,
                 len(board.cores),
                 os,
                 ",".join(connections),
-                default_compiler_id,
+                default_compiler_name,
             ]
 
             board_table.append(board_line)
@@ -67,7 +67,7 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
 
         compiler_table = []
         compiler_header = [
-            "ID",
+            "Name",
             "Toolchain",
             "Version",
             "Machines",
@@ -79,7 +79,7 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
             for triple in compiler.triples:
                 machines.add(triple.machine.value)
             compiler_line = [
-                compiler.id,
+                compiler.name,
                 compiler.toolchain.value,
                 compiler.version,
                 ", ".join(sorted(machines)),

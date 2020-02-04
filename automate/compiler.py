@@ -95,6 +95,11 @@ class Compiler(object):
         self.logger.warning("WARNING: this method has been deprecated")
         return self.model.name
 
+    @property
+    def name(self) -> str:
+        """Unique identifier of compiler in metadata"""
+        return self.model.name
+
 
 class CrossCompiler(Compiler):
     """Represents a Compiler with board specific configuration"""

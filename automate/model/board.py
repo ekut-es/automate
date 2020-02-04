@@ -52,7 +52,7 @@ class KernelImageModel(DataModelBase):
 
 
 class KernelModel(DataModelBase):
-    id: str
+    name: str
     description: str
     version: str
     localversion: Optional[str] = None
@@ -76,7 +76,7 @@ class OSModel(DataModelBase):
     kernels: List[KernelModel] = []
 
 
-class BoardModel(LoadedModelBase):
+class BoardModel(DataModelBase):
     name: str
     board: str
     description: str
@@ -95,3 +95,8 @@ class BoardModel(LoadedModelBase):
         default_dict.update(d)
 
         return default_dict
+
+class BoardModelFS(BoardModel, LoadedModelBase):
+    """Adds fields like file_name and file_modification time 
+    that are only meaningful for models loaded from Filesystem""" 
+    pass
