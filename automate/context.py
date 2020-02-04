@@ -78,11 +78,9 @@ class AutomateContext(invoke.Context):
 
             # Detach from process using double fork
             pid = os.fork()
-            # pid = 0
             if pid == 0:
                 # os.setsid()
                 pid = os.fork()
-                # pid = 0
                 if pid > 0:
                     os._exit(0)
 

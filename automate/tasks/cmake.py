@@ -14,9 +14,7 @@ def configure(
     cc = board.compiler()
     builder = board.builder("cmake", builddir=builddir)
 
-    builder.configure(
-        cc, srcdir=Path(srcdir), prefix=Path(prefix), cmake_definitions=[]
-    )
+    builder.configure(cc, srcdir=srcdir, prefix=prefix, cmake_definitions=[])
 
 
 @task

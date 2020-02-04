@@ -46,7 +46,6 @@ class BaseBuilder(object):
             self.state.srcdir = Path(".")
             self.state.prefix = Path(self.board.rundir) / self.srcdir.name
 
-            self.state.prefix = self.state.prefix.absolute()
             self.state.srcdir = self.state.srcdir.absolute()
             self.state.builddir = self.state.builddir.absolute()
 

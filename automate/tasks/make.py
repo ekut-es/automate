@@ -4,13 +4,37 @@ from fabric import task
 
 
 @task
-def configure(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
+def configure(
+    c,
+    board,
+    builddir="",
+    srcdir="",
+    prefix="",
+    flags="",
+    cflags="",
+    cxxflags="",
+    ldflags="",
+    libs="",
+    sysroot=True,
+    isa=True,
+    uarch=True,
+):  # pragma: no cover
 
     board = c.board(board)
     cc = board.compiler()
+    cc.configure(
+        flags=flags,
+        cflags=cflags,
+        cxxflags=cxxflags,
+        ldflagx=ldflags,
+        uarch_opt=uarch,
+        isa_opt=isa,
+        enable_sysroot=sysroot,
+        libs=libs,
+    )
     builder = board.builder("make", builddir=builddir)
 
-    builder.configure(cc, srcdir=Path(srcdir), prefix=Path(prefix))
+    builder.configure(cc, srcdir=srcdir, prefix=prefix)
 
 
 @task

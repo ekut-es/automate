@@ -20,8 +20,8 @@ class CMakeBuilder(BaseBuilder):
         if srcdir:
             self.state.srcdir = Path(srcdir).absolute()
 
-        if self.prefix:
-            self.state.prefix = Path(prefix).absolute()
+        if prefix:
+            self.state.prefix = Path(prefix)
 
         self._mkbuilddir()
 
@@ -125,6 +125,8 @@ class CMakeBuilder(BaseBuilder):
             self.logger.info("Running cmake: {}".format(command))
             self.context.run(command)
 
+        self._save_state()
+
     def build(self, c):
         self._mkbuilddir()
         with self.context.cd(str(self.builddir)):
@@ -137,6 +139,7 @@ class CMakeBuilder(BaseBuilder):
     def deploy(self, c, delete=False):
         print("Rsyncing with prefix", self.prefix)
         with self.board.connect() as con:
+            con.run(f"mkdir -p {self.prefix.name}")
             rsync(
                 con,
                 source=str(self.builddir / "install") + "/",
