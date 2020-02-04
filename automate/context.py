@@ -1,5 +1,9 @@
 import logging
+import os
 import os.path
+import sys
+import time
+from pathlib import Path
 from typing import Any, List
 
 import invoke
@@ -20,8 +24,6 @@ class AutomateContext(invoke.Context):
         self.logger = logging.getLogger(__name__)
         self.logger.debug("Context init")
 
-        self.forward_connections: List[Connection] = []
-        self.forward: List[Any] = []
         if hasattr(config.automate, "forwards") and config.automate.forwards:
             self._setup_forwards()
             pass
@@ -30,7 +32,7 @@ class AutomateContext(invoke.Context):
         if hasattr(config.automate, "database") and config.automate.database:
             if database_enabled():
                 self.logger.info("Setup database connection")
-                self.database = Database(
+                database = Database(
                     self.config.automate.database.host,
                     self.config.automate.database.port,
                     self.config.automate.database.db,
@@ -45,12 +47,22 @@ class AutomateContext(invoke.Context):
         loader = ModelLoader(config, database=database)
         self.metadata = loader.load()
 
-    def __del__(self):
-        for connection in self.forward_connections:
-            connection.close()
-
     def _setup_forwards(self):
         for forward in self.config.automate.forwards:
+            pidfile = (
+                Path("/tmp") / f"automate_forward_{forward['local_port']}.pid"
+            )
+            if pidfile.exists():
+                with pidfile.open() as pid_f:
+                    pid = int(pid_f.read())
+                    try:
+                        os.kill(pid, 0)
+                    except OSError as e:
+                        pidfile.unlink()
+                    else:
+                        logging.debug("Forwarder process exists")
+                        continue
+
             self.logger.info(
                 f'forwarding {forward["local_port"]} to {forward["host"]}:{forward["remote_port"]}'
             )
@@ -62,13 +74,46 @@ class AutomateContext(invoke.Context):
                 passwd_allowed=True,
             )
 
-            fw = connection.forward_local(
-                local_port=forward["local_port"],
-                remote_port=forward["remote_port"],
-            )
+            print("Starting forwarder")
 
-            self.forward.append(fw)
-            self.forward_connections.append(connection)
+            # Detach from process using double fork
+            pid = os.fork()
+            # pid = 0
+            if pid == 0:
+                # os.setsid()
+                pid = os.fork()
+                # pid = 0
+                if pid > 0:
+                    os._exit(0)
+
+                logging.debug("Forked forwarder %d", os.getpid())
+
+                sys.stdout = pidfile.with_suffix(".stdout").open("w")
+                sys.stderr = pidfile.with_suffix(".stderr").open("w")
+                # sys.stdin = open("/dev/null")
+
+                with pidfile.open("w") as pid_f:
+                    pid_f.write(str(os.getpid()))
+
+                connection = connect(
+                    forward["host"],
+                    forward["user"],
+                    forward.get("port", 22),
+                    passwd_allowed=True,
+                )
+
+                with connection:
+                    with connection.forward_local(
+                        local_port=forward["local_port"],
+                        remote_port=forward["remote_port"],
+                    ) as fw:
+                        while True:
+                            time.sleep(1.0)
+                            print(connection)
+                            sys.stdout.flush()
+
+        time.sleep(1.0)
+        logging.debug("Setup forwards finished")
 
     def boards(self):
         for board in self.metadata.boards:

@@ -149,7 +149,11 @@ class ModelLoader(object):
         boards = [BoardModel(**b) for b in boards]
 
         if self.database:
+            self.logger.info("getting boards from database")
             database_boards = self.database.get_all_boards()
+            self.logger.debug(
+                "Boards %s", " ".join((b.id for b in database_boards))
+            )
             boards = self._merge_metadata(boards, database_boards)
 
         data_model = MetadataModel(compilers=compilers, boards=boards)
