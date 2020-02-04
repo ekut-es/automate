@@ -33,10 +33,10 @@ class UARTConnectionModel(DataModelBase):
 
 class CoreModel(DataModelBase):
     id: int
-    isa: ISA
-    uarch: UArch
-    vendor: Vendor
-    extensions: List[ISAExtension] = []  # Supported ISA extensions
+    isa: str
+    uarch: str
+    vendor: str
+    extensions: List[str] = []  # Supported ISA extensions
     description: str = ""
 
 

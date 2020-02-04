@@ -13,13 +13,10 @@ from .model import (
     TripleModel,
 )
 from .model.common import (
-    ISA,
     OS,
     Environment,
     Machine,
     Toolchain,
-    UArch,
-    Vendor,
 )
 
 if TYPE_CHECKING:

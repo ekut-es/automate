@@ -24,12 +24,10 @@ from ..loader import ModelLoader
 from ..model import (
     BoardModel,
     CoreModel,
-    ISAExtension,
     OSModel,
     SSHConnectionModel,
     TripleModel,
 )
-from ..model.common import ISA, UArch, Vendor
 from ..utils import cpuinfo, fix_symlinks
 from ..utils.network import find_local_port
 
@@ -246,39 +244,8 @@ def build_sysroot(c, board):  # pragma: no cover
         c.run("sudo rmdir {}".format(tmp_path))
 
 
-class ISAValidator(Validator):
-    isa_set = set((k.value for k in ISA))
-
-    def validate(self, document):
-        text = document.text.strip()
-        if text not in self.isa_set:
-            raise ValidationError(
-                message="{} is not a valid ISA", cursor_position=len(text)
-            )
 
 
-class UArchValidator(Validator):
-    uarch_set = set((k.value for k in UArch))
-
-    def validate(self, document):
-        text = document.text.strip()
-        if text not in self.uarch_set:
-            raise ValidationError(
-                message="{} is not a valid Microarchitecture",
-                cursor_position=len(text),
-            )
-
-
-class VendorValidator(Validator):  # pragma: no cover
-    vendor_set = set((k.value for k in Vendor))
-
-    def validate(self, document):
-        text = document.text.strip()
-        if text not in self.vendor_set:
-            raise ValidationError(
-                message="{} is not a valid CPU Vendor",
-                cursor_position=len(text),
-            )
 
 
 board_yaml_template = r"""
@@ -416,28 +383,21 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
         )
         uarch = prompt(
             "  microarchitecture: ",
-            default=cpu.uarch.value if cpu.uarch.value != UArch.UNKNOWN else "",
-            validator=UArchValidator(),
-            completer=FuzzyWordCompleter(words=[k.value for k in UArch]),
+            default=cpu.uarch,
         )
 
         vendor = prompt(
             "  vendor: ",
-            default=cpu.vendor.value,
-            validator=VendorValidator(),
-            completer=FuzzyWordCompleter(words=[k.value for k in Vendor]),
+            default=cpu.vendor,
         )
 
         isa = prompt(
             "  isa: ",
-            default=cpu.isa.value if cpu.isa != ISA.UNKNOWN else "",
-            validator=ISAValidator(),
-            completer=FuzzyWordCompleter([k.value for k in ISA]),
+            default=cpu.isa,
         )
 
         # TODO: Prompt for isa extensions
-        assert ISAExtension.UNKNOWN not in cpu.extensions
-
+        
         cpu_model = CoreModel(
             id=cpu.id,
             isa=isa,

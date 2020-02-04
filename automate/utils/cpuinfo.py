@@ -6,7 +6,6 @@ from typing import Any, Dict, List, NamedTuple, Tuple, Union
 from fabric import Connection
 
 from ..model import CoreModel
-from ..model.common import ISA, ISAExtension, UArch, Vendor
 from .cpuinfo_arm import implementers as arm_implementers
 from .cpuinfo_arm import uarch_to_isa
 
@@ -20,7 +19,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
         m = re.match(r"processor\s+: (\d+)", line)
         if m:
             if current_dict:
-                if current_dict["isa"] == ISA.UNKNOWN:
+                if current_dict["isa"] == "":
                     if current_dict["uarch"] in uarch_to_isa:
                         current_dict["isa"] = uarch_to_isa[
                             current_dict["uarch"]
@@ -28,7 +27,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
                 current_dict["description"] = current_dict[
                     "description"
                 ] + " (microarchitecture: {})".format(
-                    current_dict["uarch"].value
+                    current_dict["uarch"]
                 )
                 cpus.append(CoreModel(**current_dict))
             current_dict = {"description": ""}
@@ -42,7 +41,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
         if m:
             implementer_key = int(m.group(1), 16)
 
-            vendor = Vendor.UNKNOWN
+            vendor = ""
             if implementer_key in arm_implementers:
                 vendor = arm_implementers[implementer_key][0]
 
@@ -51,7 +50,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
         m = re.match(r"CPU architecture\s*: (\S+)", line)
         if m:
             architecture_key = int(m.group(1), 10)
-            isa = ISA.UNKNOWN
+            isa = ""
             current_dict["isa"] = isa
 
         m = re.match(r"CPU variant\s*: (\S+)", line)
@@ -63,7 +62,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
         if m:
             part_key = int(m.group(1), 16)
 
-            uarch = UArch.UNKNOWN
+            uarch = ""
             if implementer_key in arm_implementers:
                 if part_key in arm_implementers[implementer_key][1]:
                     uarch = arm_implementers[implementer_key][1][part_key]
@@ -73,24 +72,12 @@ def _cpuinfo(text: str) -> List[CoreModel]:
         m = re.match(r"Features\s*: (.*)", line)
         if m:
             features = m.group(1).split()
-            extensions = []
 
-            extension_set = set()
-
-            for v in ISAExtension:
-                extension_set.add(v.value)
-
-            for feature in features:
-                if feature in extension_set:
-                    extensions.append(ISAExtension(feature))
-                else:
-                    extensions.append(ISAExtension.UNKNOWN)
-
-            current_dict["extensions"] = extensions
+            current_dict["extensions"] = list(sorted(features))
 
     if current_dict:
 
-        if current_dict["isa"] == ISA.UNKNOWN:
+        if current_dict["isa"] == "":
             if current_dict["uarch"] in uarch_to_isa:
                 current_dict["isa"] = uarch_to_isa[current_dict["uarch"]]
         current_dict["description"] = current_dict[
