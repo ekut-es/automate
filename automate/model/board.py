@@ -32,7 +32,7 @@ class UARTConnectionModel(DataModelBase):
 
 
 class CoreModel(DataModelBase):
-    id: int
+    num: int
     isa: str
     uarch: str
     vendor: str
@@ -78,7 +78,6 @@ class OSModel(DataModelBase):
 
 class BoardModel(LoadedModelBase):
     name: str
-    id: str
     board: str
     description: str
     rundir: Path
@@ -91,7 +90,7 @@ class BoardModel(LoadedModelBase):
     def _get_env_dict(self) -> Dict[str, str]:
         default_dict = dict(super(BoardModel, self)._get_env_dict())
 
-        d = {"board": self.board, "board_id": self.id}
+        d = {"board": self.board, "board_name": self.name}
 
         default_dict.update(d)
 

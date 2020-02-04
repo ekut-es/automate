@@ -122,9 +122,9 @@ class AutomateContext(invoke.Context):
                 os.path.expanduser(self.config.automate.identity),
             )
 
-    def board(self, board_id: str) -> Board:
+    def board(self, board_name: str) -> Board:
         for board in self.metadata.boards:
-            if board.id == board_id:
+            if board.name == board_name:
                 return Board(
                     self,
                     board,
@@ -134,7 +134,7 @@ class AutomateContext(invoke.Context):
 
         raise Exception(
             "Could not find board {} available boards {}".format(
-                board_id, ",".join([board.id for board in self.metadata.boards])
+                board_name, ",".join([board.name for board in self.metadata.boards])
             )
         )
 
@@ -142,15 +142,15 @@ class AutomateContext(invoke.Context):
         for compiler in self.metadata.compilers:
             yield Compiler(self, compiler)
 
-    def compiler(self, compiler_id: str) -> Compiler:
+    def compiler(self, compiler_name: str) -> Compiler:
 
         for compiler in self.metadata.compilers:
-            if compiler.id == compiler_id:
+            if compiler.name == compiler_name:
                 return Compiler(self, compiler)
 
         raise Exception(
             "Could not find compiler {} available compilers {}".format(
-                compiler_id,
-                ",".join([compiler.id for compiler in self.metadata.compilers]),
+                compiler_name,
+                ",".join([compiler.name for compiler in self.metadata.compilers]),
             )
         )

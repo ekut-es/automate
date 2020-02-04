@@ -18,7 +18,6 @@ class TripleModel(DataModelBase):
 
 class CompilerModel(LoadedModelBase):
     name: str
-    id: str
     triples: List[TripleModel] = Field(
         ..., description="List of supported target triples"
     )
