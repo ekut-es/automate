@@ -3,6 +3,7 @@ import contextlib
 import gzip
 import io
 import logging
+import os.path
 import random
 import re
 import shlex
@@ -208,7 +209,9 @@ def rsync_to(c, board, source, target="", delete=False):  # pragma: no cover
     board = c.board(board)
 
     if not target:
-        target = board.rundir
+        target = str(board.rundir) + "/"
+    elif target[0] != "/":
+        target = os.path.join(board.rundir, target)
 
     with board.connect() as con:
         rsync(con, source=source, target=target, delete=delete)

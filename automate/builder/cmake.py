@@ -22,7 +22,10 @@ class CMakeBuilder(BaseBuilder):
 
         if prefix:
             self.state.prefix = Path(prefix)
+        else:
+            self.state.prefix = self.board.rundir / self.state.srcdir.name
 
+        self.clean()
         self._mkbuilddir()
 
         toolchain_file_name = self.builddir / "toolchain.cmake"
@@ -119,7 +122,7 @@ class CMakeBuilder(BaseBuilder):
         definitions = " ".join(["-D{}".format(d) for d in cmake_definitions])
 
         with self.context.cd(str(self.builddir)):
-            command = "cmake -DCMAKE_INSTALL_RPATH={2}/lib -DCMAKE_BUILD_TYPE='RELWITHDEBINFO' -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake -C cache.cmake {0} {1}".format(
+            command = "cmake -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON -DCMAKE_INSTALL_RPATH={2}/lib -DCMAKE_BUILD_TYPE='RELWITHDEBINFO' -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake -C cache.cmake {0} {1}".format(
                 self.srcdir, definitions, self.prefix
             )
             self.logger.info("Running cmake: {}".format(command))

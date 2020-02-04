@@ -15,7 +15,7 @@ def builds(c):
                     f"Building for {board.id} with {compiler.id} and flags {flag}"
                 )
                 cross_compiler = board.compiler(compiler.id)
-                cross_compiler._flags = [flag]
+                cross_compiler.configure(flags=flag)
                 builddir = f"builds/{board.id}/{compiler.id}_{flag[1:]}"
                 builder = board.builder("make", builddir=builddir)
 
@@ -28,7 +28,7 @@ def builds(c):
 
 
 @task()
-def run(c):
+def all(c):
     for builder in builds(c):
         with builder.board.lock_ctx():
             builder.deploy(c)

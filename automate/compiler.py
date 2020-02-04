@@ -116,7 +116,7 @@ class CrossCompiler(Compiler):
         )
         self.check_multiarch = True
         self.core = 0
-        self._flags: List[str] = []
+        self._flags: List[str] = ["-O2"]
         self._cflags: List[str] = []
         self._cxxflags: List[str] = []
         self._ldflags: List[str] = []
@@ -308,6 +308,9 @@ class CrossCompiler(Compiler):
         base_flags = self.base_flags
         if base_flags:
             flags.append(base_flags)
+
+        if self.toolchain == Toolchain.LLVM:
+            flags.append("--stdlib=libstdc++")
 
         if self._cxxflags:
             flags.extend(self._cxxflags)

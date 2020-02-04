@@ -2,19 +2,50 @@ from pathlib import Path
 
 from fabric import task
 
+from ..model.common import Toolchain
+
 
 @task
 def configure(
-    c, board, builddir="", srcdir="", prefix="", D=[]
+    c,
+    board,
+    builddir="",
+    srcdir="",
+    prefix="",
+    flags="",
+    cflags="",
+    cxxflags="",
+    ldflags="",
+    libs="",
+    sysroot=True,
+    isa=True,
+    uarch=True,
+    toolchain="gcc",
+    compiler_id="",
+    D=[],
 ):  # pragma: no cover
     """ Configure a cmake project for the build
     """
 
     board = c.board(board)
-    cc = board.compiler()
+
+    toolchain = Toolchain(toolchain) if toolchain else Toolchain.GCC
+
+    cc = board.compiler(toolchain=toolchain, compiler_id=compiler_id)
+    cc.configure(
+        flags=flags,
+        cflags=cflags,
+        cxxflags=cxxflags,
+        ldflags=ldflags,
+        uarch_opt=uarch,
+        isa_opt=isa,
+        enable_sysroot=sysroot,
+        libs=libs,
+    )
+
     builder = board.builder("cmake", builddir=builddir)
 
-    builder.configure(cc, srcdir=srcdir, prefix=prefix, cmake_definitions=[])
+    builder.configure(cc, srcdir=srcdir, prefix=prefix, cmake_definitions=D)
 
 
 @task
