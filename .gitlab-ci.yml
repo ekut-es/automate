@@ -9,7 +9,8 @@ before_script:
   - python3.6 -m ensurepip
   - python3.6 -m pip install poetry
   
-
+variables:
+  "LC_ALL": "en_US.UTF-8"
   
 test:
   script:
@@ -20,9 +21,6 @@ test:
     - poetry run inv test
   tags:
     - docker
-    
-  environment:
-    LC_ALL: en_US.UTF-8
 
 test_with_db:
 
@@ -43,6 +41,3 @@ test_with_db:
     - poetry run inv test
   tags:
     - docker
-    
-  environment:
-    LC_ALL: en_US.UTF-8
