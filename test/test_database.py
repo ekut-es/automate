@@ -1,7 +1,7 @@
 import automate.database as db
 
 from pytest import fixture
-import pytest.mark
+import pytest
 
 @fixture
 def database():
