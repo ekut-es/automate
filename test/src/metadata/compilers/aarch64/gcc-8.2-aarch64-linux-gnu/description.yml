@@ -1,5 +1,4 @@
-name: gcc-8.2-aarch64-linux-gnu
-id: aarch64-gcc82
+name: aarch64-gcc82
 triples:
   -
     machine: aarch64

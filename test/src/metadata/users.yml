@@ -16,4 +16,14 @@ gerum:
   public_keys:
     - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEAv61/8ZqrfDJ+XvNP3nsxtA0Dim0PMA26bx1LTk3CveCPDMd5EamXHX/h+RyB63mhp42W8gFJvosV0kVkbK7IWvfWFDWdYuMDn7c6K28IEmWaD8mmBdwYFChGDKf+Pdonk60SQdNlKCrvCJzbgTIfdZJyP/D2/BF7mllaBQlSCtc= *"
 
+luebeck:
+  name: "Konstantin Lübeck"
+  mail: konstantin.luebeck@uni-tuebingen.de
+  public_keys:
+    - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA7gwcV8B+cnnpEdQaxzC1ZDCXlUtCriYzzHndgs/pd9w9BccvLgIFWCjYgApKbt8fn6sp1sF7AwYBhpYE3XfIXz5eb1LxmX8SGr5RziwfSLMiTssDILMswyWOaUJEYsX58M/iQAJ+BRkBS6kWuBQx4z5NnBS2AzNtsyvFZESYs5EqT8jS53RT2bO8I14iF1d8NQkUJcuXnwoKsuRbcSGp0ckfeY3S1hu3dOk/icyaObBBeIBLdTZM4ozvdZu1HBuF3MirI/Y2AtoKQko+jUnkwFWOfUVo7OU/AeLqvlAfrUk9MGSqJ+Mxd1ygqoLSP3cbKqXKVM3m20Kpg3O0CyET5Q== konstantin.luebeck@student.uni-tuebingen.de"
 
+volmdenn:
+    name: "Dennis Volm"
+    mail: dennis.volm@student.uni-tuebingen.de
+    public_keys:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHVfqEqR6dHAwEe0pZfTiiCMlQE3KNooVz4FlXcWNeXEeOl0CaBvQh2rysU3jWpnCb/9nsC2N55XdgZBrB9tUEBi4e849N3K6Sr34gfpykRcI16KP5i3Y8LA1sLlChlZS+5d3sMQ886Lb4rgWCk+pNOopegiVi1eeEUd+3pNGgRX/RTMhixLHP7UJIC1cSSaV/3M2LFxzsCLfK8AIO+lv5sTlOmhUDUVMoM48p9d/JVDnHLaWIjjosX4EgLK1Se9o6R11wVCbNqRwaiTd0KRMstDMQb5k7RnEbT+oS4zKZRWIrYhe5N3Sar5PbrlcK7kJir5F14sRBZcKyaOC/tk6X volmdenn@ducky"

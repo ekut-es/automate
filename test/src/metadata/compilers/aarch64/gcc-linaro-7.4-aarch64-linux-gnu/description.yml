@@ -1,5 +1,4 @@
-name: gcc-linaro-7.4.1-aarch64-linux-gnu
-id: aarch64-gcc74
+name: aarch64-gcc74
 triples:
   -
     machine: aarch64

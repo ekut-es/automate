@@ -46,6 +46,11 @@ class Board(object):
         self.compiler_models = compilers
         self.identity = Path(identity).absolute()
 
+    @property
+    def id(self) -> str:
+        #FIXME: Remove and replace with hostname
+        return self.name
+        
     @contextmanager
     def lock_ctx(self, timeout: str = "1h"):
         if not self.has_lock():

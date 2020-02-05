@@ -31,7 +31,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
                 )
                 cpus.append(CoreModel(**current_dict))
             current_dict = {"description": ""}
-            current_dict["id"] = int(m.group(1))
+            current_dict["num"] = int(m.group(1))
 
         m = re.match(r"model name\s+: (.*)", line)
         if m:

@@ -21,14 +21,14 @@ def test_model_load():
     assert len(model.boards) > 0
     assert len(model.compilers) > 0
 
-    checked_boards = ["jetsontx2", "jetsonagx", "zynqberry"]
+    checked_boards = ["jetsontx2", "jetsonagx", "zynqberry", "raspberrypi4b-jh1"]
     for board in model.boards:
-        checked_boards.remove(board.id)
+        checked_boards.remove(board.name)
     assert len(checked_boards) == 0
 
     c = Counter()
     for board in model.boards:
-        c[board.id] += 1
+        c[board.name] += 1
 
     for key, val in c.items():
         assert val == 1

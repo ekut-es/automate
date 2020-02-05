@@ -1,5 +1,4 @@
 name: clang-70
-id: clang-70
 triples:
   - 
     machine: aarch64
@@ -21,6 +20,7 @@ cc: clang
 cxx: clang++
 asm: llvm-as
 ld: lld  
+multiarch: True
 
 isa_map:
   armv8.1-a: -march=armv8.1-a

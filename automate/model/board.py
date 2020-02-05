@@ -102,7 +102,7 @@ class BoardModel(DataModelBase):
     
     soc: Optional[SOCModel] = None 
     power_connector: Optional[PowerConnectorModel] = None
-    #TODO: maybe move to power connector and FIXME
+    #TODO: maybe move to power connector
     voltage : Optional[float] = None      #  voltage in V
     max_current : Optional[float] = None  # max. current in A
     

@@ -21,7 +21,7 @@ def configure(
     isa=True,
     uarch=True,
     toolchain="gcc",
-    compiler_id="",
+    compiler_name="",
     D=[],
 ):  # pragma: no cover
     """ Configure a cmake project for the build
@@ -31,7 +31,7 @@ def configure(
 
     toolchain = Toolchain(toolchain) if toolchain else Toolchain.GCC
 
-    cc = board.compiler(toolchain=toolchain, compiler_id=compiler_id)
+    cc = board.compiler(toolchain=toolchain, compiler_name=compiler_name)
     cc.configure(
         flags=flags,
         cflags=cflags,

@@ -84,7 +84,6 @@ class Database:
         board_models = []
 
         for board in boards:
-            print(board)
             query, bind_params = self.j.prepare_query(
                 self.all_cpu_cores_for_board_query, {"board_id": board["id"]}
             )
