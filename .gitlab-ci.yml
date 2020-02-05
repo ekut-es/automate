@@ -14,7 +14,6 @@ before_script:
 test:
   script:
     - set -e
-    - echo "LC_ALL: $LC_ALL"
     - poetry install
     - poetry run inv mypy
     - poetry run inv test
@@ -34,7 +33,6 @@ test_with_db:
   
   script:
     - set -e
-    - echo "LC_ALL: $LC_ALL"
     - poetry install -E postgres
     - poetry run inv mypy
     - poetry run inv test
