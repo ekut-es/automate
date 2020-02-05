@@ -9,7 +9,8 @@ before_script:
   - python3.6 -m ensurepip
   - python3.6 -m pip install poetry
   
-
+variables:
+  LC_ALL: "en_US.UTF-8"
   
 test:
   script:
