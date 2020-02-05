@@ -22,7 +22,7 @@ test_with_db:
 
 
   services:
-    - postgres:latest
+    - postgres:10
 
   variables:
     POSTGRES_DB: der_schrank_test
