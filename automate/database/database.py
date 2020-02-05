@@ -2,6 +2,7 @@ import inspect
 import os
 import pprint
 import sys
+import logging
 from datetime import datetime
 from os.path import dirname, join
 
@@ -34,6 +35,7 @@ def database_enabled() -> bool:
 
 class Database:
     def __init__(self, host, port, db, user, password):
+        self.logger = logging.getLogger(self.__name__)
         self.connection_string = "host={} port={} dbname={} user={} password={}".format(
             host, port, db, user, password
         )
@@ -44,12 +46,12 @@ class Database:
                 cursor_factory=psycopg2.extras.DictCursor
             )
         except Exception as e:
-            print(
+            self.logger.warn(
                 "ERROR: could not connnect to database: '"
                 + self.connection_string
                 + "'"
             )
-            print(e)
+            self.logger.warn(e)
 
         self.j = JinjaSql(param_style="pyformat")
 
@@ -73,7 +75,7 @@ class Database:
         try:
             sql_file = open(sql_file_path, "r")
         except:
-            print("ERROR: could not load sql file: '" + sql_file_path + "'")
+            self.logger.warn("ERROR: could not load sql file: '" + sql_file_path + "'")
         query = sql_file.read()
         return query
 
@@ -260,5 +262,5 @@ class Database:
         try:
             self.cursor.execute(query)
         except Exception as e:
-            print("ERROR: database import failed")
-            print(e)
+            self.logger.warn("ERROR: database import failed")
+            self.logger.warn(e)

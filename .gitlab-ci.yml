@@ -25,9 +25,9 @@ test_with_db:
     - postgres:latest
 
   variables:
-    POSTGRES_DB: der_schrank
-    POSTGRES_USER: test
-    POSTGRES_PASSWORD: test
+    POSTGRES_DB: der_schrank_test
+    POSTGRES_USER: der_schrank_test
+    POSTGRES_PASSWORD: der_schrank_test
   
   script:
     - set -e
