@@ -19,6 +19,16 @@ test:
     - docker
 
 test_with_db:
+
+
+  services:
+    - postgres:latest
+
+  variables:
+    POSTGRES_DB: der_schrank
+    POSTGRES_USER: test
+    POSTGRES_PASSWORD: test
+  
   script:
     - set -e
     - poetry install -E postgres
