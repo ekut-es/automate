@@ -13,6 +13,8 @@ class KernelBuilder(BaseBuilder):
     def _kernel_desc(self, kernel_id):
         board = self.board
 
+        print(board.json())
+
         kernel_desc = None
         for kernel in board.os.kernels:
             if kernel.id == kernel_id:
@@ -22,7 +24,7 @@ class KernelBuilder(BaseBuilder):
         if kernel_desc is None:
             raise Exception(
                 "Could not find config with id: {} for board {}".format(
-                    kernel_id, board.id
+                    kernel_id, board.name
                 )
             )
 

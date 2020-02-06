@@ -49,7 +49,7 @@ def configure(
 
 
 @task
-def build(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
+def build(c, board, builddir=""):  # pragma: no cover
     """build a cmake project for the board"""
 
     board = c.board(board)
@@ -59,7 +59,7 @@ def build(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
 
 
 @task
-def install(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
+def install(c, board, builddir=""):  # pragma: no cover
     """install cmake project for deployment"""
 
     board = c.board(board)
