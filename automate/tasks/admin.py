@@ -24,12 +24,10 @@ from ..loader import ModelLoader
 from ..model import (
     BoardModel,
     CoreModel,
-    ISAExtension,
     OSModel,
     SSHConnectionModel,
     TripleModel,
 )
-from ..model.common import ISA, UArch, Vendor
 from ..utils import cpuinfo, fix_symlinks
 from ..utils.network import find_local_port
 
@@ -86,7 +84,7 @@ def add_users(c):  # pragma: no cover
 def safe_rootfs(c, board):  # pragma: no cover
     """Safe rootfs image of board
        
-        -b/--board: target board id
+        -b/--board: target board name
     """
     bh = c.board(board)
 
@@ -246,44 +244,13 @@ def build_sysroot(c, board):  # pragma: no cover
         c.run("sudo rmdir {}".format(tmp_path))
 
 
-class ISAValidator(Validator):
-    isa_set = set((k.value for k in ISA))
-
-    def validate(self, document):
-        text = document.text.strip()
-        if text not in self.isa_set:
-            raise ValidationError(
-                message="{} is not a valid ISA", cursor_position=len(text)
-            )
 
 
-class UArchValidator(Validator):
-    uarch_set = set((k.value for k in UArch))
-
-    def validate(self, document):
-        text = document.text.strip()
-        if text not in self.uarch_set:
-            raise ValidationError(
-                message="{} is not a valid Microarchitecture",
-                cursor_position=len(text),
-            )
-
-
-class VendorValidator(Validator):  # pragma: no cover
-    vendor_set = set((k.value for k in Vendor))
-
-    def validate(self, document):
-        text = document.text.strip()
-        if text not in self.vendor_set:
-            raise ValidationError(
-                message="{} is not a valid CPU Vendor",
-                cursor_position=len(text),
-            )
 
 
 board_yaml_template = r"""
 name: 
-id: 
+hostname: 
 board: 
 description: 
 rundir:
@@ -384,20 +351,19 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
     if result.return_code == 0:
         hostname = result.stdout.strip()
 
-    board_id = prompt("board_id: ", default=hostname)
+    board_name = prompt("board_name: ", default=hostname)
     model_file = (
         Path(c.config.automate.metadata)
         / "boards"
-        / board_id
+        / board_name
         / "description.yml"
     )
     if model_file.exists():
-        logging.error("board with id {0} already exists".format(board_id))
+        logging.error("board with id {0} already exists".format(board_name))
         return -1
 
-    board_name = prompt("board name: ", default=hostname)
 
-    board_model = board_id
+    board_model = board_name
     board_model = prompt("board model: ", default=board_model)
 
     board_description = prompt("board description: ", default="")
@@ -409,37 +375,30 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
     cpu_models = []
     # TODO: this is quite repetitive if there are many cores ;)
     for cpu in cpus:
-        print("cpu: ", cpu.id)
+        print("cpu: ", cpu.num)
 
         description = prompt(
             "  description: ", validator=None, default=cpu.description
         )
         uarch = prompt(
             "  microarchitecture: ",
-            default=cpu.uarch.value if cpu.uarch.value != UArch.UNKNOWN else "",
-            validator=UArchValidator(),
-            completer=FuzzyWordCompleter(words=[k.value for k in UArch]),
+            default=cpu.uarch,
         )
 
         vendor = prompt(
             "  vendor: ",
-            default=cpu.vendor.value,
-            validator=VendorValidator(),
-            completer=FuzzyWordCompleter(words=[k.value for k in Vendor]),
+            default=cpu.vendor,
         )
 
         isa = prompt(
             "  isa: ",
-            default=cpu.isa.value if cpu.isa != ISA.UNKNOWN else "",
-            validator=ISAValidator(),
-            completer=FuzzyWordCompleter([k.value for k in ISA]),
+            default=cpu.isa,
         )
 
         # TODO: Prompt for isa extensions
-        assert ISAExtension.UNKNOWN not in cpu.extensions
-
+        
         cpu_model = CoreModel(
-            id=cpu.id,
+            id=cpu.num,
             isa=isa,
             uarch=uarch,
             vendor=vendor,
@@ -499,9 +458,9 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
     distribution = prompt("  distribution: ", default=distribution)
     version = prompt("  version: ", default=version)
     description = ""
-    sysroot = prompt("  sysroot: ", default="${boardroot}/${board_id}/sysroot")
+    sysroot = prompt("  sysroot: ", default="${boardroot}/${board_name}/sysroot")
     rootfs = prompt(
-        "  rootfs: ", default="${boardroot}/${board_id}/${board_id}.img"
+        "  rootfs: ", default="${boardroot}/${board_name}/${board_name}.img"
     )
     multiarch = False
     if distribution in ["ubuntu", "debian"]:
@@ -520,7 +479,6 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
 
     board_model = BoardModel(
         name=board_name,
-        id=board_id,
         description=board_description,
         board=board_model,
         rundir=rundir,

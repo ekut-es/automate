@@ -159,7 +159,7 @@ class KernelData(object):
     @property
     def deploy_package_name(self):
         """Name of the kernel deploy archive"""
-        return "kernel-{0}.tar.gz".format(self.kernel_desc.id)
+        return "kernel-{0}.tar.gz".format(self.kernel_desc.name)
 
     @property
     def deploy_package_path(self):
@@ -168,7 +168,7 @@ class KernelData(object):
     @property
     def build_cache_name(self):
         """Name of the kernel build cache archive"""
-        return "kernel-build-{}.tar.bz".format(self.kernel_desc.id)
+        return "kernel-build-{}.tar.bz".format(self.kernel_desc.name)
 
     @property
     def build_cache_path(self):

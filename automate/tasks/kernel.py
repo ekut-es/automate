@@ -72,5 +72,8 @@ def clean(c, board, builddir=""):  # pragma: no cover
 
     builder.clean()
 
+    kernel_config = (
+        board.model.model_file.parent / "kernel" / f"{kernel_id}_config"
+    )
 
 __all__ = ["configure", "build", "clean", "install"]

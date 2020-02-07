@@ -15,10 +15,7 @@ else
     git pull
     popd
 fi
-#Download DNN test data
-pushd opencv_extra/testdata/dnn/
-./download_models.py
-popd
+
 
 for BOARD in $BOARDS; do
     echo "Syncing test inputs to $BOARD"

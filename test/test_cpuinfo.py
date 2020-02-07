@@ -15,19 +15,19 @@ def test_cpuinfo():
 
         assert len(models) == 2
 
-        assert models[0].id == 0
-        assert models[1].id == 1
+        assert models[0].num == 0
+        assert models[1].num == 1
 
-        assert models[0].isa.value == "armv7-a"
-        assert models[1].isa.value == "armv7-a"
+        assert models[0].isa == "armv7-a"
+        assert models[1].isa == "armv7-a"
 
-        assert models[0].uarch.value == "cortex-a9"
-        assert models[1].uarch.value == "cortex-a9"
+        assert models[0].uarch == "cortex-a9"
+        assert models[1].uarch == "cortex-a9"
 
-        assert models[0].vendor.value == "arm"
-        assert models[1].vendor.value == "arm"
+        assert models[0].vendor == "arm"
+        assert models[1].vendor == "arm"
 
-        assert set([f.value for f in models[0].extensions]) == set(
+        assert set([f for f in models[0].extensions]) == set(
             [
                 "half",
                 "thumb",
@@ -40,7 +40,7 @@ def test_cpuinfo():
                 "vfpd32",
             ]
         )
-        assert set([f.value for f in models[1].extensions]) == set(
+        assert set([f for f in models[1].extensions]) == set(
             [
                 "half",
                 "thumb",
@@ -65,8 +65,8 @@ def test_unknown():
         models = _cpuinfo(text)
 
         assert len(models) == 1
-        assert models[0].isa.value == "unknown"
-        assert models[0].vendor.value == "unknown"
-        assert models[0].uarch.value == "unknown"
+        assert models[0].isa == ""
+        assert models[0].vendor == ""
+        assert models[0].uarch == ""
 
-        assert "unknown" in [f.value for f in models[0].extensions]
+        assert "test_unknown" in models[0].extensions

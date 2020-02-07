@@ -13,13 +13,10 @@ from .model import (
     TripleModel,
 )
 from .model.common import (
-    ISA,
     OS,
     Environment,
     Machine,
     Toolchain,
-    UArch,
-    Vendor,
 )
 
 if TYPE_CHECKING:
@@ -36,6 +33,7 @@ class Compiler(object):
     ):
         self.model = compiler
         self.context = context
+        self.logger = logging.getLogger(__name__)
 
     @property
     def triples(self) -> List[TripleModel]:
@@ -94,7 +92,13 @@ class Compiler(object):
     @property
     def id(self) -> str:
         """Unique identifier of compiler in metadata"""
-        return self.model.id
+        self.logger.warning("WARNING: this method has been deprecated")
+        return self.model.name
+
+    @property
+    def name(self) -> str:
+        """Unique identifier of compiler in metadata"""
+        return self.model.name
 
 
 class CrossCompiler(Compiler):
@@ -112,7 +116,7 @@ class CrossCompiler(Compiler):
         self.board = board
 
         self.logger.debug(
-            "Getting compiler {} for {}".format(compiler.id, board.id)
+            "Getting compiler {} for {}".format(compiler.name, board.name)
         )
         self.check_multiarch = True
         self.core = 0
@@ -382,4 +386,4 @@ class CrossCompiler(Compiler):
         """ The default build directory for this cross compiler / board combinarion 
             For now this is just "<cwd>/builds/<board_id>"
         """
-        return Path("builds") / str(self.board.id)
+        return Path("builds") / str(self.board.name)

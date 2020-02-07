@@ -2,6 +2,7 @@ import inspect
 import os
 import pprint
 import sys
+import logging
 from datetime import datetime
 from os.path import dirname, join
 
@@ -34,6 +35,7 @@ def database_enabled() -> bool:
 
 class Database:
     def __init__(self, host, port, db, user, password):
+        self.logger = logging.getLogger(__name__)
         self.connection_string = "host={} port={} dbname={} user={} password={}".format(
             host, port, db, user, password
         )
@@ -44,12 +46,12 @@ class Database:
                 cursor_factory=psycopg2.extras.DictCursor
             )
         except Exception as e:
-            print(
-                "ERROR: could not connnect to database: '"
+            self.logger.error(
+                "could not connnect to database: '"
                 + self.connection_string
                 + "'"
             )
-            print(e)
+            self.logger.error(e)
 
         self.j = JinjaSql(param_style="pyformat")
 
@@ -73,7 +75,7 @@ class Database:
         try:
             sql_file = open(sql_file_path, "r")
         except:
-            print("ERROR: could not load sql file: '" + sql_file_path + "'")
+            self.logger.error("could not load sql file: '" + sql_file_path + "'")
         query = sql_file.read()
         return query
 
@@ -84,7 +86,6 @@ class Database:
         board_models = []
 
         for board in boards:
-
             query, bind_params = self.j.prepare_query(
                 self.all_cpu_cores_for_board_query, {"board_id": board["id"]}
             )
@@ -136,7 +137,7 @@ class Database:
 
                 kernel_model = KernelModel(
                     **{
-                        "id": 0,  # TODO what does id represent?
+                        "name": "",   # A name uniquely identifies a a triple of kernel_configuration/commandline/kernel_source code 
                         "description": kernel["description"],
                         "version": kernel["version"],
                         "commandline": kernel["command_line"],
@@ -186,7 +187,7 @@ class Database:
             for cpu_core in cpu_cores:
                 cpu_core_model = CoreModel(
                     **{
-                        "id": cpu_core["os_id"],
+                        "num": cpu_core["os_id"],
                         "isa": cpu_core["isa"],
                         "uarch": cpu_core["uarch"],
                         "vendor": cpu_core["implementer"],
@@ -206,15 +207,10 @@ class Database:
 
             board_model = BoardModel(
                 **{
-                    "model_file": "/dev/null",  # TODO remove
-                    "model_file_mtime": datetime.strptime(
-                        "2020-01-22 13:40:23", "%Y-%m-%d %H:%M:%S"
-                    ),  # TODO remove
                     "name": board["name"],
-                    "id": board["hostname"],
                     "board": board["hostname"],
                     "description": board["description"],
-                    "rundir": "",  # TODO what is it?
+                    "rundir": "",  # Should probably be moved to connection
                     "doc": documentation_link_models,
                     "connections": [ssh_connection_model],
                     "cores": cpu_core_models,
@@ -233,19 +229,17 @@ class Database:
         cpu_extensions = set()
 
         for cpu_core in board_model.cores:
-            cpu_isas.add(cpu_core.isa.value)
-            cpu_implementers.add(cpu_core.vendor.value)
+            cpu_isas.add(cpu_core.isa)
+            cpu_implementers.add(cpu_core.vendor)
             cpu_uarchs.append(
                 {
-                    "id": cpu_core.uarch.value + cpu_core.vendor.value,
-                    "name": cpu_core.uarch.value,
-                    "vendor": cpu_core.vendor.value,
+                    "id": cpu_core.uarch + cpu_core.vendor,
+                    "name": cpu_core.uarch,
+                    "vendor": cpu_core.vendor,
                 }
             )
             cpu_extensions.update(cpu_core.extensions)
 
-        cpu_uarchs = list({v["id"]: v for v in cpu_uarchs}.values())
-        cpu_extensions = [x.value for x in cpu_extensions]
 
         query, bind_params = self.j.prepare_query(
             self.insert_board_query,
@@ -253,7 +247,7 @@ class Database:
                 "soc_name": additional_data["soc_name"],
                 "foundry_name": additional_data["foundry_name"],
                 "technology": additional_data["technology"],
-                "hostname": board_model.id,
+                "hostname": board_model.name,
                 "board": board_model,
                 "power_connector_name": additional_data["power_connector_name"],
                 "voltage": additional_data["voltage"],
@@ -268,5 +262,5 @@ class Database:
         try:
             self.cursor.execute(query)
         except Exception as e:
-            print("ERROR: database import failed")
-            print(e)
+            self.logger.error("ERROR: database import failed")
+            self.logger.error(e)

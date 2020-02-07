@@ -9,6 +9,9 @@ before_script:
   - python3.6 -m ensurepip
   - python3.6 -m pip install poetry
   
+variables:
+  LC_ALL: "en_US.UTF-8"
+  
 test:
   script:
     - set -e
@@ -22,12 +25,12 @@ test_with_db:
 
 
   services:
-    - postgres:latest
+    - postgres:10
 
   variables:
-    POSTGRES_DB: der_schrank
-    POSTGRES_USER: test
-    POSTGRES_PASSWORD: test
+    POSTGRES_DB: der_schrank_test
+    POSTGRES_USER: der_schrank_test
+    POSTGRES_PASSWORD: der_schrank_test
   
   script:
     - set -e

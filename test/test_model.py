@@ -23,12 +23,12 @@ def test_model_load():
 
     checked_boards = ["jetsontx2", "jetsonagx", "zynqberry"]
     for board in model.boards:
-        checked_boards.remove(board.id)
+        checked_boards.remove(board.name)
     assert len(checked_boards) == 0
 
     c = Counter()
     for board in model.boards:
-        c[board.id] += 1
+        c[board.name] += 1
 
     for key, val in c.items():
         assert val == 1

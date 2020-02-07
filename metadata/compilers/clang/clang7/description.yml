@@ -1,5 +1,4 @@
 name: clang-70
-id: clang-70
 triples:
   - 
     machine: aarch64

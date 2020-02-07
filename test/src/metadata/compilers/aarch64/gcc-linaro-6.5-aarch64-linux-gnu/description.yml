@@ -1,5 +1,4 @@
-name: gcc-linaro-6.5.0-aarch64-linux-gnu
-id: aarch64-gcc65
+name: aarch64-gcc65
 triples:
   -
     machine: aarch64

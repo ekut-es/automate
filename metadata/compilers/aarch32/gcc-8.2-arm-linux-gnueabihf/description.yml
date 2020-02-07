@@ -1,5 +1,4 @@
-name: gcc-arm-8.2-2018.11-x86_64-arm-linux-gnueabihf
-id: aarch32hf-gcc82
+name: aarch32hf-gcc82
 triples:
   -
     machine: arm

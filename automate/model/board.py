@@ -32,11 +32,11 @@ class UARTConnectionModel(DataModelBase):
 
 
 class CoreModel(DataModelBase):
-    id: int
-    isa: ISA
-    uarch: UArch
-    vendor: Vendor
-    extensions: List[ISAExtension] = []  # Supported ISA extensions
+    num: int
+    isa: str
+    uarch: str
+    vendor: str
+    extensions: List[str] = []  # Supported ISA extensions
     description: str = ""
 
 
@@ -52,7 +52,7 @@ class KernelImageModel(DataModelBase):
 
 
 class KernelModel(DataModelBase):
-    id: str
+    name: str
     description: str
     version: str
     localversion: Optional[str] = None
@@ -70,15 +70,27 @@ class OSModel(DataModelBase):
     distribution: str
     release: str
     description: str
-    sysroot: Path = Path("$(boardroot)/$(board_id)/sysroot")
-    rootfs: Path = Path("$(boardroot)/$(board_id)/$(board_id).img")
+    sysroot: Path = Path("$(boardroot)/$(board_name)/sysroot")
+    rootfs: Path = Path("$(boardroot)/$(board_name)/$(board_id).img")
     multiarch: bool = False
     kernels: List[KernelModel] = []
 
 
-class BoardModel(LoadedModelBase):
+class FoundryModel(DataModelBase):
     name: str
-    id: str
+    
+class SOCModel(DataModelBase):
+    name: str
+    technology: int
+    foundry: FoundryModel
+
+class PowerConnectorModel(DataModelBase):
+    name: str
+
+class BoardModel(DataModelBase):
+    name: str
+    hostname: str = ""      # FIXME use pydantic datatypes
+    mac_address : str = ""  # FIXME use pydantic datatypes
     board: str
     description: str
     rundir: Path
@@ -87,12 +99,26 @@ class BoardModel(LoadedModelBase):
     connections: List[Union[SSHConnectionModel, UARTConnectionModel]]
     cores: List[CoreModel]
     os: OSModel
+    
+    soc: Optional[SOCModel] = None 
+    power_connector: Optional[PowerConnectorModel] = None
+    #TODO: maybe move to power connector
+    voltage : Optional[float] = None      #  voltage in V
+    max_current : Optional[float] = None  # max. current in A
+    
+    
+    
 
     def _get_env_dict(self) -> Dict[str, str]:
         default_dict = dict(super(BoardModel, self)._get_env_dict())
 
-        d = {"board": self.board, "board_id": self.id}
+        d = {"board": self.board, "board_name": self.name}
 
         default_dict.update(d)
 
         return default_dict
+
+class BoardModelFS(BoardModel, LoadedModelBase):
+    """Adds fields like file_name and file_modification time 
+    that are only meaningful for models loaded from Filesystem""" 
+    pass

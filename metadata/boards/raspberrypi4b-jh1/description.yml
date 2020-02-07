@@ -1,5 +1,4 @@
 name: raspberrypi4b-jh1
-id: raspberrypi4b-jh1
 board: raspberrypi4b
 description: ''
 rundir: /home/es/run
@@ -15,7 +14,7 @@ connections:
     port: 22
     
 cores:
-  - id: 0
+  - num: 0
     isa: armv8-a
     uarch: cortex-a72
     vendor: arm
@@ -26,7 +25,7 @@ cores:
       - crc32
       - cpuid
     description: '(microarchitecture: cortex-a72)'
-  - id: 1
+  - num: 1
     isa: armv8-a
     uarch: cortex-a72
     vendor: arm
@@ -37,7 +36,7 @@ cores:
       - crc32
       - cpuid
     description: '(microarchitecture: cortex-a72)'
-  - id: 2
+  - num: 2
     isa: armv8-a
     uarch: cortex-a72
     vendor: arm
@@ -48,7 +47,7 @@ cores:
       - crc32
       - cpuid
     description: '(microarchitecture: cortex-a72)'
-  - id: 3
+  - num: 3
     isa: armv8-a
     uarch: cortex-a72
     vendor: arm

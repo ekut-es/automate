@@ -11,14 +11,13 @@ class TripleModel(DataModelBase):
     """Description of a target triple"""
 
     machine: Machine
-    vendor: Vendor = Vendor.UNKNOWN
+    vendor: str = ""
     os: OS
     environment: Environment
 
 
 class CompilerModel(LoadedModelBase):
     name: str
-    id: str
     triples: List[TripleModel] = Field(
         ..., description="List of supported target triples"
     )
@@ -29,8 +28,8 @@ class CompilerModel(LoadedModelBase):
     cxx: str
     asm: str
     ld: str
-    isa_map: Dict[ISA, str]
-    uarch_map: Dict[UArch, str]
+    isa_map: Dict[str, str]
+    uarch_map: Dict[str, str]
     description: str = ""
     prefix: str = ""
     postfix: str = ""

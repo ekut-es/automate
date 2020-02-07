@@ -46,6 +46,11 @@ class Board(object):
         self.compiler_models = compilers
         self.identity = Path(identity).absolute()
 
+    @property
+    def id(self) -> str:
+        #FIXME: Remove and replace with hostname
+        return self.model.name
+        
     @contextmanager
     def lock_ctx(self, timeout: str = "1h"):
         if not self.has_lock():
@@ -83,14 +88,14 @@ class Board(object):
         return False
 
     def compiler(
-        self, compiler_id: str = "", toolchain: Toolchain = Toolchain.GCC
+        self, compiler_name: str = "", toolchain: Toolchain = Toolchain.GCC
     ) -> CrossCompiler:
         """ Build a Cross Compiler Object for this board 
 
         By default uses newest gcc compiler available in metadata.
 
         # Arguments
-           compiler_id: use a specifc compiler id
+           compiler_name: use a specifc compiler id
            toolchain:  use newest configured compiler
 
         # Returns
@@ -101,8 +106,8 @@ class Board(object):
             sorted(self.compiler_models, key=lambda x: x.version)
         )
         for compiler_model in sorted_models:
-            if compiler_id != "":
-                if compiler_id == compiler_model.id:
+            if compiler_name != "":
+                if compiler_name == compiler_model.name:
                     cc = CrossCompiler(self.context, compiler_model, self)
                     if cc.valid:
                         return cc
@@ -112,8 +117,8 @@ class Board(object):
                     return cc
 
         raise Exception(
-            "Could not get compatible compiler with: id: '{}' and toolchain: '{}'".format(
-                compiler_id, toolchain.value
+            "Could not get compatible compiler with: name: '{}' and toolchain: '{}'".format(
+                compiler_name, toolchain.value
             )
         )
 
@@ -187,7 +192,7 @@ class Board(object):
                 return c
 
         raise Exception(
-            "Could not find ssh connection for {}".format(self.model.id)
+            "Could not find ssh connection for {}".format(self.model.name)
         )
 
     def reboot(self, wait=True) -> Union[Connection, None]:
@@ -200,7 +205,7 @@ class Board(object):
         If wait was given a new connection is Returned
         """
 
-        self.logger.info("Rebooting board {}".format(self.id))
+        self.logger.info("Rebooting board {}".format(self.name))
 
         with self.connect() as connection:
             connection.run("sudo shutdown -r now & exit")
@@ -271,12 +276,12 @@ class Board(object):
             return Path(result.stdout.strip())
 
     def kexec(
-        self, kernel_id="", append="", commandline="", wait=True
+        self, kernel_name="", append="", commandline="", wait=True
     ) -> Union[Connection, None]:
         """ Start a board kernel using kexec 
 
         # Arguments
-        kernel_id: id of the kernel to boot
+        kernel_name: unique name of the kernel to boot
         append: string of addition kernel commandline flags
         commandline: completely new kernel commandline
         wait: block unitl board is reachable via ssh again and reconnect
@@ -287,10 +292,10 @@ class Board(object):
         kernel_config = None
 
         for config in self.os.kernels:
-            if kernel_id and kernel_id == config.id:
+            if kernel_name and kernel_name == config.name:
                 kernel_config = config
                 break
-            elif not kernel_id and config.default:
+            elif not kernel_name and config.default:
                 kernel_config = config
                 break
 
@@ -328,11 +333,11 @@ class Board(object):
 
         return None
 
-    def kernel_data(self, id: str) -> Union[KernelData, None]:
+    def kernel_data(self, name: str) -> Union[KernelData, None]:
         """ Information about the installed kernels 
 
         # Arguments
-        id: kernel id for which information should be returned
+        name: kernel name for which information should be returned
         
         # Returns
         KernelData object for the kernel configration
@@ -340,7 +345,7 @@ class Board(object):
         """
 
         for kernel_desc in self.os.kernels:
-            if kernel_desc.id == id:
+            if kernel_desc.name == name:
                 return KernelData(self, kernel_desc)
         return None
 

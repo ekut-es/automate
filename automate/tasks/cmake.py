@@ -21,7 +21,7 @@ def configure(
     isa=True,
     uarch=True,
     toolchain="gcc",
-    compiler_id="",
+    compiler_name="",
     D=[],
 ):  # pragma: no cover
     """ Configure a cmake project for the build
@@ -31,7 +31,7 @@ def configure(
 
     toolchain = Toolchain(toolchain) if toolchain else Toolchain.GCC
 
-    cc = board.compiler(toolchain=toolchain, compiler_id=compiler_id)
+    cc = board.compiler(toolchain=toolchain, compiler_name=compiler_name)
     cc.configure(
         flags=flags,
         cflags=cflags,
@@ -49,7 +49,7 @@ def configure(
 
 
 @task
-def build(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
+def build(c, board, builddir=""):  # pragma: no cover
     """build a cmake project for the board"""
 
     board = c.board(board)
@@ -59,7 +59,7 @@ def build(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
 
 
 @task
-def install(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
+def install(c, board, builddir=""):  # pragma: no cover
     """install cmake project for deployment"""
 
     board = c.board(board)
