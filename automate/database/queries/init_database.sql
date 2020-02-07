@@ -119,7 +119,7 @@ values
 	('iwmmxt2');
 
 create table cpu_implementers (
-    id integer not null,
+    id integer not null, -- Why not id serial primary key,
     name varchar(32),
     unique(id),
     unique(name),
@@ -425,7 +425,7 @@ create table board_oss (
 );
 
 create table os_kernels (
-    id serial primary_key,
+    id serial primary key,
     board_os_id integer references board_oss(id) not null,
     name varchar(32),
     description varchar(255),
@@ -445,6 +445,7 @@ create table os_kernels (
 create unique index only_one_default_kernel_per_board_os on os_kernels(board_os_id) where is_default;
 
 create table docs (
+    id serial primary key,
     board_id integer references boards(id) ,
     title varchar(255),
     location varchar(1024),

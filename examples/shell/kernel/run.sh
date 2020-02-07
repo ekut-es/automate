@@ -2,7 +2,7 @@
 
 BOARDS="zynqberry jetsontx2 jetsonagx"
 
-BOARDS=$(automate board.board-ids --filter '"default" in [kernel.id for kernel in board.os.kernels]')
+BOARDS=$(automate board.board-ids --filter '"default" in [kernel.name for kernel in board.os.kernels]')
 
 for BOARD in $BOARDS; do
     echo "Compile kernel for $BOARD"
