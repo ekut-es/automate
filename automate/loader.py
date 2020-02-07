@@ -12,7 +12,7 @@ from ruamel.yaml.comments import CommentedMap
 from .config import AutomateConfig
 from .model import (
     BoardModel,
-    BoardModelFS, 
+    BoardModelFS,
     CompilerModel,
     DataModelBase,
     LoadedModelBase,
@@ -77,7 +77,7 @@ class ModelLoader(object):
                 merged_list.append(item)
                 merged_names.add(item.name)
 
-        merged_list.sort(key = lambda x: x.name)
+        merged_list.sort(key=lambda x: x.name)
         return merged_list
 
     def _apply_templates(

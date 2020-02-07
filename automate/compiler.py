@@ -12,12 +12,7 @@ from .model import (
     MetadataModel,
     TripleModel,
 )
-from .model.common import (
-    OS,
-    Environment,
-    Machine,
-    Toolchain,
-)
+from .model.common import OS, Environment, Machine, Toolchain
 
 if TYPE_CHECKING:
     import automate.context

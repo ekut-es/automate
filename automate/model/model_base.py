@@ -25,3 +25,7 @@ class LoadedModelBase(DataModelBase):
             "model_file": str(self.model_file),
             "model_dir": str(self.model_file.parent),
         }
+
+
+class DBModelBase(DataModelBase):
+    id: int  # Database ID

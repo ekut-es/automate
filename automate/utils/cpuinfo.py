@@ -26,9 +26,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
                         ]
                 current_dict["description"] = current_dict[
                     "description"
-                ] + " (microarchitecture: {})".format(
-                    current_dict["uarch"]
-                )
+                ] + " (microarchitecture: {})".format(current_dict["uarch"])
                 cpus.append(CoreModel(**current_dict))
             current_dict = {"description": ""}
             current_dict["num"] = int(m.group(1))

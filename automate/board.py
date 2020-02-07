@@ -48,9 +48,9 @@ class Board(object):
 
     @property
     def id(self) -> str:
-        #FIXME: Remove and replace with hostname
+        # FIXME: Remove and replace with hostname
         return self.model.name
-        
+
     @contextmanager
     def lock_ctx(self, timeout: str = "1h"):
         if not self.has_lock():

@@ -133,7 +133,8 @@ class AutomateContext(invoke.Context):
 
         raise Exception(
             "Could not find board {} available boards {}".format(
-                board_name, ",".join([board.name for board in self.metadata.boards])
+                board_name,
+                ",".join([board.name for board in self.metadata.boards]),
             )
         )
 
@@ -150,6 +151,8 @@ class AutomateContext(invoke.Context):
         raise Exception(
             "Could not find compiler {} available compilers {}".format(
                 compiler_name,
-                ",".join([compiler.name for compiler in self.metadata.compilers]),
+                ",".join(
+                    [compiler.name for compiler in self.metadata.compilers]
+                ),
             )
         )

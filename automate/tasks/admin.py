@@ -244,10 +244,6 @@ def build_sysroot(c, board):  # pragma: no cover
         c.run("sudo rmdir {}".format(tmp_path))
 
 
-
-
-
-
 board_yaml_template = r"""
 name: 
 hostname: 
@@ -362,7 +358,6 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
         logging.error("board with id {0} already exists".format(board_name))
         return -1
 
-
     board_model = board_name
     board_model = prompt("board model: ", default=board_model)
 
@@ -380,23 +375,14 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
         description = prompt(
             "  description: ", validator=None, default=cpu.description
         )
-        uarch = prompt(
-            "  microarchitecture: ",
-            default=cpu.uarch,
-        )
+        uarch = prompt("  microarchitecture: ", default=cpu.uarch)
 
-        vendor = prompt(
-            "  vendor: ",
-            default=cpu.vendor,
-        )
+        vendor = prompt("  vendor: ", default=cpu.vendor)
 
-        isa = prompt(
-            "  isa: ",
-            default=cpu.isa,
-        )
+        isa = prompt("  isa: ", default=cpu.isa)
 
         # TODO: Prompt for isa extensions
-        
+
         cpu_model = CoreModel(
             id=cpu.num,
             isa=isa,
@@ -458,7 +444,9 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
     distribution = prompt("  distribution: ", default=distribution)
     version = prompt("  version: ", default=version)
     description = ""
-    sysroot = prompt("  sysroot: ", default="${boardroot}/${board_name}/sysroot")
+    sysroot = prompt(
+        "  sysroot: ", default="${boardroot}/${board_name}/sysroot"
+    )
     rootfs = prompt(
         "  rootfs: ", default="${boardroot}/${board_name}/${board_name}.img"
     )

@@ -1,8 +1,8 @@
 import inspect
+import logging
 import os
 import pprint
 import sys
-import logging
 from datetime import datetime
 from os.path import dirname, join
 
@@ -40,6 +40,12 @@ class Database:
             host, port, db, user, password
         )
 
+        self.host = host
+        self.port = port
+        self.db = db
+        self.user = user
+        self.password = password
+
         try:
             connection = psycopg2.connect(self.connection_string)
             self.cursor = connection.cursor(
@@ -69,15 +75,23 @@ class Database:
             "select_all_docs_for_board"
         )
         self.insert_board_query = self.__load_query("insert_board")
+        self.init_database_query = self.__load_query("init_database")
 
     def __load_query(self, name):
         sql_file_path = self.QUERIES_DIR + "/" + name + ".sql"
         try:
             sql_file = open(sql_file_path, "r")
         except:
-            self.logger.error("could not load sql file: '" + sql_file_path + "'")
+            self.logger.error(
+                "could not load sql file: '" + sql_file_path + "'"
+            )
         query = sql_file.read()
         return query
+
+    def init(self):
+        query = self.database_init_query
+
+        self.cursor.execute(query)
 
     def get_all_boards(self):
         self.cursor.execute(self.all_boards_query)
@@ -137,7 +151,7 @@ class Database:
 
                 kernel_model = KernelModel(
                     **{
-                        "name": "",   # A name uniquely identifies a a triple of kernel_configuration/commandline/kernel_source code 
+                        "name": "",  # A name uniquely identifies a a triple of kernel_configuration/commandline/kernel_source code
                         "description": kernel["description"],
                         "version": kernel["version"],
                         "commandline": kernel["command_line"],
@@ -239,7 +253,6 @@ class Database:
                 }
             )
             cpu_extensions.update(cpu_core.extensions)
-
 
         query, bind_params = self.j.prepare_query(
             self.insert_board_query,
