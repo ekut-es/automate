@@ -3,6 +3,8 @@ from typing import Dict, Generator, List, Tuple, Union
 from .. import board, compiler
 from ..model.common import Machine
 
+__all__ = ["KernelConfigBuilder", "KernelData"]
+
 
 class FilteredKernelOption:
     def __init__(self, option: str) -> None:
@@ -171,6 +173,3 @@ class KernelData(object):
     @property
     def build_cache_path(self):
         return self.shared_data_dir / self.build_cache_name
-
-
-__all__ = ["KernelConfigBuilder"]
