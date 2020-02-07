@@ -1,12 +1,12 @@
 import pytest
 from pytest import fixture
 
-import automate.database as db
+from automate.database import Database, database_enabled
 
 
 @fixture
-def database():
-    database_object = db.Database(
+def db():
+    database_object = Database(
         host="postgres",
         db="der_schrank_test",
         port=5432,
@@ -17,17 +17,13 @@ def database():
     return database_object
 
 
-@pytest.mark.skipif(
-    not db.database_enabled(), reason="requires database drivers"
-)
-def test_database(database):
+@pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
+def test_database(db):
+    assert db is not None
+
+
+@pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
+def test_database_init(db):
     assert database is not None
 
-
-@pytest.mark.skipif(
-    not db.database_enabled(), reason="requires database drivers"
-)
-def test_database_init(database):
-    assert database is not None
-
-    database.init()
+    db.init()
