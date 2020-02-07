@@ -1,5 +1,4 @@
 select
-    b.id as id,
     b.name as name,
     b.hostname as hostname,
     b.id as id,

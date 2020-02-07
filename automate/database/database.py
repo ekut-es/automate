@@ -5,9 +5,11 @@ import pprint
 import sys
 from datetime import datetime
 from os.path import dirname, join
+from typing import Any, List
 
 from ..model import (
     BoardModel,
+    BoardModelDB,
     CoreModel,
     DocumentationLinkModel,
     KernelImageModel,
@@ -34,7 +36,9 @@ def database_enabled() -> bool:
 
 
 class Database:
-    def __init__(self, host, port, db, user, password):
+    def __init__(
+        self, host: str, port: int, db: str, user: str, password: str
+    ) -> None:
         self.logger = logging.getLogger(__name__)
         self.connection_string = "host={} port={} dbname={} user={} password={}".format(
             host, port, db, user, password
@@ -77,7 +81,7 @@ class Database:
         self.insert_board_query = self.__load_query("insert_board")
         self.init_database_query = self.__load_query("init_database")
 
-    def __load_query(self, name):
+    def __load_query(self, name: str) -> str:
         sql_file_path = self.QUERIES_DIR + "/" + name + ".sql"
         try:
             sql_file = open(sql_file_path, "r")
@@ -88,12 +92,12 @@ class Database:
         query = sql_file.read()
         return query
 
-    def init(self):
-        query = self.database_init_query
+    def init(self) -> None:
+        query = self.init_database_query
 
         self.cursor.execute(query)
 
-    def get_all_boards(self):
+    def get_all_boards(self) -> List[BoardModelDB]:
         self.cursor.execute(self.all_boards_query)
         boards = self.cursor.fetchall()
 
@@ -191,7 +195,7 @@ class Database:
 
             for doc in docs:
                 documentation_link_model = DocumentationLinkModel(
-                    **{"title": doc["title"], "loc": doc["location"]}
+                    title=doc[0], loc=doc[1]
                 )
 
                 documentation_link_models.append(documentation_link_model)
@@ -199,44 +203,40 @@ class Database:
             cpu_core_models = []
 
             for cpu_core in cpu_cores:
-                cpu_core_model = CoreModel(
-                    **{
-                        "num": cpu_core["os_id"],
-                        "isa": cpu_core["isa"],
-                        "uarch": cpu_core["uarch"],
-                        "vendor": cpu_core["implementer"],
-                        "extensions": cpu_core["extensions"],
-                    }
-                )
+                # FIXME: Core Model DB?
+                cpu_core_model = CoreModel(**cpu_core)
 
                 cpu_core_models.append(cpu_core_model)
 
             ssh_connection_model = SSHConnectionModel(
-                **{
-                    "host": board["hostname"],
-                    "username": board["ssh_username"],
-                    "port": board["ssh_port"],
-                }
+                host=board["hostname"],
+                username=board["ssh_username"],
+                port=board["ssh_port"],
             )
 
-            board_model = BoardModel(
-                **{
-                    "name": board["name"],
-                    "board": board["hostname"],
-                    "description": board["description"],
-                    "rundir": "",  # Should probably be moved to connection
-                    "doc": documentation_link_models,
-                    "connections": [ssh_connection_model],
-                    "cores": cpu_core_models,
-                    "os": os_model,
-                }
+            # FIXME: move to separate table
+            board = dict(board)
+            del board["ssh_username"]
+            del board["ssh_port"]
+
+            # FIXME: add database fields for rundir and board
+            board_model = BoardModelDB(  # type: ignore
+                **board,
+                rundir="/home/es/run",
+                board="unknown",
+                doc=documentation_link_models,
+                connections=[ssh_connection_model],
+                cores=cpu_core_models,
+                os=os_model,
             )
 
             board_models.append(board_model)
 
         return board_models
 
-    def insert_board(self, board_model, additional_data):
+    def insert_board(
+        self, board_model: BoardModel, additional_data: Any
+    ) -> None:
         cpu_isas = set()
         cpu_implementers = set()
         cpu_uarchs = []

@@ -32,10 +32,10 @@ class UARTConnectionModel(DataModelBase):
 
 
 class CoreModel(DataModelBase):
-    num: int
+    num: int = Field(..., alias="os_id")
     isa: str
     uarch: str
-    vendor: str
+    vendor: str = Field(..., alias="implementer")
     extensions: List[str] = []  # Supported ISA extensions
     description: str = ""
 

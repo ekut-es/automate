@@ -11,6 +11,7 @@ class DataModelBase(BaseModel):
         validate_all = True
         extra = "forbid"
         allow_mutation = True
+        allow_population_by_field_name = True
 
     def _get_env_dict(self) -> Dict[str, str]:
         return {}
@@ -29,3 +30,6 @@ class LoadedModelBase(DataModelBase):
 
 class DBModelBase(DataModelBase):
     id: int  # Database ID
+
+    class Config(DataModelBase.Config):
+        orm_mode = True
