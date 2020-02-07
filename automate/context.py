@@ -113,7 +113,7 @@ class AutomateContext(invoke.Context):
         logging.debug("Setup forwards finished")
 
     def boards(self):
-        for board in sorted(self.metadata.boards, key=lambda b: b.id):
+        for board in sorted(self.metadata.boards, key=lambda b: b.name):
             yield Board(
                 self,
                 board,
@@ -139,7 +139,7 @@ class AutomateContext(invoke.Context):
         )
 
     def compilers(self):
-        for compiler in sorted(self.metadata.compilers, key=lambda c: c.id):
+        for compiler in sorted(self.metadata.compilers, key=lambda c: c.name):
             yield Compiler(self, compiler)
 
     def compiler(self, compiler_name: str) -> Compiler:

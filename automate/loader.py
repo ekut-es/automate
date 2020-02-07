@@ -147,8 +147,18 @@ class ModelLoader(object):
         compilers = self._load_metadata_list("compilers/**/description.yml")
         compilers = [CompilerModel(**c) for c in compilers]
 
-        boards = self._load_metadata_list("boards/**/description.yml")
-        boards = [BoardModelFS(**b) for b in boards]
+        board_dicts = self._load_metadata_list("boards/**/description.yml")
+        boards = []
+        for board_dict in board_dicts:
+            try:
+                board = BoardModelFS(**board_dict)
+                boards.append(board)
+            except Exception as e:
+                self.logger.error(
+                    "Could not validate board description from: %s",
+                    str(board_dict["model_file"]),
+                )
+                self.logger.error(str(e))
 
         if self.database:
             self.logger.info("getting boards from database")
