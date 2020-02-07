@@ -84,7 +84,7 @@ def add_users(c):  # pragma: no cover
 def safe_rootfs(c, board):  # pragma: no cover
     """Safe rootfs image of board
        
-        -b/--board: target board id
+        -b/--board: target board name
     """
     bh = c.board(board)
 
@@ -250,7 +250,7 @@ def build_sysroot(c, board):  # pragma: no cover
 
 board_yaml_template = r"""
 name: 
-id: 
+hostname: 
 board: 
 description: 
 rundir:
@@ -351,20 +351,19 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
     if result.return_code == 0:
         hostname = result.stdout.strip()
 
-    board_id = prompt("board_id: ", default=hostname)
+    board_name = prompt("board_name: ", default=hostname)
     model_file = (
         Path(c.config.automate.metadata)
         / "boards"
-        / board_id
+        / board_name
         / "description.yml"
     )
     if model_file.exists():
-        logging.error("board with id {0} already exists".format(board_id))
+        logging.error("board with id {0} already exists".format(board_name))
         return -1
 
-    board_name = prompt("board name: ", default=hostname)
 
-    board_model = board_id
+    board_model = board_name
     board_model = prompt("board model: ", default=board_model)
 
     board_description = prompt("board description: ", default="")
@@ -376,7 +375,7 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
     cpu_models = []
     # TODO: this is quite repetitive if there are many cores ;)
     for cpu in cpus:
-        print("cpu: ", cpu.id)
+        print("cpu: ", cpu.num)
 
         description = prompt(
             "  description: ", validator=None, default=cpu.description
@@ -399,7 +398,7 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
         # TODO: Prompt for isa extensions
         
         cpu_model = CoreModel(
-            id=cpu.id,
+            id=cpu.num,
             isa=isa,
             uarch=uarch,
             vendor=vendor,
@@ -459,9 +458,9 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
     distribution = prompt("  distribution: ", default=distribution)
     version = prompt("  version: ", default=version)
     description = ""
-    sysroot = prompt("  sysroot: ", default="${boardroot}/${board_id}/sysroot")
+    sysroot = prompt("  sysroot: ", default="${boardroot}/${board_name}/sysroot")
     rootfs = prompt(
-        "  rootfs: ", default="${boardroot}/${board_id}/${board_id}.img"
+        "  rootfs: ", default="${boardroot}/${board_name}/${board_name}.img"
     )
     multiarch = False
     if distribution in ["ubuntu", "debian"]:
@@ -480,7 +479,6 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
 
     board_model = BoardModel(
         name=board_name,
-        id=board_id,
         description=board_description,
         board=board_model,
         rundir=rundir,

@@ -70,8 +70,8 @@ class OSModel(DataModelBase):
     distribution: str
     release: str
     description: str
-    sysroot: Path = Path("$(boardroot)/$(board_id)/sysroot")
-    rootfs: Path = Path("$(boardroot)/$(board_id)/$(board_id).img")
+    sysroot: Path = Path("$(boardroot)/$(board_name)/sysroot")
+    rootfs: Path = Path("$(boardroot)/$(board_name)/$(board_id).img")
     multiarch: bool = False
     kernels: List[KernelModel] = []
 
