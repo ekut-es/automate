@@ -18,14 +18,14 @@ class KernelBuilder(BaseBuilder):
 
         kernel_desc = None
         for kernel in board.os.kernels:
-            if kernel.id == self._kernel_name():
+            if kernel.name == self._kernel_name():
                 kernel_desc = kernel
                 break
 
         if kernel_desc is None:
             raise Exception(
                 "Could not find config with id: {} for board {}".format(
-                    kernel_id, board.name
+                    self._kernel_name(), board.name
                 )
             )
 

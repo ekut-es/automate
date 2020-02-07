@@ -30,14 +30,14 @@ def configure(
     isa=True,
     uarch=True,
     toolchain="gcc",
-    compiler_id="",
+    compiler_name="",
 ):  # pragma: no cover
     builder = _get_builder(c, board, builddir)
     board = builder.board
 
     toolchain = Toolchain(toolchain) if toolchain else Toolchain.GCC
 
-    cc = board.compiler(toolchain=toolchain, compiler_id=compiler_id)
+    cc = board.compiler(toolchain=toolchain, compiler_name=compiler_name)
     cc.configure(
         flags=flags,
         cflags=cflags,
@@ -71,10 +71,6 @@ def clean(c, board, builddir=""):  # pragma: no cover
     builder = _get_builder(c, board, builddir)
 
     builder.clean()
-
-    kernel_config = (
-        board.model.model_file.parent / "kernel" / f"{kernel_id}_config"
-    )
 
 
 __all__ = ["configure", "build", "clean", "install"]
