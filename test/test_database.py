@@ -14,7 +14,7 @@ def db():
         password="der_schrank_test",
     )
 
-    return database_object
+    yield database_object
 
 
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
@@ -24,6 +24,6 @@ def test_database(db):
 
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
 def test_database_init(db):
-    assert database is not None
+    assert db is not None
 
     db.init()
