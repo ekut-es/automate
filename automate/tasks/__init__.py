@@ -20,4 +20,4 @@ collection.add_collection(kernel_tasks)
 collection.add_collection(make_tasks)
 
 if database_enabled():
-    collection.add(database_tasks)
+    collection.add_collection(database_tasks)

@@ -24,6 +24,9 @@ def test_database(database):
     assert database is not None
 
 
+@pytest.mark.skipif(
+    not db.database_enabled(), reason="requires database drivers"
+)
 def test_database_init(database):
     assert database is not None
 

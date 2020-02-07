@@ -26,12 +26,12 @@ class AutomateContext(invoke.Context):
         if hasattr(config.automate, "forwards") and config.automate.forwards:
             self._setup_forwards()
 
-        database = None
+        self.database = None
 
         if hasattr(config.automate, "database") and config.automate.database:
             if database_enabled():
                 self.logger.info("Setup database connection")
-                database = Database(
+                self.database = Database(
                     self.config.automate.database.host,
                     self.config.automate.database.port,
                     self.config.automate.database.db,
@@ -43,7 +43,7 @@ class AutomateContext(invoke.Context):
                     "You have configured a database but the required "
                 )
 
-        loader = ModelLoader(config, database=database)
+        loader = ModelLoader(config, database=self.database)
         self.metadata = loader.load()
 
     def _setup_forwards(self):
