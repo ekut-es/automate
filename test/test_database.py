@@ -14,7 +14,7 @@ def database():
         password="der_schrank_test",
     )
 
-    return db
+    return database_object
 
 
 @pytest.mark.skipif(

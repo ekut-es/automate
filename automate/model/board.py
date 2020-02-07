@@ -11,7 +11,7 @@ from .model_base import *
 
 class DocumentationLinkModel(DataModelBase):
     title: str
-    loc: Union[HttpUrl, Path]
+    location: Union[HttpUrl, Path] = Field(..., alias="loc")
 
 
 class GatewayModel(DataModelBase):

@@ -194,9 +194,7 @@ class Database:
             documentation_link_models = []
 
             for doc in docs:
-                documentation_link_model = DocumentationLinkModel(
-                    title=doc[0], loc=doc[1]
-                )
+                documentation_link_model = DocumentationLinkModel(**doc)
 
                 documentation_link_models.append(documentation_link_model)
 
