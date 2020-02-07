@@ -22,11 +22,10 @@ class AutomateContext(invoke.Context):
         super(AutomateContext, self).__init__(config)
 
         self.logger = logging.getLogger(__name__)
-        self.logger.debug("Context init")
 
         if hasattr(config.automate, "forwards") and config.automate.forwards:
             self._setup_forwards()
-            pass
+
         database = None
 
         if hasattr(config.automate, "database") and config.automate.database:
@@ -114,7 +113,7 @@ class AutomateContext(invoke.Context):
         logging.debug("Setup forwards finished")
 
     def boards(self):
-        for board in self.metadata.boards:
+        for board in sorted(self.metadata.boards, key=lambda b: b.id):
             yield Board(
                 self,
                 board,
@@ -139,7 +138,7 @@ class AutomateContext(invoke.Context):
         )
 
     def compilers(self):
-        for compiler in self.metadata.compilers:
+        for compiler in sorted(self.metadata.compilers, key=lambda c: c.id):
             yield Compiler(self, compiler)
 
     def compiler(self, compiler_id: str) -> Compiler:
