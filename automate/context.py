@@ -113,7 +113,7 @@ class AutomateContext(invoke.Context):
         logging.debug("Setup forwards finished")
 
     def boards(self):
-        for board in sorted(self.metadata.boards, key=lambda b: b.id):
+        for board in sorted(self.metadata.boards, key=lambda b: b.name):
             yield Board(
                 self,
                 board,
@@ -133,12 +133,13 @@ class AutomateContext(invoke.Context):
 
         raise Exception(
             "Could not find board {} available boards {}".format(
-                board_name, ",".join([board.name for board in self.metadata.boards])
+                board_name,
+                ",".join([board.name for board in self.metadata.boards]),
             )
         )
 
     def compilers(self):
-        for compiler in sorted(self.metadata.compilers, key=lambda c: c.id):
+        for compiler in sorted(self.metadata.compilers, key=lambda c: c.name):
             yield Compiler(self, compiler)
 
     def compiler(self, compiler_name: str) -> Compiler:
@@ -150,6 +151,8 @@ class AutomateContext(invoke.Context):
         raise Exception(
             "Could not find compiler {} available compilers {}".format(
                 compiler_name,
-                ",".join([compiler.name for compiler in self.metadata.compilers]),
+                ",".join(
+                    [compiler.name for compiler in self.metadata.compilers]
+                ),
             )
         )
