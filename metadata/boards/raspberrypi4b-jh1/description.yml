@@ -3,6 +3,7 @@ board: raspberrypi4b
 description: ''
 rundir: /home/es/run
 doc: []
+
 gateway:
   host: tichy.informatik.uni-tuebingen.de
   username: esdata
@@ -11,6 +12,7 @@ connections:
   - host: 10.42.0.101
     username: es
     port: 22
+    
 cores:
   - num: 0
     isa: armv8-a
@@ -56,6 +58,7 @@ cores:
       - crc32
       - cpuid
     description: '(microarchitecture: cortex-a72)'
+
 os:
   triple:
     machine: aarch64
@@ -68,4 +71,18 @@ os:
   sysroot: ${boardroot}/${board_id}/sysroot
   rootfs: ${boardroot}/${board_id}/${board_id}.img
   multiarch: true
-  kernels: []
+  kernels:
+    -
+      id: default
+      description: "Ubuntu 19.10 raspbi2 standard kernel"
+      version: 5.3.0-1017-raspi2
+      commandline: "coherent_pool=1M 8250.nr_uarts=1 cma=64M bcm2708_fb.fbwidth=0 bcm2708_fb.fbheight=0 bcm2708_fb.fbswap=1 smsc95xx.macaddr=DC:A6:32:59:00:21 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  net.ifnames=0 dwc_otg.lpm_enable=0 console=ttyS0,115200 console=tty1 root=LABEL=writable rootfstype=ext4 elevator=deadline rootwait fixrtc"
+      kernel_config: ${model_dir}/kernel/default_config
+      kernel_source: ${boardroot}/${board_id}/kernel/linux-raspi2_5.3.0-1017.19.tar.xz
+      kernel_srcdir: linux-5.3/
+      image:
+        deploy_path: /boot/Image-default
+        build_path: linux-5.3/arch/arm64/boot/Image # TBD verify
+      
+      default: true
+

@@ -22,7 +22,9 @@ class MakefileBuilder(BaseBuilder):
             self.state.srcdir = Path(srcdir).absolute()
 
         if prefix:
-            self.state.prefix = Path(prefix).absolute()
+            self.state.prefix = Path(prefix)
+        else:
+            self.state.prefix = self.board.rundir / self.state.srcdir.name
 
         self._mkbuilddir()
         self.context.run(f"rsync -ar --delete {self.srcdir} {self.builddir}")

@@ -3,7 +3,7 @@ import os
 import shutil
 from pathlib import Path
 from string import Template
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
 from ruamel.yaml import YAML
 
@@ -21,6 +21,8 @@ class BuilderState:
     builddir: Path  # Build Directory
     srcdir: Path  # Source Direcotry
     prefix: Path  # Install Prefix
+    kernel: Optional[Dict[str, str]] = None
+    buildvars: Optional[Dict[str, str]] = None
 
 
 class BaseBuilder(object):

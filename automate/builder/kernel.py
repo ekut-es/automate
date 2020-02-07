@@ -1,23 +1,24 @@
 import os.path
 from pathlib import Path
+from typing import Dict, Optional
 
 from .. import compiler
 from ..utils import untar
 from ..utils.kernel import KernelConfigBuilder, KernelData
 from ..utils.network import rsync
 from ..utils.uboot import build_ubimage
-from .builder import BaseBuilder
+from .builder import BaseBuilder, BuilderState
 
 
 class KernelBuilder(BaseBuilder):
-    def _kernel_desc(self, kernel_id):
+    def _kernel_desc(self):
         board = self.board
 
         print(board.json())
 
         kernel_desc = None
         for kernel in board.os.kernels:
-            if kernel.id == kernel_id:
+            if kernel.id == self._kernel_name():
                 kernel_desc = kernel
                 break
 
@@ -30,86 +31,116 @@ class KernelBuilder(BaseBuilder):
 
         return kernel_desc
 
-    def _kernel_data(self, kernel_id):
-        return KernelData(self.board, self._kernel_desc(kernel_id))
+    def _kernel_data(self) -> KernelData:
+        """Computed kernel data"""
 
-    def _arch(self):
-        arch = (
-            self.cc.machine.value
-            if self.cc.machine.value != "aarch64"
+        return KernelData(self.board, self._kernel_desc())
+
+    def _kernel_name(self) -> str:
+        """Name for current kernel config"""
+
+        assert self.state.kernel is not None
+        return str(self.state.kernel["kernel_name"])
+
+    def _arch(self) -> str:
+        """Arch argument"""
+
+        assert self.state.kernel is not None
+        return str(self.state.kernel["arch"])
+
+    def _cross_compile(self) -> str:
+        """COSS_COMPILE argument for kernel builds"""
+
+        assert self.state.kernel is not None
+        return str(self.state.kernel["cross_compile"])
+
+    def configure(self, kernel_name, cross_compiler=None):
+        self._mkbuilddir()
+
+        if not cross_compiler:
+            cross_compiler = board.compiler()
+
+        self.state.kernel = {}
+        self.state.kernel["arch"] = (
+            cross_compiler.machine.value
+            if cross_compiler.machine.value != "aarch64"
             else "arm64"
         )
-        return arch
+        self.state.kernel["kernel_name"] = kernel_name
+        self.state.kernel["cross_compile"] = os.path.join(
+            cross_compiler.bin_path, cross_compiler.prefix
+        )
 
-    def _cross_compile(self):
-        cross_compile = os.path.join(self.cc.bin_path, self.cc.prefix)
+        kernel_desc = self._kernel_desc()
+        self.state.srcdir = self.builddir / kernel_desc.kernel_srcdir
+        self.state.prefix = Path("/")
 
-        return cross_compile
+        self._save_state()
 
-    def configure(self, c, kernel_id):
-        self._mkbuilddir()
-        kernel_desc = self._kernel_desc(kernel_id)
-
-        with c.cd(str(self.builddir)):
-            srcdir = self.builddir / kernel_desc.kernel_srcdir
+        with self.context.cd(str(self.builddir)):
+            srcdir = self.srcdir
 
             if not Path(srcdir).exists():
-                c.run("cp {} .".format(kernel_desc.kernel_source))
+                self.context.run("cp {} .".format(kernel_desc.kernel_source))
                 kernel_archive = (
                     self.builddir / Path(kernel_desc.kernel_source).name
                 )
                 untar(kernel_archive, self.builddir)
 
-            with c.cd(str(srcdir)):
+            with self.context.cd(str(srcdir)):
 
-                c.run("cp {} .config".format(kernel_desc.kernel_config))
+                self.context.run(
+                    "cp {} .config".format(kernel_desc.kernel_config)
+                )
 
-                c.run(
+                self.context.run(
                     "make ARCH={0} CROSS_COMPILE={1} oldconfig".format(
                         self._arch(), self._cross_compile()
                     )
                 )
 
-                config_builder = KernelConfigBuilder(self.board, self.cc)
+                config_builder = KernelConfigBuilder(self.board, cross_compiler)
                 config_fragment = srcdir / ".config_fragment"
                 with config_fragment.open("w") as fragment:
                     fragment_str = config_builder.predefined_config_fragment(
-                        kernel_id
+                        kernel_name
                     )
                     print(fragment_str)
                     fragment.write(fragment_str)
 
-                with c.prefix(
+                with self.context.prefix(
                     "export ARCH={0} && export CROSS_COMPILE={1}".format(
                         self._arch(), self._cross_compile()
                     )
                 ):
-                    c.run(
+                    self.context.run(
                         "./scripts/kconfig/merge_config.sh .config .config_fragment"
                     )
 
-                c.run("cp .config {}".format(kernel_desc.kernel_config))
+                self.context.run(
+                    "cp .config {}".format(kernel_desc.kernel_config)
+                )
 
-    def build(self, c, kernel_id):
+    def build(self):
         self._mkbuilddir()
-        kernel_desc = self._kernel_desc(kernel_id)
+        kernel_desc = self._kernel_desc()
 
         build_path = Path(self.builddir)
         install_path = build_path / "install"
         boot_path = install_path / "boot"
-        c.run("rm -rf {}".format(install_path))
+        self.context.run("rm -rf {}".format(install_path))
 
-        with c.cd(str(self.builddir)):
+        with self.context.cd(str(self.builddir)):
             srcdir = kernel_desc.kernel_srcdir
-            with c.cd(str(srcdir)):
+            with self.context.cd(str(srcdir)):
 
-                c.run(
-                    "make ARCH={0} CROSS_COMPILE={1}".format(
+                self.context.run(
+                    "make ARCH={0} CROSS_COMPILE={1} all".format(
                         self._arch(), self._cross_compile()
                     )
                 )
 
-                c.run(
+                self.context.run(
                     "make modules_install ARCH={0} CROSS_COMPILE={1} INSTALL_MOD_PATH={2}".format(
                         self._arch(), self._cross_compile(), str(install_path)
                     )
@@ -121,7 +152,9 @@ class KernelBuilder(BaseBuilder):
             )
 
             kernel_dest.parent.mkdir(parents=True, exist_ok=True)
-            c.run("cp {0} {1}".format(str(kernel_image), str(kernel_dest)))
+            self.context.run(
+                "cp {0} {1}".format(str(kernel_image), str(kernel_dest))
+            )
 
             if kernel_desc.uboot:
                 build_ubimage(
@@ -133,16 +166,16 @@ class KernelBuilder(BaseBuilder):
                     kernel_image,
                 )
 
-    def install(self, c, kernel_id):
-        kernel_desc = self._kernel_desc(kernel_id)
-        kernel_data = self._kernel_data(kernel_id)
-        with c.cd(str(self.builddir)):
+    def install(self):
+        kernel_desc = self._kernel_desc()
+        kernel_data = self._kernel_data()
+        with self.context.cd(str(self.builddir)):
             kernel_dir = kernel_data.shared_data_dir
-            with c.cd("install"):
+            with self.context.cd("install"):
                 kernel_package = kernel_data.deploy_package_name
 
-                c.run("tar czf {0} boot lib".format(kernel_package))
-                c.run(
+                self.context.run("tar czf {0} boot lib".format(kernel_package))
+                self.context.run(
                     "cp {0} {1}".format(
                         kernel_package, kernel_data.build_cache_name
                     )
@@ -151,9 +184,14 @@ class KernelBuilder(BaseBuilder):
             kernel_top_dir = kernel_desc.kernel_srcdir.parts[0]
             kernel_build_cache = kernel_data.build_cache_name
 
-            c.run("tar cJf  {} {}".format(kernel_build_cache, kernel_top_dir))
-            c.run(
+            self.context.run(
+                "tar cJf  {} {}".format(kernel_build_cache, kernel_top_dir)
+            )
+            self.context.run(
                 "cp {} {}".format(
                     kernel_build_cache, kernel_data.build_cache_path
                 )
             )
+
+    def deploy(self):
+        logging.warn("Deployment for kernels is currently not provided")

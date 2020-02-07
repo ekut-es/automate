@@ -5,90 +5,75 @@ from pathlib import Path
 import requests
 from fabric import task
 
+from ..model.common import Toolchain
 
 
-
-@task
-def configure(c, board, kernel_id, config_options=[]):  # pragma: no cover
+def _get_builder(c, board, builddir):  # pragma: no cover
     board = c.board(board)
-    builder = board.builder("kernel")
-    
-    builder.configure(c, kernel_id)
+    builder = board.builder("kernel", builddir=builddir)
+
+    return builder
 
 
 @task
-def build(c, board, kernel_id):  # pragma: no cover
-
-    board = c.board(board)
-    builder = board.builder("kernel")
-    
-    builder.build(c, kernel_id)
-
-
-@task
-def install(c, board, kernel_id):  # pragma: no cover
-    board = c.board(board)
-    builder = board.builder("kernel")
-    
-    builder.install(c, kernel_id)
-
-
-@task
-def clean(c, board, kernel_id):  # pragma: no cover
-    board = c.board(board)
-    builder = board.builder("kernel")
-    
-    
-    builder.clean(c)
-
-
-@task
-def get_board_config(
+def configure(
     c,
     board,
-    kernel_id="base",
-    tarball_url="",
-    force=False,
-    config_name="config",
+    kernel_id,
+    builddir="",
+    flags="",
+    cflags="",
+    cxxflags="",
+    ldflags="",
+    libs="",
+    sysroot=True,
+    isa=True,
+    uarch=True,
+    toolchain="gcc",
+    compiler_id="",
 ):  # pragma: no cover
-    board = c.board(board)
+    builder = _get_builder(c, board, builddir)
+    board = builder.board
 
-    if kernel_id in set((kernel.id for kernel in board.os.kernels)):
-        if not force:
-            raise Exception(
-                f"Kernel config already exists use --force to overwrite"
-            )
+    toolchain = Toolchain(toolchain) if toolchain else Toolchain.GCC
+
+    cc = board.compiler(toolchain=toolchain, compiler_id=compiler_id)
+    cc.configure(
+        flags=flags,
+        cflags=cflags,
+        cxxflags=cxxflags,
+        ldflags=ldflags,
+        uarch_opt=uarch,
+        isa_opt=isa,
+        enable_sysroot=sysroot,
+        libs=libs,
+    )
+
+    builder.configure(kernel_id, cc)
+
+
+@task
+def build(c, board, builddir=""):  # pragma: no cover
+    builder = _get_builder(c, board, builddir)
+
+    builder.build()
+
+
+@task
+def install(c, board, builddir=""):  # pragma: no cover
+    builder = _get_builder(c, board, builddir)
+
+    builder.install()
+
+
+@task
+def clean(c, board, builddir=""):  # pragma: no cover
+    builder = _get_builder(c, board, builddir)
+
+    builder.clean()
 
     kernel_config = (
         board.model.model_file.parent / "kernel" / f"{kernel_id}_config"
     )
 
-    kernel_source_name = Path(tarball_url).name
-    kernel_source_path = (
-        Path(c.config.automate["boardroot"])
-        / board.id
-        / "kernel"
-        / kernel_source_name
-    )
-
-    kernel_source_path.parent.mkdir(exist_ok=True)
-    c.run("wget -c {} -o {}".format(str(tarball_url), str(kernel_source_path)))
-
-    with board.connect() as con:
-        result = con.run("cat /proc/cmdline", hide="out")
-        cmdline = result.stdout.strip()
-
-        logging.info(f"cmdline: {cmdline}")
-
-        result = con.run("zcat /proc/config.gz", hide="out")
-        config = result.stdout
-
-        result = con.run("uname -r", hide="out")
-        version = result.stdout.strip()
-
-        logging.info(f"version: {version}")
-
-    kernel_model = KernelModel()
-
-
-__all__ = ["configure", "build", "clean", "install", "from_board"]
+__all__ = ["configure", "build", "clean", "install"]
