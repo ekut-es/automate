@@ -1,9 +1,18 @@
 #!/bin/bash -e
 
+if [ -z "$1" ]; then
+    BOARDS=$(automate board.board-ids --filter '"default" in [kernel.name for kernel in board.os.kernels]')
 
-BOARDS=$(automate board.board-ids --filter '"default" in [kernel.name for kernel in board.os.kernels]')
+else
+    if [ "$1" == "-h" ]; then
+	echo "usage: ./run.sh <board_name>"
+	echo "       Build kernel config default"
+	echo "       If no Boardname is given all default configs are built"
+	exit 0
+    fi
+    BOARDS="$1"
+fi
 
-BOARDS="raspberrypi4b-jh1"
 
 
 for BOARD in $BOARDS; do

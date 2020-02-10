@@ -52,6 +52,7 @@ class KernelConfigBuilder:
                 "CONFIG_NO_HZ_FULL=y",
                 "CONFIG_MAGIC_SYSRQ=y",
                 "CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1",
+                "CONFIG_HOTPLUG_CPU=y",
                 # Coresight
                 MachineOption("CONFIG_CORESIGHT=y", ["aarch64", "arm"]),
                 MachineOption(
