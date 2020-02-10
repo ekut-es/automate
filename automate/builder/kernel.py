@@ -140,6 +140,23 @@ class KernelBuilder(BaseBuilder):
                     )
                 )
 
+                self.logger.info("Trying dtbs install target")
+
+                dtb_install_result = self.context.run(
+                    "make dtbs_install ARCH={0} CROSS_COMPILE={1} INSTALL_DTBS_PATH={2}/lib/firmware/{3}/device-tree/".format(
+                        self._arch(),
+                        self._cross_compile(),
+                        str(install_path),
+                        str(kernel_desc.version),
+                    ),
+                    warn=True,
+                )
+
+                if dtb_install_result.return_code != 0:
+                    self.logger.warning(
+                        "Could not install kernel dtbs this command is only available for newer kernels"
+                    )
+
                 self.context.run(
                     "make modules_install ARCH={0} CROSS_COMPILE={1} INSTALL_MOD_PATH={2}".format(
                         self._arch(), self._cross_compile(), str(install_path)
