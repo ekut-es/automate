@@ -1,8 +1,10 @@
 #!/bin/bash -e
 
-BOARDS="zynqberry jetsontx2 jetsonagx"
 
 BOARDS=$(automate board.board-ids --filter '"default" in [kernel.name for kernel in board.os.kernels]')
+
+BOARDS="raspberrypi4b-jh1"
+
 
 for BOARD in $BOARDS; do
     echo "Compile kernel for $BOARD"

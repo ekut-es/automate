@@ -79,6 +79,10 @@ class KernelConfigBuilder:
                 MachineOption(
                     "CONFIG_CORESIGHT_DYNAMIC_REPLICATOR=y", ["aarch64", "arm"]
                 ),
+                MachineOption("CONFIG_CORESIGHT_CATU=y", ["aarch64", "arm"]),
+                MachineOption(
+                    "CONFIG_CORESIGHT_CPU_DEBUG=y", ["aarch64", "arm"]
+                ),
                 # BPF
                 "CONFIG_BPF=y",
                 "CONFIG_BPF_JIT=y",

@@ -14,8 +14,6 @@ class KernelBuilder(BaseBuilder):
     def _kernel_desc(self):
         board = self.board
 
-        print(board.json())
-
         kernel_desc = None
         for kernel in board.os.kernels:
             if kernel.name == self._kernel_name():
