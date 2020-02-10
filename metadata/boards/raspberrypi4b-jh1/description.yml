@@ -74,15 +74,15 @@ os:
   kernels:
     -
       name: default
-      description: "Ubuntu 19.10 raspi2 standard kernel"
+      description: "Standard raspberry pi kernel from https://github.com/raspberrypi/linux branch rpi-5.3.y "
       version: 5.3.0-1017-raspi2
       commandline: "coherent_pool=1M 8250.nr_uarts=1 cma=64M bcm2708_fb.fbwidth=0 bcm2708_fb.fbheight=0 bcm2708_fb.fbswap=1 smsc95xx.macaddr=DC:A6:32:59:00:21 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  net.ifnames=0 dwc_otg.lpm_enable=0 console=ttyS0,115200 console=tty1 root=LABEL=writable rootfstype=ext4 elevator=deadline rootwait fixrtc"
       kernel_config: ${model_dir}/kernel/default_config
-      kernel_source: ${boardroot}/${board_name}/kernel/linux-raspi2_5.3.0-1017.19.tar.xz
-      kernel_srcdir: linux-5.3/
+      kernel_source: ${boardroot}/${board_name}/kernel/kernel-5.3-rpi.tar.gz
+      kernel_srcdir: kernel-5.3-rpi/
       image:
-        deploy_path: /boot/Image-default
-        build_path: linux-5.3/arch/arm64/boot/Image # TBD verify
+        deploy_path: /boot/firmware/vmlinuz
+        build_path: kernel-5.3-rpi/arch/arm64/boot/Image # TBD verify
       
       default: true
 
