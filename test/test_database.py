@@ -27,3 +27,11 @@ def test_database_init(db):
     assert db is not None
 
     db.init()
+
+    cursor = db.cursor
+
+    cursor.execute(
+        "select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';"
+    )
+
+    print(cursor)
