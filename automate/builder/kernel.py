@@ -135,8 +135,10 @@ class KernelBuilder(BaseBuilder):
             with self.context.cd(str(srcdir)):
 
                 self.context.run(
-                    "make ARCH={0} CROSS_COMPILE={1} all".format(
-                        self._arch(), self._cross_compile()
+                    "make -j {2} ARCH={0} CROSS_COMPILE={1} all".format(
+                        self._arch(),
+                        self._cross_compile(),
+                        self._num_build_cpus(),
                     )
                 )
 

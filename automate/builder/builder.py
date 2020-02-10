@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import os
 import shutil
 from pathlib import Path
@@ -62,6 +63,10 @@ class BaseBuilder(object):
     @property
     def prefix(self) -> Path:
         return self.state.prefix
+
+    def _num_build_cpus(self) -> int:
+        """ Return number of local cpus for build"""
+        return multiprocessing.cpu_count()
 
     def _save_state(self) -> None:
         self._mkbuilddir()
