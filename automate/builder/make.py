@@ -48,7 +48,7 @@ class MakefileBuilder(BaseBuilder):
 
         with self.context.cd(str(self.builddir / self.srcdir.name)):
             self.context.run(
-                f"make CC=\"{buildvars['CC']}\" CXX=\"{buildvars['CXX']}\" CFLAGS=\"{buildvars['CFLAGS']}\" CXXFLAGS=\"{buildvars['CXXFLAGS']}\" LDFLAGS=\"{buildvars['LDFLAGS']}\" LDLIBS=\"{buildvars['LDLIBS']}\""
+                f"make -j{self._num_build_cpus()}CC=\"{buildvars['CC']}\" CXX=\"{buildvars['CXX']}\" CFLAGS=\"{buildvars['CFLAGS']}\" CXXFLAGS=\"{buildvars['CXXFLAGS']}\" LDFLAGS=\"{buildvars['LDFLAGS']}\" LDLIBS=\"{buildvars['LDLIBS']}\""
             )
 
     def install(self):
