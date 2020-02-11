@@ -17,7 +17,7 @@ metadata_path = os.path.join(root_path, "src", "metadata")
 def zynqberry_board():
     """Test fixture for zynqberry cross compiler"""
 
-    config = AutomateConfig()
+    config = AutomateConfig(lazy=True)
     config.automate.metadata = str(metadata_path)
     context = AutomateContext(config)
 

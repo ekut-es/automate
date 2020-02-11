@@ -7,7 +7,7 @@ from automate.database import Database, database_enabled
 @fixture
 def db():
     database_object = Database(
-        host="postgres",
+        host="localhost",
         db="der_schrank_test",
         port=5432,
         user="der_schrank_test",
