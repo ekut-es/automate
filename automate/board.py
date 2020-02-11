@@ -211,7 +211,6 @@ class Board(object):
             connection.run("sudo shutdown -r now & exit")
 
         self.logger.info("Reboot initiated!")
-        time.sleep(3)
 
         if wait:
             return self.wait_for_connection()

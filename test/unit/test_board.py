@@ -128,3 +128,24 @@ def test_board_reboot(zynqberry_board):
     zynqberry_board.reboot()
 
     assert "shutdown -r now" in fake_connection.commands[0]
+
+
+def test_board_reset(zynqberry_board):
+
+    fake_connection = zynqberry_board.connect()
+    assert fake_connection is not None
+
+    zynqberry_board.reset()
+
+    assert "shutdown -r now" in fake_connection.commands[0]
+
+
+def test_board_kexec(zynqberry_board):
+
+    fake_connection = zynqberry_board.connect()
+    assert fake_connection is not None
+
+    zynqberry_board.kexec()
+
+    assert "kexec -l" in fake_connection.commands[0]
+    assert "kexec -e" in fake_connection.commands[1]
