@@ -37,9 +37,21 @@ def database_enabled() -> bool:
 
 
 class Database:
+    """A Database connection"""
+
     def __init__(
         self, host: str, port: int, db: str, user: str, password: str
     ) -> None:
+        """Init database connection
+    
+           # Arguments
+
+           host: hostname or ip address for database connection
+           port: port for database connection
+           db: name of database
+           user: username for connection
+           password: password for connection
+        """
         self.logger = logging.getLogger(__name__)
         self.connection_string = "host={} port={} dbname={} user={} password={}".format(
             host, port, db, user, password
@@ -94,6 +106,8 @@ class Database:
         return query
 
     def init(self) -> None:
+        """Initialize an database without locks"""
+
         query = self.init_database_query
 
         self.cursor.execute(query)
@@ -236,6 +250,16 @@ class Database:
     def insert_board(
         self, board_model: BoardModel, additional_data: Any
     ) -> None:
+        """ Insert a board into database
+
+        # Arguments
+        board_model: The BoardModel to insert
+        additional_data: to be removed
+
+        TODO: what happens if a board model with the same name already exists.
+
+        """
+
         cpu_isas = set()
         cpu_implementers = set()
         cpu_uarchs = []

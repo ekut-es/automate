@@ -15,7 +15,17 @@ generate:
       - automate.context++
   - api/config.md:
       - automate.config++
-
+  - api/database/database.md:
+      - automate.database.database++
+  - api/utils/cpuinfo.md:
+      - automate.utils.cpuinfo++
+  - api/utils/kernel.md:
+      - automate.utils.kernel++
+  - api/utils/network.md:
+      - automate.utils.network++
+  - api/utils/uboot.md:
+      - automate.utils.uboot++
+      
 pages:
   - Index: index.md
   - Configuration: configuration.md
@@ -28,6 +38,12 @@ pages:
         automate.builder.make: api/builder/make.md
         automate.builder.cmake: api/builder/cmake.md
         automate.builder.kernel: api/builder/kernel.md
+    - automate.database.database: api/database/database.md
+    - automate.utils:
+        automate.utils.cpuinfo: api/utils/cpuinfo.md
+        automate.utils.kernel: api/utils/kernel.md
+        automate.utils.network: api/utils/network.md
+        automate.utiils.uboot: api/utils/uboot.md
   - Commandline Interface: commandline.md
   - Metadata Model: model.md
   - Setup:
