@@ -31,10 +31,10 @@ def mypy(c):
 
 @task
 def test(c):
-    "Run test suite"
+    "Run unit tests"
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
-        c.run("pytest --cov automate test --cov-config=pyproject.toml")
+        c.run("pytest --cov automate test/unit --cov-config=pyproject.toml")
 
 
 @task(test)
@@ -48,10 +48,10 @@ def cov(c):
 
 @task
 def monkeytype(c):
-    "Run testsuite and collect dynamic type information"
+    "Run unit tests and collect dynamic type information"
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
-        c.run("pytest --monkeytype-output=monkeytype.sqlite3 test")
+        c.run("pytest --monkeytype-output=monkeytype.sqlite3 test/unit")
 
 
 @task

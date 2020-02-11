@@ -5,6 +5,7 @@ import pytest
 from pytest import fixture
 
 from automate.database import Database, database_enabled
+from automate.model import BoardModel, OSModel, TripleModel
 
 
 @fixture
@@ -20,6 +21,27 @@ def db() -> Generator[Database, None, None]:
     database_object.init()
 
     yield database_object
+
+
+@fixture
+def test_boards() -> Generator[BoardModel, None, None]:
+    test_os = OSModel(
+        triple=TripleModel(machine="arm", os="linux", environment="gnueabihf"),
+        distribution="test_distribution",
+        description="Test Data",
+        release="18.4",
+    )
+    test_board = BoardModel(
+        name="test_board",
+        rundir="/home/es/run",
+        board="test_board",
+        description="Fake test board",
+        connections=[],
+        cores=[],
+        os=test_os,
+    )
+
+    yield test_board
 
 
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
@@ -65,7 +87,13 @@ def test_database_init(db):
 
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
 def test_initial_database_has_no_boards(db):
-    db.init()
+
+    boards = db.get_all_boards()
+    assert boards == []
+
+
+@pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
+def test_database_insert_board(db):
 
     boards = db.get_all_boards()
     assert boards == []

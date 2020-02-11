@@ -17,7 +17,7 @@ test:
     - set -e
     - poetry install
     - poetry run inv mypy
-    - poetry run inv test
+    - poetry run pytest test/unit test/integration
   tags:
     - docker
 
@@ -37,6 +37,6 @@ test_with_db:
     - set -e
     - poetry install -E postgres
     - poetry run inv mypy
-    - poetry run inv test
+    - poetry run pytest test/unit test/integration
   tags:
     - docker

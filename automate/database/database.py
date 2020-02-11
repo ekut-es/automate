@@ -259,7 +259,7 @@ class Database:
                 "soc_name": additional_data["soc_name"],
                 "foundry_name": additional_data["foundry_name"],
                 "technology": additional_data["technology"],
-                "hostname": board_model.name,
+                "hostname": board_model.hostname,
                 "board": board_model,
                 "power_connector_name": additional_data["power_connector_name"],
                 "voltage": additional_data["voltage"],

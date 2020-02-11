@@ -20,21 +20,14 @@ pages:
   - Index: index.md
   - Configuration: configuration.md
   - API:
-    - automate.context:
-        - Context API: api/context.md
-    - automate.board:
-        - Board API: api/board.md
-    - automate.compiler:
-        - Compiler API: api/compiler.md
-    - automate.config:
-        - Configuration API: api/config.md
+    - automate.context:  api/context.md
+    - automate.board: api/board.md
+    - automate.compiler: api/compiler.md
+    - automate.config: api/config.md
     - automate.builder:
-        automate.builder.make:
-          - Makefile Builder API: api/builder/make.md
-        automate.builder.cmake:
-          - CMake Builder API: api/builder/cmake.md
-        automate.builder.kernel:
-          - Kernel Builder API: api/builder/kernel.md
+        automate.builder.make: api/builder/make.md
+        automate.builder.cmake: api/builder/cmake.md
+        automate.builder.kernel: api/builder/kernel.md
   - Commandline Interface: commandline.md
   - Metadata Model: model.md
   - Setup:
