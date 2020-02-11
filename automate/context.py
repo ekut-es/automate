@@ -29,6 +29,13 @@ class AutomateContext(invoke.Context):
 
         self.database = None
 
+        self._setup_database()
+
+        loader = ModelLoader(config, database=self.database)
+        self.metadata = loader.load()
+
+    def _setup_database(self):
+        config = self.config
         if hasattr(config.automate, "database") and config.automate.database:
             if database_enabled():
                 self.logger.info("Setup database connection")
@@ -41,11 +48,8 @@ class AutomateContext(invoke.Context):
                 )
             else:
                 self.logger.warning(
-                    "You have configured a database but the required "
+                    "You have configured a database but the required packages are not installed"
                 )
-
-        loader = ModelLoader(config, database=self.database)
-        self.metadata = loader.load()
 
     def _setup_forwards(self):
         for forward in self.config.automate.forwards:

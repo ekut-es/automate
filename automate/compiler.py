@@ -126,7 +126,7 @@ class CrossCompiler(Compiler):
 
     def configure(
         self,
-        flags: str = "",
+        flags: str = "-O2",
         cflags: str = "",
         cxxflags: str = "",
         ldflags: str = "",

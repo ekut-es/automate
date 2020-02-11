@@ -7,15 +7,46 @@ from pytest import raises, yield_fixture
 import automate
 from automate.config import AutomateConfig
 from automate.context import AutomateContext
-from fake_board import board, test_private_key
+from fake_board import fake_board, test_private_key
+from monkeypatch_state import monkeypatch_state
 
 root_path = os.path.dirname(os.path.abspath(__file__))
 metadata_path = os.path.join(root_path, "src", "metadata")
 
 
 @yield_fixture()
-def zynqberry_board():
-    """Test fixture for zynqberry cross compiler"""
+def zynqberry_board(monkeypatch):
+    """Test fixture returning a faked zynqberry board,
+       .connect method is monkeypatched and does produce a FakeConnection object
+    """
+
+    class FakeConnection:
+        def __init__(self):
+            self.commands = []
+
+        def __enter__(self, *args, **kwargs):
+            return self
+
+        def __exit__(*args, **kwargs):
+            pass
+
+        def open(self):
+            pass
+
+        @property
+        def is_connected(self):
+            return True
+
+        def run(self, command, hide=[], warn=False):
+            self.commands.append(command)
+
+    fake_connection = FakeConnection()
+
+    def get_fake_connection(*args, **kwargs):
+        print("Fake connection: ", fake_connection)
+        return fake_connection
+
+    monkeypatch.setattr(automate.Board, "connect", get_fake_connection)
 
     config = AutomateConfig(lazy=True)
     config.automate.metadata = str(metadata_path)
@@ -28,25 +59,12 @@ def zynqberry_board():
     raise Exception("Could not find zynqberry")
 
 
-def test_fake_board(board, monkeypatch):
+def test_fake_board_connection(fake_board, monkeypatch):
     monkeypatch.setattr("sys.stdin", io.StringIO(""))
 
-    host = board.host
-    port = board.port
-    user = "test"
-
-    con = Connection(
-        user=user,
-        host=host,
-        port=port,
-        connect_kwargs={"key_filename": test_private_key},
-    )
-    con.open()
-
-    assert con.is_connected == True
-
-    print("ls /")
-    con.run("ls /")
+    connection = fake_board.connect()
+    assert connection.is_connected
+    connection.run("ls")
 
 
 def test_zynqberry_board_has_builders(zynqberry_board):
@@ -61,3 +79,52 @@ def test_zynqberry_board_has_builders(zynqberry_board):
     assert isinstance(kernel_builder, automate.builder.KernelBuilder)
     with raises(Exception):
         zynqberry_cc.builder("unknown")
+
+
+def test_board_compiler(zynqberry_board):
+    board = zynqberry_board
+
+    compiler = board.compiler()
+
+    assert compiler.name == "aarch32hf-gcc74"
+    assert compiler.cflags == "-mcpu=cortex-a9 -O2"
+    assert compiler.ldflags == "-mcpu=cortex-a9 -O2"
+    assert compiler.libs == ""
+
+    compiler.configure(uarch_opt=False)
+
+    assert compiler.cflags == "-march=armv7-a -O2"
+    assert compiler.ldflags == "-march=armv7-a -O2"
+
+    compiler.configure(uarch_opt=False, isa_opt=False)
+
+    assert compiler.cflags == "-O2"
+    assert compiler.ldflags == "-O2"
+
+    compiler.configure(flags="", uarch_opt=False, isa_opt=False)
+
+    assert compiler.cflags == ""
+    assert compiler.ldflags == ""
+
+
+def test_board_compilers(zynqberry_board):
+    board = zynqberry_board
+
+    from automate.model import Toolchain
+
+    compilers = board.compilers(toolchain=Toolchain.GCC)
+    assert len(compilers) == 1
+    assert compilers[0].name == "aarch32hf-gcc74"
+
+    compilers = board.compilers()
+    assert len(compilers) == 4
+
+
+def test_board_reboot(zynqberry_board):
+
+    fake_connection = zynqberry_board.connect()
+    assert fake_connection is not None
+
+    zynqberry_board.reboot()
+
+    assert "shutdown -r now" in fake_connection.commands[0]
