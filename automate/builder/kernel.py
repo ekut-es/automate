@@ -175,7 +175,7 @@ class KernelBuilder(BaseBuilder):
 
             if kernel_desc.uboot:
                 build_ubimage(
-                    c,
+                    self.context,
                     kernel_desc.uboot,
                     self._arch(),
                     build_path,
