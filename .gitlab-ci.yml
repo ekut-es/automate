@@ -28,6 +28,7 @@ test_with_db:
     - postgres:10
 
   variables:
+    POSTGRES_HOST: postgres
     POSTGRES_DB: der_schrank_test
     POSTGRES_USER: der_schrank_test
     POSTGRES_PASSWORD: der_schrank_test

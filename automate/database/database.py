@@ -32,6 +32,7 @@ except:
 
 
 def database_enabled() -> bool:
+    """Returns True if required packages for database connection are found"""
     return enabled
 
 
