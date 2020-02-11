@@ -36,7 +36,7 @@ class CoreModel(DataModelBase):
     isa: str
     uarch: str
     vendor: str = Field(..., alias="implementer")
-    extensions: List[str] = []  # Supported ISA extensions
+    extensions: List[str] = []
     description: str = ""
 
 
@@ -127,4 +127,6 @@ class BoardModelFS(BoardModel, LoadedModelBase):
 
 
 class BoardModelDB(BoardModel, DBModelBase):
+    """Add data model field id:int for database id"""
+
     pass

@@ -68,6 +68,15 @@ def build_ubimage(
     boot_path: Path,
     kernel_image: Path,
 ) -> None:
+    """ Build a U-Boot image file  for kernel deployment
+
+    # Arguments
+    c: AutomateContext to run commands on
+    uboot_desc: UBootModel describing image configuration
+    build_path: Path of kernel Build directory
+    boot_path: path of built ubimage (usually install/boot inside kernel build directory)
+    kernel_image: path to kernel_image file that should be packaged inside builddir
+    """
     loadaddr = uboot_desc.loadaddr
     image_name = uboot_desc.image_name
     dtb_image = uboot_desc.dtb_image

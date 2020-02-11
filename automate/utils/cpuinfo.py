@@ -11,6 +11,15 @@ from .cpuinfo_arm import uarch_to_isa
 
 
 def _cpuinfo(text: str) -> List[CoreModel]:
+    """Parse a /proc/cpuinfo file to a list of core models
+
+    # Arguments
+    text: contents of cpuinfo file
+   
+    # Returns
+    List of Core Models for the cpus in cpuinfo
+    """
+
     lines = text.split("\n")
 
     current_dict: Dict[str, Any] = {}
@@ -87,6 +96,14 @@ def _cpuinfo(text: str) -> List[CoreModel]:
 
 
 def cpuinfo(con: Connection) -> List[CoreModel]:
+    """Parse remote CPU info over ssh connection
+    
+    # Arguments
+    con: fabric.Connection for the 
+
+    # Returns
+    A list of CoreModel with the parsed cpuinfos
+    """
     cpus: List[CoreModel] = []
 
     result = con.run("cat /proc/cpuinfo", hide="stdout", warn=True)
