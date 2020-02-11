@@ -8,6 +8,7 @@ from typing import Any, List
 
 import invoke
 from fabric import Connection
+from setproctitle import setproctitle
 
 from .board import Board
 from .compiler import Compiler
@@ -78,10 +79,14 @@ class AutomateContext(invoke.Context):
             # Detach from process using double fork
             pid = os.fork()
             if pid == 0:
-                # os.setsid()
+                os.setsid()
                 pid = os.fork()
                 if pid > 0:
                     os._exit(0)
+
+                setproctitle(
+                    f"automate-forward {forward['local_port']} {forward['remote_port']}"
+                )
 
                 logging.debug("Forked forwarder %d", os.getpid())
 
