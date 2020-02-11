@@ -30,6 +30,7 @@ test_with_db:
   variables:
     POSTGRES_HOST: postgres
     POSTGRES_DB: der_schrank_test
+    POSTGRES_PORT: 5432
     POSTGRES_USER: der_schrank_test
     POSTGRES_PASSWORD: der_schrank_test
   
