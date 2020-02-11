@@ -74,3 +74,4 @@ After successful installation the BL31 messages should apear on serial console:
 
 
 For jailhouse the patches mentioned in https://github.com/siemens/jailhouse-images/blob/7c6d0ddb2763ef38a019b565568b8e9b59ca48c8/recipes-bsp/arm-trusted-firmware/files/0001-rpi3-4-Add-support-for-offlining-CPUs.patch seem no longer necessary when using the current master of arm trusted firmware. 
+
