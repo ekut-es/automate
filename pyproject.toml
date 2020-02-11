@@ -40,6 +40,7 @@ mock-ssh-server = "^0.8.0"
 isort = {version = "^4.3", extras = ["pyproject"]}
 pylint = "^2.4"
 snakeviz = "^2.0.1"
+devtools = {version = "^0.5.1", extras = ["pygments"]}
 
 
 [tool.poetry.scripts]

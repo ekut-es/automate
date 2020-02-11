@@ -196,6 +196,22 @@ python-versions = "*"
 version = "0.6"
 
 [[package]]
+category = "dev"
+description = "Dev tools for python"
+name = "devtools"
+optional = false
+python-versions = ">=3.5"
+version = "0.5.1"
+
+[package.dependencies]
+[package.dependencies.Pygments]
+optional = true
+version = ">=2.2.0"
+
+[package.extras]
+pygments = ["Pygments (>=2.2.0)"]
+
+[[package]]
 category = "main"
 description = "High level SSH command execution"
 name = "fabric"
@@ -1059,7 +1075,7 @@ testing = ["jaraco.itertools"]
 postgres = ["python-dotenv", "pydot", "psycopg2", "jinjasql"]
 
 [metadata]
-content-hash = "ac2abac4c7d97267a4093070ee99c8624e9730729c357eca85eaa8825476b742"
+content-hash = "4e289ce59189399bafe80e2dbf4d549b07e13e150c5ee98b6d0b39f7eba86060"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -1226,6 +1242,10 @@ cryptography = [
 dataclasses = [
     {file = "dataclasses-0.6-py3-none-any.whl", hash = "sha256:454a69d788c7fda44efd71e259be79577822f5e3f53f029a22d08004e951dc9f"},
     {file = "dataclasses-0.6.tar.gz", hash = "sha256:6988bd2b895eef432d562370bb707d540f32f7360ab13da45340101bc2307d84"},
+]
+devtools = [
+    {file = "devtools-0.5.1-py35.py36-none-any.whl", hash = "sha256:7a1f7db6ade0a71840ca4014d75dd72390aed2ef04e39e2b2445af7b3a3f4679"},
+    {file = "devtools-0.5.1.tar.gz", hash = "sha256:51ca8d2e15b8a862875a4837db2bafbc6cda409c069e960aec3f4bbd91fe9c08"},
 ]
 fabric = [
     {file = "fabric-2.5.0-py2.py3-none-any.whl", hash = "sha256:160331934ea60036604928e792fa8e9f813266b098ef5562aa82b88527740389"},
