@@ -71,37 +71,6 @@ def pre_commit(c):
 
 
 @task
-def update_schemas(c):
-    from automate.model import CompilerModel, BoardModel, MetadataModel
-
-    root_path = Path(os.path.dirname(os.path.abspath(__file__)))
-
-    metadata_json = MetadataModel.schema_json(indent=2)
-    # board_json = BoardModel.schema_json(indent=2,by_alias=True)
-    # compiler_json = CompilerModel.schema_json(indent=2, by_alias=True)
-
-    path = root_path / "docs" / "schema"
-    path.mkdir(exist_ok=True)
-
-    with (path / "metadata.schema.json").open("w") as f:
-        f.write(metadata_json)
-
-    tmp_path = root_path / "tmp"
-    tmp_path.mkdir(exist_ok=True)
-
-    with c.cd(str(tmp_path)):
-        node_path = tmp_path / "node-v12.13.1-linux-x64"
-        if not node_path.exists():
-            c.run(
-                "wget https://nodejs.org/dist/v12.13.1/node-v12.13.1-linux-x64.tar.xz"
-            )
-            c.run("tar xvJf node-v12.13.1-linux-x64.tar.xz")
-        os.environ["PATH"] = str(node_path / "bin") + ":" + os.environ["PATH"]
-        c.run("npm install -g @adobe/jsonschema2md")
-        c.run("jsonschema2md -d {0} -o {0}".format(path))
-
-
-@task
 def doc(c):
     "Starts the documentation viewer"
 
