@@ -2,3 +2,7 @@
 	path = metadata/boards
 	url = ../boards.git
 	branch = master
+[submodule "metadata/compilers"]
+	path = metadata/compilers
+	url = ../compilers.git
+	branch = master
