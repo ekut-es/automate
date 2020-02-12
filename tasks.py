@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 
-from invoke import task
+from invoke import call, task
 
 
 @task
@@ -30,16 +30,24 @@ def mypy(c):
 
 
 @task
-def test(c):
+def test(c, integration=False):
     "Run unit tests"
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
-        c.run("pytest --cov automate test/unit --cov-config=pyproject.toml")
+        if integration:
+            c.run(
+                "pytest --cov automate test/unit test/integration --cov-config=pyproject.toml"
+            )
+        else:
+            c.run("pytest --cov automate test/unit --cov-config=pyproject.toml")
 
 
-@task(test)
-def cov(c):
+@task
+def cov(c, integration=False):
     "Generate html coverage report"
+
+    test(c, integration)
+
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
         c.run("coverage html")
