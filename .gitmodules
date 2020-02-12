@@ -1,0 +1,4 @@
+[submodule "metadata/boards"]
+	path = metadata/boards
+	url = ../boards.git
+	branch = master
