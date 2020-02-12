@@ -18,7 +18,7 @@ def black(c):
     "Runs black code formatter"
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
-        c.run("black --py36 -l 80 automate test")
+        c.run("black --target-version py36 -l 80 automate test")
 
 
 @task

@@ -104,7 +104,7 @@ class KernelConfigBuilder:
         return res
 
     def predefined_configs(
-        self
+        self,
     ) -> Generator[Tuple[str, List[str]], None, None]:
         """Return all predefined configs that are applicable to a board
 
