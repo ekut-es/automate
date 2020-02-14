@@ -76,6 +76,7 @@ def doc(c):
 
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
+        c.run("rm -f mkdocs.yml")
         c.run("pydocmd serve")
 
 
@@ -86,7 +87,7 @@ def clean_examples(c):
     import glob
 
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
-    glob_pattern = root_path / "examples" / "**" / "build-*"
+    glob_pattern = root_path / "examples" / "**" / "build*"
     for res in glob.glob(str(glob_pattern), recursive=True):
         res = Path(res)
         if res.is_dir():
