@@ -54,17 +54,19 @@ To enable dnsmasq use:
 
 Add the following in `/etc/dnsmasq.d/derschrank.conf`
 
-	listen-address=10.42.0.1
-	interface=IF_NAME
+	listen-address=::1,127.0.0.1,10.42.0.1
+	port=53
+	interface=enp0s20u3
+	domain-needed
 	expand-hosts
-	bogus-priv
+	server=134.2.12.15
+	server=134.2.12.4
+	server=134.2.12.17
 
 	dhcp-range=10.42.0.10,10.42.0.150,72h
 	dhcp-leasefile=/var/lib/dnsmasq/dnsmasq.leases
 	dhcp-authoritative
 	dhcp-option=option:ntp-server,134.2.10.50,134.2.12.2,134.2.14.2
-
-	dhcp-host=00:04:4b:cb:d8:5d,jetsonagx,10.42.0.123
 
 To syntax check the commandline do:
 	
@@ -79,6 +81,10 @@ When a new board is installed and joins the network. The hostname, MAC address, 
 
 	dhcp-host=yy:yy:yy:yy:yy:yy,boardhostname,10.42.0.YY
 
+In order to make the locallay installed dnsmasq server the primary DNS server edit `/etc/resolv.conf` with the following line:
+
+	nameserver 127.0.0.1
+	search your.localdomain.com
 
 ## Configure NAT forwarding
 
