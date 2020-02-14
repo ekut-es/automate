@@ -24,17 +24,18 @@ from ..loader import ModelLoader
 from ..model import (
     BoardModel,
     CoreModel,
+    GatewayModel,
     OSModel,
     SSHConnectionModel,
     TripleModel,
 )
 from ..utils import cpuinfo, fix_symlinks
-from ..utils.network import find_local_port
+from ..utils.network import connect, find_local_port
 
 
 @task
 def add_users(c):  # pragma: no cover
-    """Add user ssh keys to all boards
+    """Add users ssh keys to all boards and gateways
     """
     loader = ModelLoader(c.config)
     users = loader.load_users()
@@ -300,25 +301,55 @@ os:
 
 
 @task
-def add_board(c, user="", host="", port=22):  # pragma: no cover
-    # TODO: add configuration of gateway
+def add_board(
+    c, user="", host="", port=22, gw_host="", gw_user="", gw_port=22
+):  # pragma: no cover
+    """Add a new board to test rack
+
+      # Arguments
+      --user: username on board
+      --host: hostname or ip address of board
+      --port: port of ssh deamon on board (optional default: 22)
+      --gw-host: hostname of gateway (optional if omitted not gateway is configured)
+      --gw-user: username on gateway (optional if omitted use --user)
+      --gw-port: port of ssh on gateway (optional default: 22)
+    """
 
     if host == "":
-        host = prompt("Host: ")
+        raise Exception("No hostname given: --host missing")
 
     if user == "":
-        user = prompt("Username: ", default="{}".format(getpass.getuser()))
+        raise Exception("No username given --user missing")
+
+    gateway_connection = None
+    if gw_host != "":
+        if gw_user == "":
+            gw_user = user
+
+        gateway_connection = connect(
+            gw_host,
+            gw_user,
+            gw_port,
+            passwd_allowed=True,
+            keyring_allowed=False,
+            gateway=gateway_connection,
+        )
 
     try:
-        con = Connection(user=user, host=host, port=port)
+        con = connect(
+            host,
+            user,
+            port,
+            passwd_allowed=False,
+            keyring_allowed=False,
+            gateway=gateway_connection,
+        )
         con.open()
     except AuthenticationException as e:
         print("Could not Authenticate with public key")
-        password = prompt(
-            "Password for {}@{}: ".format(user, host), is_password=True
-        )
-        con = Connection(
-            user=user, host=host, connect_kwargs={"password": password}
+
+        con = connect(
+            host, user, port, passwd_allowed=True, keyring_allowed=False
         )
         con.open()
 
@@ -364,7 +395,7 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
     board_description = prompt("board description: ", default="")
 
     rundir = "/home/{}/run".format(user)
-    board_rundirrundir = prompt("board rundir: ", default=rundir)
+    rundir = prompt("board rundir: ", default=rundir)
 
     cpus = cpuinfo.cpuinfo(con)
     cpu_models = []
@@ -384,7 +415,7 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
         # TODO: Prompt for isa extensions
 
         cpu_model = CoreModel(
-            id=cpu.num,
+            os_id=cpu.num,
             isa=isa,
             uarch=uarch,
             vendor=vendor,
@@ -394,8 +425,6 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
         cpu_models.append(cpu_model)
 
     print("OS Configuration")
-    # TODO: get default triple
-    # TODO: Add validator
 
     t_machine = "arm64"
     result = con.run("uname --machine", hide="stdout", warn=True)
@@ -465,16 +494,19 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
         multiarch=multiarch,
     )
 
+    gateway = None
+    if gw_host:
+        gateway = GatewayModel(host=gw_host, username=gw_user, port=gw_port)
+
     board_model = BoardModel(
         name=board_name,
         description=board_description,
         board=board_model,
+        gateway=gateway,
         rundir=rundir,
         connections=[SSHConnectionModel(username=user, host=host, port=port)],
         cores=cpu_models,
         os=os_model,
-        model_file=model_file,
-        model_file_mtime=datetime.datetime.now(),
     )
 
     model_file.parent.mkdir(parents=True, exist_ok=True)
@@ -485,7 +517,7 @@ def add_board(c, user="", host="", port=22):  # pragma: no cover
 
     yaml.load(board_yaml_template)
     with model_file.open("w") as mf:
-        d = board_model.dict(exclude={"model_file", "model_file_mtime"})
+        d = board_model.dict()
 
         def _recurse(d):
             if isinstance(d, dict):

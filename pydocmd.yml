@@ -1,4 +1,4 @@
-site_name: Automate docs
+site_name: Automate Documentation
 
 generate:
   - api/board.md:
@@ -29,28 +29,33 @@ generate:
 pages:
   - Index: index.md
   - Configuration: configuration.md
-  - API:
-    - automate.context:  api/context.md
-    - automate.board: api/board.md
-    - automate.compiler: api/compiler.md
-    - automate.config: api/config.md
-    - automate.builder:
-        automate.builder.make: api/builder/make.md
-        automate.builder.cmake: api/builder/cmake.md
-        automate.builder.kernel: api/builder/kernel.md
-    - automate.database.database: api/database/database.md
-    - automate.utils:
-        automate.utils.cpuinfo: api/utils/cpuinfo.md
-        automate.utils.kernel: api/utils/kernel.md
-        automate.utils.network: api/utils/network.md
-        automate.utiils.uboot: api/utils/uboot.md
-  - Commandline Interface: commandline.md
+  - Commandline Interface:
+      automate: commandline_automate.md
+      automate-run: commandline_run.md 
   - Metadata Model: model.md
+  - Workflows:
+      Adding a new board: add_board.md
+      Simple Builds: simple_builds.md
   - Setup:
       - Boards: boards.md
       - Gateway: gateway.md
   - Development: development.md
-  
+  - Python API:
+      - automate.context:  api/context.md
+      - automate.board: api/board.md
+      - automate.compiler: api/compiler.md
+      - automate.config: api/config.md
+      - automate.builder:
+          automate.builder.make: api/builder/make.md
+          automate.builder.cmake: api/builder/cmake.md
+          automate.builder.kernel: api/builder/kernel.md
+      - automate.database.database: api/database/database.md
+      - automate.utils:
+          automate.utils.cpuinfo: api/utils/cpuinfo.md
+          automate.utils.kernel: api/utils/kernel.md
+          automate.utils.network: api/utils/network.md
+          automate.utiils.uboot: api/utils/uboot.md
+
 docs_dir: docs
 theme: 'material'
 loader:   pydocmd.loader.PythonLoader
