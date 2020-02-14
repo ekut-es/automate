@@ -88,7 +88,9 @@ class Board(object):
         return False
 
     def compiler(
-        self, compiler_name: str = "", toolchain: Toolchain = Toolchain.GCC
+        self,
+        compiler_name: str = "",
+        toolchain: Union[Toolchain, str] = Toolchain.GCC,
     ) -> CrossCompiler:
         """ Build a Cross Compiler Object for this board 
 
@@ -101,6 +103,9 @@ class Board(object):
         # Returns
            Object of class #automate.compiler.CrossCompiler configured to run builds for this board
         """
+
+        if isinstance(toolchain, str):
+            toolchain = Toolchain(toolchain)
 
         sorted_models = reversed(
             sorted(self.compiler_models, key=lambda x: x.version)
@@ -123,7 +128,7 @@ class Board(object):
         )
 
     def compilers(
-        self, toolchain: Union[Toolchain, None] = None
+        self, toolchain: Union[Toolchain, None, str] = None
     ) -> List[CrossCompiler]:
         """ Build list of cross compiler objects configured for this board
 
@@ -133,6 +138,12 @@ class Board(object):
         # Returns
         List of configured cross compilers
         """
+
+        if isinstance(toolchain, str):
+            if toolchain == "":
+                toolchain = None
+            else:
+                toolchain = Toolchain(toolchain)
 
         res = []
         for model in self.compiler_models:

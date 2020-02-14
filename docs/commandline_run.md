@@ -1,10 +1,10 @@
-# Commandline Interface
+# Interface for Python Interaction
 
-The commandline interface is used for interactive and scripted interaction 
-with the boards. It uses the entry point automate. 
+The command _automate_run_ can be used to script board and 
+compiler interaction in python. 
 
 
-    Usage: automate [--core-opts] <subcommand> [--subcommand-opts] ...
+    Usage: automate-run [--core-opts] <subcommand> [--subcommand-opts] ...
      
     Core options:
      
@@ -12,231 +12,75 @@ with the boards. It uses the entry point automate.
       -l [STRING], --list[=STRING]       List available tasks, optionally limited to a namespace.
       -V, --version                      Show version and exit.
 
-Actual tasks are run as subcommands of automate.
 
-# _automate list_
+The tasks provided by automate-run are defined in a file called _autofile.py_ . 
+Which should be placed in the current working directory. 
 
-List available boards and compilers.
-
-    Usage: automate [--core-opts] list [--options] [other tasks here ...]
-     
-    Docstring:
-      List available boards and compilers
-     
-      -b/--boards: only list boards
-      -c/--compilers: only list compilers
-
-Example: 
-
-    $ automate list 
-    Boards:
-    ID          Machine       Cores  OS      Connections    Default Compiler
-    ----------  ----------  -------  ------  -------------  ------------------
-    jetsonagx   jetsonagx         8  ubuntu  ssh            aarch64-gcc74
-    zynqberry   zynqberry         2  debian  ssh            aarch32hf-gcc74
-    jetsontx2   jetsontx2         6  ubuntu  ssh,uart       aarch64-gcc74
-     
-    Compiler:
-    ID               Toolchain    Version    Machines      Multiarch
-    ---------------  -----------  ---------  ------------  -----------
-    aarch32hf-gcc74  gcc          7.4.1      arm           yes
-    aarch32hf-gcc82  gcc          8.2.1      arm           no
-    aarch32-gcc82    gcc          8.2.1      arm           no
-    aarch64-gcc55    gcc          5.5.0      aarch64       yes
-    aarch64-gcc82    gcc          8.2.1      aarch64       no
-    aarch64-gcc65    gcc          6.5.0      aarch64       yes
-    aarch64-gcc74    gcc          7.4.1      aarch64       yes
-    clang-70         llvm         7.0.1      aarch64, arm  yes
-    clang-80         llvm         8.0.1      aarch64, arm  yes
-    clang-90         llvm         9.0.0      aarch64, arm  yes
+Tasks are then defined using the _pyinvoke_ tasks syntax (http://docs.pyinvoke.org/en/stable/concepts/invoking-tasks.html). The only differences 
+is, that tasks get handed in a [AutomateContext](#automate.context) object instead of pyinvokes contexts, this allows tasks to interact with the boards and compilers from 
+the Metadata repository. 
 
 
-# Board Interaction
 
-Board interaction commands are defined in namespace _board_.
-
-## _automate board.board-ids_
-
-List available board ids. Useful for iterating boards in shell scripts. 
-
-    Usage: automate [--core-opts] board.board-ids [--options] [other tasks here ...]
-     
-    Docstring:
-      returns list of board_ids suitable for usage in shell scripts
-     
-      -f/--filter: filter expression for boards
-     
-              Filter expression is prepended with 'lambda board:  ' and then evaluated as a python function
-              board is an object of class Board, only returns board_ids if filter expression is true
-     
-              Examples:
-     
-              board.machine == 'zynqberry' to only run on zynqberry boards
-     
-              board.trylock() to only iterate over boards that are currently 
-			  unlocked, and lock the boards while iterating
+## Examples 
 
 
-Examples: 
+## Run hello on All boards:
 
-List all available board ids:
+Put the following in _autofile.py_
 
-    $automate board.board-ids
-    jetsonagx
-    zynqberry
-    jetsontx2
+    from invoke import task
+          
+    @task
+    def say_hello(c):
+        for board in c.boards():
+            with board.connect() as con:
+                con.run('echo "Hello from $(hostname)!"')
 
+The command _echo "Hello from $(hostname)!"_ will be run on each board,
+and return the corresponding return values.
 
-List only boards with gnueabhif environment (32Bit ARM with floating point):
-
-    $automate board.board-ids --filter 'board.os.triple.environment.value == gnueabihf'
-	zynqberry
-
-
-## _automate board.get_
-
-Get files from board. 
-
-    Usage: automate [--core-opts] board.get [--options] [other tasks here ...]
-     
-    Docstring:
-      Get file from board
-     
-      -b/--board: target board id
-      -r/--remote: remote file path
-      -l/--local:  local folder or filename (default is current working directory)
-
-Examples:
-
-     automate board.get zynqberry /proc/cpuinfo
+To run use:
+   
+     $automate-run say-hello
 	 
+	 Hello from jetsonagx!
+	 Hello from jetsontx2!
+	 Hello from raspberrypi4b-jh1!
+	 Hello from zynqberry!
 
-## _automate board.kexec_
 
-    Usage: automate [--core-opts] board.kexec [--options] [other tasks here ...]
+## Access cross compiler information:
+
+If one wants to see the default compiler flags for each compiler one could use:
+
+    @task
+    def compiler_info(c, board="", toolchain=""):
+        board = c.board(board)
      
-    Docstring:
-      Start the Linux kernel using kexec
-     
-      -b/--board: target board id
-      -k/--kernel-id: target kernel id
-      -a/--append: Append the given string to the commandline
-      -w/--wait: wait until board is reachable via ssh again
+        for compiler in board.compilers(toolchain=toolchain):
+            print("compiler:", compiler.name)
+            print("  CC =", compiler.cc)
+            print("  CFLAGS = ", compiler.cflags)
+            print("  CXX =", compiler.cxx)
+            print("  CXXFLAGS =", compiler.cxxflags)
+            print("  LDFLAGS =", compiler.ldflags)
+            print("  LDLIBS = ", compiler.libs)
+            print("")
 
-## _automate_ board.lock
-
-
-    Usage: automate [--core-opts] board.lock [--options] [other tasks here ...]
-     
-    Docstring:
-      Lock board
-     
-      -b/--board: target board id
-      -t/--timeout: timeout for the lock
-
-## _automate_ board.put_
-
-    Usage: automate [--core-opts] board.put [--options] [other tasks here ...]
-     
-    Docstring:
-      Put file on the board
-     
-      -b/--board: target board id
-      -f/--file: local file
-      -r/--remote: remote file path (default is board specific rundir)
-
-## _automate board.reboot_
-
-     Usage: automate [--core-opts] board.reboot [--options] [other tasks here ...]
-
-     Docstring:
-       Reboot  board
-      
-       -b/--board: target board id
-       -w/--wait block until the board is reachable via ssh again
-
-## _automate board.reset_
+To run use: 
 
 
-    Usage: automate [--core-opts] board.reset [--options] [other tasks here ...]
-     
-    Docstring:
-      Hard reset board
-     
-      -b/--board: target board id
-      -w/--wait: block until the board is reachable again
+    $ automate-run compiler-info -b zynqberry -t gcc
+    compiler: aarch32hf-gcc74
+      CC = arm-linux-gnueabihf-gcc
+      CFLAGS =  -mcpu=cortex-a9 --sysroot=/nfs/es-genial/schrank/boards/zynqberry/sysroot -O2
+      CXX = arm-linux-gnueabihf-g++
+      CXXFLAGS = -mcpu=cortex-a9 --sysroot=/nfs/es-genial/schrank/boards/zynqberry/sysroot -O2
+      LDFLAGS = -mcpu=cortex-a9 --sysroot=/nfs/es-genial/schrank/boards/zynqberry/sysroot -O2
+      LDLIBS = 
+	  
+# Further examples
 
-## _automate board.rsync-to_
-
-     Usage: automate [--core-opts] board.rsync-to [--options] [other tasks here ...]
-
-     Docstring:
-       rsync a folder to the target board by default the 
-      
-      
-       -b/--board: target board id
-       -s/--source: source folder/file
-       -t/--target: target folder/file default is configured rundir on the board
-       -d/--delete: delete files from target that do not exist in the source 
-
-## _automate board.run_
-
-    Usage: automate [--core-opts] board.run [--options] [other tasks here ...]
-     
-    Docstring:
-      Run command remotely
-     
-      -b/--board: target board id
-      -c/--command: command to run
-      --cwd: working directory of the command (default is rundir of board)
-
-## automate board.shell
-
-    Usage: automate [--core-opts] board.shell [--options] [other tasks here ...]
-     
-    Docstring:
-      Start a remote shell 
-     
-      -b/--board: target board id
-     
-    Options:
-      -b STRING, --board=STRING
-
-
-## automate board.unlock
-
-    Usage: automate [--core-opts] board.unlock [--options] [other tasks here ...]
-     
-    Docstring:
-      Unlock board
-     
-      -b/--board: target board id 
-     
-    Options:
-      -b STRING, --board=STRING
-
-# Builders
-
-Software for boards can be built using a standard buildsystem. All buildsystem 
-follow the sequence.
-
-_automate $buildsystem.configure_: to configure the build
-_automate $buildsystem.build_: to build software
-_automate $buildsystem.install_: to install built software in a defined directory on the host system
-_automate $buildsystem.deploy_: to copy the built software to the board
-
-We currently have the following buildsystems available: 
-
-_cmake_: for cmake based software builds
-_make_: for makefile based software builds
-_kernel_: to build linux kernels using the kbuild build system
-
-
-
-# Administration tasks
-
-TBD
-
-# Examples 
-
-Examples for commandline usage can be found in _examples/shell_ folder of the project. 
+  The examples from this tutorial and further more advanced examples are available 
+  from the folder _examples/python/_ in this repository.
