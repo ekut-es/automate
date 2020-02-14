@@ -54,9 +54,10 @@ To enable dnsmasq use:
 
 Add the following in `/etc/dnsmasq.d/derschrank.conf`
 
-	listen-address=::1,127.0.0.1,10.42.0.1
+	listen-address=10.42.0.1,::1,127.0.0.1
 	port=53
-	interface=enp0s20u3
+	interface=IF_NAME
+    bind-interfaces
 	domain-needed
 	expand-hosts
 	server=134.2.12.15
