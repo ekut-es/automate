@@ -62,7 +62,7 @@ class KernelModel(DataModelBase):
     kernel_srcdir: Path
     image: KernelImageModel
     uboot: Optional[UBootModel] = None
-    default: bool
+    default: bool = False
 
 
 class OSModel(DataModelBase):
