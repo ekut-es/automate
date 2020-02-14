@@ -72,6 +72,7 @@ To run use:
 
 
     $ automate-run compiler-info -b zynqberry -t gcc
+	
     compiler: aarch32hf-gcc74
       CC = arm-linux-gnueabihf-gcc
       CFLAGS =  -mcpu=cortex-a9 --sysroot=/nfs/es-genial/schrank/boards/zynqberry/sysroot -O2
