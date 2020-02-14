@@ -1,7 +1,10 @@
 # Automate
 
-
 To get started:
+  
+Update submodules:
+
+    git submodule update --init --recursive
   
 Install poetry
 
