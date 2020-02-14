@@ -56,7 +56,7 @@ class KernelBuilder(BaseBuilder):
         self._mkbuilddir()
 
         if not cross_compiler:
-            cross_compiler = board.compiler()
+            cross_compiler = self.board.compiler()
 
         self.state.kernel = {}
         self.state.kernel["arch"] = (
