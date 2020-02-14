@@ -3,16 +3,44 @@
 This describes a simple gateway configuration assuming a 
 RHEL  based system.
 
-
 ## Disable Network Manager for the interface
 
-Edit the file in /etc/sysconfig/network-scripts corresponding to your device,
-and disable network manager configuration by adding the following line:
+All boards are part of a network (10.42.0.0/24) administered by the gateway. The board network is connected to a dedicated network interface of the gateway. To assign a static IP address to the network interface get the name and MAC address of the network interface by executing:
 
-    NM_CONTROLLED=no
+    ifconfig -a
+
+Edit or add the file in `/etc/sysconfig/network-scripts/ifcfg-IF_NAME` corresponding to your device and replace all content of the file with the following:
+
+	TYPE=Ethernet
+	DEFROUTE=no
+	IPV4_FAILURE_FATAL=no
+	IPV6INIT=yes
+	IPV6_AUTOCONF=shared
+	IPV6_DEFROUTE=yes
+	IPV6_FAILURE_FATAL=no
+	HWADDR=xx:xx:xx:xx:xx:xx
+	ONBOOT=yes
+	IPV6_ADDR_GEN_MODE=stable-privacy
+	IPV6_PRIVACY=no
+	PROXY_METHOD=none
+	BROWSER_ONLY=no
+	BOOTPROTO=shared
+	NM_CONTROLLED=no
 	NETMASK=255.255.255.0
-	IPADDR=192.168.1.1
+	IPADDR=10.42.0.1
 	ZONE=dmz
+
+
+## Disable Network Manager dnsmasq
+
+By default Network Manager runs a DNS/DHCP server. This DNS server has to be disabled by editing `/etc/NetworkManager/NetworkManager.conf`. Under section `[main]` add the following line to the config file:
+
+	dns=none
+
+Reboot the computer:
+
+	shutdown -r now
+
 
 ## Enable dnsmasq
 
@@ -20,26 +48,23 @@ To enable dnsmasq use:
    
     yum install dnsmasq
 	systemctl enable dnsmasq
-    shutdown -r now
 	
 	
 ## Configure dnsmasq
 
-Add the following in /etc/dnsmasq.d/der_schrank.conf
+Add the following in `/etc/dnsmasq.d/derschrank.conf`
 
-    listen-address=::1,127.0.0.1,192.168.1.1
-	interface=enp1s0
+	listen-address=10.42.0.1
+	interface=IF_NAME
 	expand-hosts
 	bogus-priv
-	
-	
+
 	dhcp-range=10.42.0.10,10.42.0.150,72h
-    dhcp-leasefile=/var/lib/dnsmasq/dnsmasq.leases
-    dhcp-authoritative
-    dhcp-option=option:ntp-server,134.2.10.50,134.2.12.2,134.2.14.2
-	
-	dhcp-host=jetsontx2,10.42.0.99
-	dhcp-host=zynqberry,10.42.0.10
+	dhcp-leasefile=/var/lib/dnsmasq/dnsmasq.leases
+	dhcp-authoritative
+	dhcp-option=option:ntp-server,134.2.10.50,134.2.12.2,134.2.14.2
+
+	dhcp-host=00:04:4b:cb:d8:5d,jetsonagx,10.42.0.123
 
 To syntax check the commandline do:
 	
@@ -49,6 +74,10 @@ And apply the changes with:
 
     systemctl restart dnsmasq
     systemctl status dnsmasq
+
+When a new board is installed and joins the network. The hostname, MAC address, and IP address can be found in: `/var/lib/dnsmasq/dnsmasq.leases`. To assign a static IP to a board add the following line to `/etc/dnsmasq.d/derschrank.conf`: 
+
+	dhcp-host=yy:yy:yy:yy:yy:yy,boardhostname,10.42.0.YY
 
 
 ## Configure NAT forwarding
