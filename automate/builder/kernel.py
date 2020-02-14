@@ -92,7 +92,7 @@ class KernelBuilder(BaseBuilder):
                 )
 
                 self.context.run(
-                    "make ARCH={0} CROSS_COMPILE={1} oldconfig".format(
+                    "make ARCH={0} CROSS_COMPILE={1} olddefconfig".format(
                         self._arch(), self._cross_compile()
                     )
                 )
@@ -192,11 +192,6 @@ class KernelBuilder(BaseBuilder):
                 kernel_package = kernel_data.deploy_package_name
 
                 self.context.run("tar czf {0} boot lib".format(kernel_package))
-                self.context.run(
-                    "cp {0} {1}".format(
-                        kernel_package, kernel_data.build_cache_name
-                    )
-                )
 
             kernel_top_dir = kernel_desc.kernel_srcdir.parts[0]
             kernel_build_cache = kernel_data.build_cache_name
