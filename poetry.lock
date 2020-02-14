@@ -244,14 +244,6 @@ python-versions = "*"
 version = "3.0.12"
 
 [[package]]
-category = "dev"
-description = "An HTML Minifier"
-name = "htmlmin"
-optional = false
-python-versions = "*"
-version = "0.1.12"
-
-[[package]]
 category = "main"
 description = "Human friendly output for text interfaces using Python"
 name = "humanfriendly"
@@ -371,14 +363,6 @@ version = "0.1.7"
 Jinja2 = ">=2.5"
 
 [[package]]
-category = "dev"
-description = "JavaScript minifier."
-name = "jsmin"
-optional = false
-python-versions = "*"
-version = "2.2.2"
-
-[[package]]
 category = "main"
 description = "Store and access your passwords safely."
 name = "keyring"
@@ -425,7 +409,7 @@ description = "Python implementation of Markdown."
 name = "markdown"
 optional = false
 python-versions = ">=3.5"
-version = "3.2"
+version = "3.2.1"
 
 [package.dependencies]
 setuptools = ">=36"
@@ -471,27 +455,13 @@ description = "A Material Design theme for MkDocs"
 name = "mkdocs-material"
 optional = false
 python-versions = "*"
-version = "4.6.2"
+version = "4.6.3"
 
 [package.dependencies]
-Pygments = ">=2.2"
+Pygments = ">=2.4"
 markdown = ">=3.2"
 mkdocs = ">=1.0"
-mkdocs-minify-plugin = ">=0.2"
 pymdown-extensions = ">=6.3"
-
-[[package]]
-category = "dev"
-description = "An MkDocs plugin to minify HTML and/or JS files prior to being written to disk"
-name = "mkdocs-minify-plugin"
-optional = false
-python-versions = ">=2.7"
-version = "0.2.2"
-
-[package.dependencies]
-htmlmin = ">=0.1.4"
-jsmin = ">=2.2.2"
-mkdocs = ">=1.0.4"
 
 [[package]]
 category = "dev"
@@ -921,7 +891,7 @@ description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip pres
 name = "ruamel.yaml"
 optional = false
 python-versions = "*"
-version = "0.16.9"
+version = "0.16.10"
 
 [package.dependencies]
 [package.dependencies."ruamel.yaml.clib"]
@@ -1059,13 +1029,13 @@ description = "Virtual Python Environment builder"
 name = "virtualenv"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
-version = "20.0.2"
+version = "20.0.4"
 
 [package.dependencies]
 appdirs = ">=1.4.3,<2"
 distlib = ">=0.3.0,<1"
 filelock = ">=3.0.0,<4"
-six = ">=1.12.0,<2"
+six = ">=1.9.0,<2"
 
 [package.dependencies.importlib-metadata]
 python = "<3.8"
@@ -1290,9 +1260,6 @@ filelock = [
     {file = "filelock-3.0.12-py3-none-any.whl", hash = "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"},
     {file = "filelock-3.0.12.tar.gz", hash = "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"},
 ]
-htmlmin = [
-    {file = "htmlmin-0.1.12.tar.gz", hash = "sha256:50c1ef4630374a5d723900096a961cff426dff46b48f34d194a81bbe14eca178"},
-]
 humanfriendly = [
     {file = "humanfriendly-6.1-py2.py3-none-any.whl", hash = "sha256:5a57c973dd28a24f45ab723521c84b111fbe79e9d9fcdca6f9aeb668c18a0f40"},
     {file = "humanfriendly-6.1.tar.gz", hash = "sha256:b77d1aa8d73b6fe7e8860fa516fbc0e2aa85bff159d7525b0213353817cf1cfc"},
@@ -1333,9 +1300,6 @@ jinja2 = [
 jinjasql = [
     {file = "jinjasql-0.1.7.tar.gz", hash = "sha256:254c6dc34cedad15fbb9ba59e3a547cb6db3e9d6e453d8c9106105a8c785126f"},
 ]
-jsmin = [
-    {file = "jsmin-2.2.2.tar.gz", hash = "sha256:b6df99b2cd1c75d9d342e4335b535789b8da9107ec748212706ef7bbe5c2553b"},
-]
 keyring = [
     {file = "keyring-21.1.0-py2.py3-none-any.whl", hash = "sha256:24ae23ab2d6adc59138339e56843e33ec7b0a6b2f06302662477085c6c0aca00"},
     {file = "keyring-21.1.0.tar.gz", hash = "sha256:1f393f7466314068961c7e1d508120c092bd71fa54e3d93b76180b526d4abc56"},
@@ -1368,8 +1332,8 @@ livereload = [
     {file = "livereload-2.6.1.tar.gz", hash = "sha256:89254f78d7529d7ea0a3417d224c34287ebfe266b05e67e51facaf82c27f0f66"},
 ]
 markdown = [
-    {file = "Markdown-3.2-py2.py3-none-any.whl", hash = "sha256:9c71241ec237505535eabff7a38b1307250f16cea174bb1e505c3e032f108867"},
-    {file = "Markdown-3.2.tar.gz", hash = "sha256:5ad7180c3ec16422a764568ad6409ec82460c40d1631591fa53d597033cc98bf"},
+    {file = "Markdown-3.2.1-py2.py3-none-any.whl", hash = "sha256:e4795399163109457d4c5af2183fbe6b60326c17cfdf25ce6e7474c6624f725d"},
+    {file = "Markdown-3.2.1.tar.gz", hash = "sha256:90fee683eeabe1a92e149f7ba74e5ccdc81cd397bd6c516d93a8da0ef90b6902"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},
@@ -1410,12 +1374,8 @@ mkdocs = [
     {file = "mkdocs-1.0.4.tar.gz", hash = "sha256:17d34329aad75d5de604b9ed4e31df3a4d235afefdc46ce7b1964fddb2e1e939"},
 ]
 mkdocs-material = [
-    {file = "mkdocs-material-4.6.2.tar.gz", hash = "sha256:4f32bfc8f8da74abc0bc65116d7f9e3d6b2e3e2dc43b61cfaab72e151c9c0431"},
-    {file = "mkdocs_material-4.6.2-py2.py3-none-any.whl", hash = "sha256:294275c4d3f3e5711b27645b013a0afe8b22a8ace8db81099cb1403ad47b4af5"},
-]
-mkdocs-minify-plugin = [
-    {file = "mkdocs-minify-plugin-0.2.2.tar.gz", hash = "sha256:181ec20a78be6aeb9e9e2477784f0e778011b10dd00d1398d0a2dd5019d5f5d0"},
-    {file = "mkdocs_minify_plugin-0.2.2-py2-none-any.whl", hash = "sha256:27b68dfa54fa6ac6c91b2f2ec2bdeaf54ccf2ad8d6433d88a4a9a05029d91388"},
+    {file = "mkdocs-material-4.6.3.tar.gz", hash = "sha256:1d486635b03f5a2ec87325842f7b10c7ae7daa0eef76b185572eece6a6ea212c"},
+    {file = "mkdocs_material-4.6.3-py2.py3-none-any.whl", hash = "sha256:7f3afa0a09c07d0b89a6a9755fdb00513aee8f0cec3538bb903325c80f66f444"},
 ]
 mock-ssh-server = [
     {file = "mock-ssh-server-0.8.0.tar.gz", hash = "sha256:35d3bff1b272878d6dfcdccd7b435199cc31c7e1590eccc1345eaadbca3eb78a"},
@@ -1633,8 +1593,8 @@ retype = [
     {file = "retype-19.9.0.tar.gz", hash = "sha256:846fd135d3ee33c1bad387602a405d808cb99a9a7a47299bfd0e1d25dfb2fedd"},
 ]
 "ruamel.yaml" = [
-    {file = "ruamel.yaml-0.16.9-py2.py3-none-any.whl", hash = "sha256:fd16843ff0ba45fa5e1ea9ea7038428b4a46f2c39deea9aa67f9eaa34823dc11"},
-    {file = "ruamel.yaml-0.16.9.tar.gz", hash = "sha256:ee3264b83c3309b4ae7978afa185da6a1d278e3abc9fb942f1a0b57c622092f8"},
+    {file = "ruamel.yaml-0.16.10-py2.py3-none-any.whl", hash = "sha256:0962fd7999e064c4865f96fb1e23079075f4a2a14849bcdc5cdba53a24f9759b"},
+    {file = "ruamel.yaml-0.16.10.tar.gz", hash = "sha256:099c644a778bf72ffa00524f78dd0b6476bca94a1da344130f4bf3381ce5b954"},
 ]
 "ruamel.yaml.clib" = [
     {file = "ruamel.yaml.clib-0.2.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:9c6d040d0396c28d3eaaa6cb20152cb3b2f15adf35a0304f4f40a3cf9f1d2448"},
@@ -1730,8 +1690,8 @@ urllib3 = [
     {file = "urllib3-1.25.8.tar.gz", hash = "sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.0.2-py2.py3-none-any.whl", hash = "sha256:e0099edd03c77e14a8ac9be62e45af28759984075d9409bb2c3a4edeb7420a23"},
-    {file = "virtualenv-20.0.2.tar.gz", hash = "sha256:7e4e234e1f27755685dc54063d989756790b0682d60e304db589fa1604938013"},
+    {file = "virtualenv-20.0.4-py2.py3-none-any.whl", hash = "sha256:de2cbdd5926c48d7b84e0300dea9e8f276f61d186e8e49223d71d91250fbaebd"},
+    {file = "virtualenv-20.0.4.tar.gz", hash = "sha256:08f3623597ce73b85d6854fb26608a6f39ee9d055c81178dc6583803797f8994"},
 ]
 wcwidth = [
     {file = "wcwidth-0.1.8-py2.py3-none-any.whl", hash = "sha256:8fd29383f539be45b20bd4df0dc29c20ba48654a41e661925e612311e9f3c603"},
