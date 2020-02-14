@@ -248,6 +248,10 @@ and tries to extract the metadata automatically. As this command is not able
 to extract all information 100% reliably. After extraction an interactive 
 wizard is used for review of the extracted board data.
 
+Some board data (especially os.kernel) is not generated automatically. So 
+some features especially kernel building and kexec will not work with
+the automatically generated board descriptions. 
+
     Usage: automate [--core-opts] admin.add-board [--options] [other tasks here ...]
      
     Docstring:
