@@ -46,6 +46,7 @@ class KernelConfigBuilder:
                 "CONFIG_PROC_KCORE=y",
                 "CONFIG_IKCONFIG=y",
                 "CONFIG_IKCONFIG_PROC=y",
+                "CONFIG_IKHEADERS=m",
                 "CONFIG_HW_PERF_EVENTS=y",
                 "CONFIG_KEXEC=y",
                 "CONFIG_KEXEC_CORE=y",

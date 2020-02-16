@@ -15,16 +15,9 @@ class MakefileBuilder(BaseBuilder):
             2. Record build variables in build_directory/buildvars.yml
         """
 
-        if cross_compiler is None:
-            cross_compiler = self.board.compiler()
-
-        if srcdir:
-            self.state.srcdir = Path(srcdir).absolute()
-
-        if prefix:
-            self.state.prefix = Path(prefix)
-        else:
-            self.state.prefix = self.board.rundir / self.state.srcdir.name
+        super(MakefileBuilder).configure(
+            cross_compiler=cross_compiler, srcdir=srcdir, prefix=prefix
+        )
 
         self._mkbuilddir()
         self.context.run(f"rsync -ar --delete {self.srcdir} {self.builddir}")

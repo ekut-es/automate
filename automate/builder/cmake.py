@@ -14,16 +14,9 @@ class CMakeBuilder(BaseBuilder):
         self, cross_compiler=None, srcdir="", prefix="", cmake_definitions=[]
     ):
 
-        if cross_compiler is None:
-            cross_compiler = self.board.compiler()
-
-        if srcdir:
-            self.state.srcdir = Path(srcdir).absolute()
-
-        if prefix:
-            self.state.prefix = Path(prefix)
-        else:
-            self.state.prefix = self.board.rundir / self.state.srcdir.name
+        super(MakefileBuilder).configure(
+            cross_compiler=cross_compiler, srcdir=srcdir, prefix=prefix
+        )
 
         self.clean()
         self._mkbuilddir()

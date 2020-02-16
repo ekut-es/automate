@@ -53,10 +53,10 @@ class KernelBuilder(BaseBuilder):
         return str(self.state.kernel["cross_compile"])
 
     def configure(self, kernel_name, cross_compiler=None):
-        self._mkbuilddir()
 
-        if not cross_compiler:
-            cross_compiler = self.board.compiler()
+        super(MakefileBuilder).configure(cross_compiler=cross_compiler)
+
+        self._mkbuilddir()
 
         self.state.kernel = {}
         self.state.kernel["arch"] = (
@@ -156,6 +156,17 @@ class KernelBuilder(BaseBuilder):
                     self.logger.warning(
                         "Could not install kernel dtbs this command is only available for newer kernels"
                     )
+
+                header_install_result = self.context.run(
+                    "make header_install ARCH={0} CROSS_COMPILE={1} INSTALL_HDR_PATH={2}".format(
+                        self._arch(),
+                        self._cross_compile(),
+                        str(install_path / "usr"),
+                    ),
+                    warn=True,
+                )
+                if header_install_result.return_code != 0:
+                    self.logger.warning("Could not install kernel headers")
 
                 self.context.run(
                     "make modules_install ARCH={0} CROSS_COMPILE={1} INSTALL_MOD_PATH={2}".format(

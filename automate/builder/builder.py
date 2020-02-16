@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Dict, Optional, Union
 
 from ruamel.yaml import YAML
 
+from ..compiler import CrossCompiler
 from ..utils import untar
 from ..utils.kernel import KernelConfigBuilder, KernelData
 from ..utils.network import rsync
@@ -86,10 +87,29 @@ class BaseBuilder(object):
 
         return False
 
-    def configure(self, *args, **kwargs):
+    def configure(
+        self,
+        cross_compiler: CrossCompiler = None,
+        srcdir: Union[Path, str] = "",
+        prefix: Union[Path, str] = "",
+    ):
         "Configure the build"
 
-        raise NotImplementedError("Configure is not implemented")
+        if cross_compiler is None:
+            cross_compiler = self.board.compiler()
+
+        if srcdir:
+            self.state.srcdir = Path(srcdir).absolute()
+
+        if prefix:
+            prefix = Path(prefix)
+            if prefix.is_absolute():
+                self.state.prefix = prefix
+            else:
+                self.state.prefix = self.board.rundir / prefix
+
+        else:
+            self.state.prefix = self.board.rundir / self.state.srcdir.name
 
     def build(self, *args, **kwargs):
         "Build target code"
