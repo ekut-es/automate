@@ -349,7 +349,12 @@ def add_board(
         print("Could not Authenticate with public key")
 
         con = connect(
-            host, user, port, passwd_allowed=True, keyring_allowed=False
+            host,
+            user,
+            port,
+            passwd_allowed=True,
+            keyring_allowed=False,
+            gateway=gateway_connection,
         )
         con.open()
 
@@ -368,7 +373,15 @@ def add_board(
 
             con.close()
 
-            con = Connection(user=user, host=host)
+            con = connect(
+                host,
+                user,
+                port,
+                passwd_allowed=True,
+                keyring_allowed=False,
+                gateway=gateway_connection,
+            )
+
             con.open()
 
     assert con.is_connected
