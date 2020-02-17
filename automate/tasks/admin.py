@@ -492,8 +492,9 @@ def add_board(
     rootfs = prompt(
         "  rootfs: ", default="${boardroot}/${board_name}/${board_name}.img"
     )
+
     multiarch = False
-    if distribution in ["ubuntu", "debian"]:
+    if distribution in ["ubuntu", "debian", "raspbian"]:
         multiarch = True
 
     # TODO: extract kernel info
