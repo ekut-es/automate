@@ -54,7 +54,7 @@ class KernelBuilder(BaseBuilder):
 
     def configure(self, kernel_name, cross_compiler=None):
 
-        super(MakefileBuilder).configure(cross_compiler=cross_compiler)
+        super(KernelBuilder, self).configure(cross_compiler=cross_compiler)
 
         self._mkbuilddir()
 

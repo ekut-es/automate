@@ -15,7 +15,7 @@ class MakefileBuilder(BaseBuilder):
             2. Record build variables in build_directory/buildvars.yml
         """
 
-        super(MakefileBuilder).configure(
+        super(MakefileBuilder, self).configure(
             cross_compiler=cross_compiler, srcdir=srcdir, prefix=prefix
         )
 

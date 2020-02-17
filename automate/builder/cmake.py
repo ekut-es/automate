@@ -14,7 +14,7 @@ class CMakeBuilder(BaseBuilder):
         self, cross_compiler=None, srcdir="", prefix="", cmake_definitions=[]
     ):
 
-        super(MakefileBuilder).configure(
+        super(CMakeBuilder, self).configure(
             cross_compiler=cross_compiler, srcdir=srcdir, prefix=prefix
         )
 
