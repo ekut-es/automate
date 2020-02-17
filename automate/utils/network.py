@@ -154,6 +154,7 @@ def rsync(
             )
 
             con.run("rsync --daemon --config /tmp/rsync-ad-hoc.conf")
+            con.run(f"mkdir -p {target}")
 
             delete_flag = "--delete" if delete else ""
 
