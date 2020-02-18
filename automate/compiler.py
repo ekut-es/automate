@@ -2,7 +2,7 @@ import logging
 import shlex
 import subprocess
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from . import board
 from .model import (
@@ -126,20 +126,43 @@ class CrossCompiler(Compiler):
 
     def configure(
         self,
-        flags: str = "-O2",
-        cflags: str = "",
-        cxxflags: str = "",
-        ldflags: str = "",
-        libs: str = "",
+        flags: Optional[str] = None,
+        cflags: Optional[str] = None,
+        cxxflags: Optional[str] = None,
+        ldflags: Optional[str] = None,
+        libs: Optional[str] = None,
         uarch_opt=True,
         isa_opt=True,
         enable_sysroot=True,
-    ):
-        self._flags = shlex.split(flags)
-        self._cflags = shlex.split(cflags)
-        self._cxxflags = shlex.split(cxxflags)
-        self._ldflags = shlex.split(ldflags)
-        self._libs = shlex.split(libs)
+    ) -> None:
+        """ Set compiler options 
+    
+    # Arguments
+    flags: Basic flags (used for compilation and linkags)
+    cflags: flags for C compiler
+    cxxflags: flags for C++ compiler
+    ldflags: flags for linker (linker is assumed to call C/C++-Compiler)
+    libs: Additional libraries to link (some builds might need -lrt)
+    uarch_opt: Enable microarchitecture specific optimizations
+    isa_opt: Enable isa specific optimizations
+    enable_sysroot: Link and build with --sysroot set to a dump of the boards root file system, linkers and cmake will link to libraries installed on the board
+    """
+
+        if flags is not None:
+            self._flags = shlex.split(flags)
+
+        if cflags is not None:
+            self._cflags = shlex.split(cflags)
+
+        if cxxflags is not None:
+            self._cxxflags = shlex.split(cxxflags)
+
+        if ldflags is not None:
+            self._ldflags = shlex.split(ldflags)
+
+        if libs is not None:
+            self._libs = shlex.split(libs)
+
         self._isa_opt = isa_opt
         self._uarch_opt = uarch_opt
         self._enable_sysroot = enable_sysroot
@@ -208,7 +231,7 @@ class CrossCompiler(Compiler):
 
     @property
     def sysroot(self) -> Union[Path, str]:
-        """Sysroot flag for this compiler"""
+        """Sysroot flag for this compiler and board"""
         if not Path(self.board.os.sysroot).exists():
             self.logger.warning(
                 "Could not find sysroot {} using generic sysroot".format(
