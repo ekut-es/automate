@@ -53,6 +53,12 @@ class KernelBuilder(BaseBuilder):
         return str(self.state.kernel["cross_compile"])
 
     def configure(self, kernel_name, cross_compiler=None):
+        """configure kernel build
+        
+        # Arguments
+        kernel_name: name of the kernel config (see Metadata)
+        cross_compiler: cross_compiler object to use
+        """
 
         super(KernelBuilder, self).configure(cross_compiler=cross_compiler)
 
@@ -120,6 +126,8 @@ class KernelBuilder(BaseBuilder):
                 )
 
     def build(self):
+        """Build kernel"""
+
         self._mkbuilddir()
         kernel_desc = self._kernel_desc()
 
@@ -195,6 +203,8 @@ class KernelBuilder(BaseBuilder):
                 )
 
     def install(self):
+        """Install kernel locally and save build directory snapshot
+        """
         kernel_desc = self._kernel_desc()
         kernel_data = self._kernel_data()
         with self.context.cd(str(self.builddir)):

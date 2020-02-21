@@ -24,7 +24,27 @@ def configure(
     compiler_name="",
     D=[],
 ):  # pragma: no cover
-    """ Configure a cmake project for the build
+    """ 
+    Configure a cmake project for the build
+    
+    # Arguments
+
+       -b, --board=STRING: Board for the build. required argument 
+       -s, --srcdir=STRING: Directory containing CMakeLists.txt usually top of source directory, required argument
+      --builddir=STRING: Directory containing the built project (default: builds/<board_name>)
+       --cflags=STRING: Extra flags for C-Compiler
+       --flags=STRING: Extra base flags, used for all compilers and linking (for example -flto)
+       --libs=STRING: Extra libraries to linke with the binaries
+       --ldflags=STRING: Extra flags for linking. Linker is execute through compiler so for actual linker flags use -Wl,--linkerflag
+       --compiler-name=STRING: Select a specific compiler 
+       --prefix=STRING: Install prefix on the board (default: board.rundir/name of srcdir)
+       --toolchain=STRING: Select a different toolchain type choices: llvm, gcc (default: gcc)
+       --cxxflags=STRING: Extra flags for C++ compiliation
+       --[no-]uarch:  Enable / Disable uarch specific optimizations if uarch is not supported by the compiler 
+       --[no-]isa: Enable / Disable isa specific optimizations
+       --[no-]sysroot: Enable / Disable linking with default sysroot 
+       -D=STRING: Extra definitions for the CMAKE Build e.g. "-D 'ENABLE_OPENCL=ON'"
+    
     """
 
     board = c.board(board)
@@ -50,7 +70,11 @@ def configure(
 
 @task
 def build(c, board, builddir=""):  # pragma: no cover
-    """build a cmake project for the board"""
+    """build a cmake project for the board
+    
+    -b STRING, --board=STRING: Target board
+    --builddir=STRING: Builddirectory (default: builds/<board_name>)
+    """
 
     board = c.board(board)
     builder = board.builder("cmake", builddir=builddir)
@@ -60,7 +84,11 @@ def build(c, board, builddir=""):  # pragma: no cover
 
 @task
 def install(c, board, builddir=""):  # pragma: no cover
-    """install cmake project for deployment"""
+    """install cmake project for deployment in <builddir>/install
+
+    -b STRING, --board=STRING: Target board
+    --builddir=STRING: Builddirectory (default: builds/<board_name>)
+    """
 
     board = c.board(board)
     builder = board.builder("cmake", builddir=builddir)
@@ -69,8 +97,12 @@ def install(c, board, builddir=""):  # pragma: no cover
 
 
 @task
-def deploy(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
-    """Deploy installed cmake project on board"""
+def deploy(c, board, builddir=""):  # pragma: no cover
+    """Deploy installed cmake project on board in configured prefix
+
+    -b STRING, --board=STRING: Target board
+    --builddir=STRING: Builddirectory (default: builds/<board_name>)
+    """
 
     board = c.board(board)
     builder = board.builder("cmake", builddir=builddir)
@@ -79,8 +111,12 @@ def deploy(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
 
 
 @task
-def clean(c, board, builddir="", srcdir="", prefix=""):  # pragma: no cover
-    """Remove the build directory"""
+def clean(c, board, builddir=""):  # pragma: no cover
+    """Remove the build directory
+    
+    -b STRING, --board=STRING: Target board
+    --builddir=STRING: Builddirectory (default: builds/<board_name>)
+    """
 
     board = c.board(board)
     builder = board.builder("cmake", builddir=builddir)

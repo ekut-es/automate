@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from ..utils.network import rsync
 from .builder import BaseBuilder
@@ -11,8 +11,24 @@ if TYPE_CHECKING:
 
 class CMakeBuilder(BaseBuilder):
     def configure(
-        self, cross_compiler=None, srcdir="", prefix="", cmake_definitions=[]
+        self,
+        cross_compiler: "Optional[automate.compiler.CrossCompiler]" = None,
+        srcdir: Union[Path, str] = "",
+        prefix: Union[Path, str] = "",
+        cmake_definitions: List[str] = [],
     ):
+        """
+        Configure cmake based build
+
+        # Arguments 
+        cross_compiler: cross compiler for the build, default: use default compiler for the board
+        srcdir: directory conaining CMakeLists.txt
+        prefix: install prefix on the board
+        cmake_definitions: extra cmake definitions 
+        """
+
+        if cross_compiler is None:
+            cross_compiler = self.board.compiler()
 
         super(CMakeBuilder, self).configure(
             cross_compiler=cross_compiler, srcdir=srcdir, prefix=prefix
@@ -124,15 +140,22 @@ class CMakeBuilder(BaseBuilder):
         self._save_state()
 
     def build(self, c):
+        "Run cmake build"
         self._mkbuilddir()
         with self.context.cd(str(self.builddir)):
             self.context.run("cmake --build  .")
 
     def install(self, c):
+        "Run cmake install"
         with self.context.cd(str(self.builddir)):
             self.context.run("cmake  --build . --target install")
 
     def deploy(self, c, delete=False):
+        """ Deploy target on board
+        
+        # Arguments
+        delete: if true clean install prefix before deployment
+        """
         print("Rsyncing with prefix", self.prefix)
         with self.board.connect() as con:
             con.run(f"mkdir -p {self.prefix.name}")

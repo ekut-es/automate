@@ -55,7 +55,7 @@ class MakefileBuilder(BaseBuilder):
 
            # Arguments 
 
-           delete: if true delete non existant files from the board
+           delete: if true delete remove non existant files from install prefix on the board 
         """
 
         with self.board.connect() as con:
