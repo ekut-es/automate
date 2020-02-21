@@ -64,6 +64,8 @@ class AutomateContext(invoke.Context):
     def _setup_forwards(
         self,
     ) -> None:  # Start forwarder processes for port forwarding if corresponding processes do not exist already
+
+        new_forwarder_started = False
         for forward in self.config.automate.forwards:
             pidfile = (
                 Path("/tmp") / f"automate_forward_{forward['local_port']}.pid"
@@ -78,7 +80,7 @@ class AutomateContext(invoke.Context):
                     else:
                         logging.debug("Forwarder process exists")
                         continue
-
+            new_forwarder_started = True
             self.logger.info(
                 f'forwarding {forward["local_port"]} to {forward["host"]}:{forward["remote_port"]}'
             )
@@ -128,7 +130,10 @@ class AutomateContext(invoke.Context):
                             print(connection)
                             sys.stdout.flush()
 
-        time.sleep(1.0)
+        if new_forwarder_started:
+            logging.info("Waiting for forwarder setup")
+            time.sleep(1.0)
+
         logging.debug("Setup forwards finished")
 
     def boards(self) -> Generator[Board, None, None]:
