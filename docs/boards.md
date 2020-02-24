@@ -15,8 +15,13 @@ Boards are required to have the following tools installed:
      
  1. ssh
  2. rsync
- 3. netcat (nc)
+ 3. netcat (nc), might need netcat-openbsd apt-get install -y netcat-openbsd
  4. perf
+ 
+ 
+## Kernel
+
+All of these options are currently optional for all kernels, but we recommend using them for all 
  
 ## Sudo Access
 
