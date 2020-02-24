@@ -140,6 +140,8 @@ class KernelBuilder(BaseBuilder):
             srcdir = kernel_desc.kernel_srcdir
             with self.context.cd(str(srcdir)):
 
+                self.logger.info("Trying build")
+
                 self.context.run(
                     "make -j {2} ARCH={0} CROSS_COMPILE={1} all".format(
                         self._arch(),
@@ -165,11 +167,29 @@ class KernelBuilder(BaseBuilder):
                         "Could not install kernel dtbs this command is only available for newer kernels"
                     )
 
+                self.context.run(
+                    "rm -f {}".format(
+                        str(
+                            install_path
+                            / "lib"
+                            / "modules"
+                            / kernel_desc.version
+                            / "build"
+                        )
+                    )
+                )
+
                 header_install_result = self.context.run(
-                    "make header_install ARCH={0} CROSS_COMPILE={1} INSTALL_HDR_PATH={2}".format(
+                    "make headers_install ARCH={0} CROSS_COMPILE={1} INSTALL_HDR_PATH={2}".format(
                         self._arch(),
                         self._cross_compile(),
-                        str(install_path / "usr"),
+                        str(
+                            install_path
+                            / "lib"
+                            / "modules"
+                            / kernel_desc.version
+                            / "build"
+                        ),
                     ),
                     warn=True,
                 )

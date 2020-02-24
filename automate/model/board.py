@@ -55,7 +55,6 @@ class KernelModel(DataModelBase):
     name: str
     description: str
     version: str
-    localversion: Optional[str] = None
     commandline: str
     kernel_config: Path
     kernel_source: Path
@@ -86,15 +85,17 @@ class SOCModel(DataModelBase):
     foundry: FoundryModel
 
 
-class PowerConnectorModel(DataModelBase):
+class PowerSupplyModel(DataModelBase):
     name: str
+    voltage: float  #  voltage in V
+    max_current: float  # max. current in A
 
 
 class BoardModel(DataModelBase):
     name: str
+    board: str
     hostname: str = ""  # FIXME use pydantic datatypes
     mac_address: str = ""  # FIXME use pydantic datatypes
-    board: str
     description: str
     rundir: Path
     doc: List[DocumentationLinkModel] = []
@@ -104,10 +105,7 @@ class BoardModel(DataModelBase):
     os: OSModel
 
     soc: Optional[SOCModel] = None
-    power_connector: Optional[PowerConnectorModel] = None
-    # TODO: maybe move to power connector
-    voltage: Optional[float] = None  #  voltage in V
-    max_current: Optional[float] = None  # max. current in A
+    power_supply: Optional[PowerSupplyModel] = None
 
     def _get_env_dict(self) -> Dict[str, str]:
         default_dict = dict(super(BoardModel, self)._get_env_dict())
