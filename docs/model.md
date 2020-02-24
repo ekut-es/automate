@@ -16,7 +16,7 @@ to system user names.
 
 Each users model has the following attributes:
 
-| Name        | Type      | Meaning                                                    |
+| Name        | Type      | Description                                                |
 |-------------|-----------|------------------------------------------------------------|
 | name        | str       | Full name of user                                          |
 | mail        | str       | email address of user                                      |
@@ -27,7 +27,7 @@ Each users model has the following attributes:
 
 Boards are represented by an instance of _BoardModel_ see _automate/model/board.py_ .
 
-| Name         | Type             | Meaning                                                                                                                         |
+| Name         | Type             | Description                                                                                                                        |
 |--------------|------------------|---------------------------------------------------------------------------------------------------------------------------------|
 | name         | str              | main unique identifier of a single board instance, chose a unique board name for each instance physical board                   |
 | board        | str              | unique identifier for a board type should be the same for each instance of the same board type                                  |
@@ -69,15 +69,54 @@ Describes a CPU-Core of the SoC.
 | description        | str       | Short human readable description of the core and its main features                                              |
 
 Currently we only describe main cores of the SoC that are under control of the OS-Scheduler, might be used to also 
-describe accelerator cores in the future.
+describe accelerator/gpu cores in the future.
 
 ## OS
 
-Describes the Configruation of the Operating System Kernel and RootFS.
+Describes the Configuration of the Operating System Kernel and RootFS.
 Is defined by _OSModel_ in _automate/models/board.py_.
 
+| Name         | Type        | Description                                                                                                                          |
+|--------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| triple       | TripleModel | Default compiler target triple for this OS/Rootfs                                                                                    |
+| distribution | str         | Name of the distribution this rootfs is based on, should correspond to _ID_ from /etc/os-release                                     |
+| release      | str         | Identifier for the os release, should correspond to VERSION or VERSION_CODENAME from /etc/os-release                                 |
+| description  | str         | Short human readable description of the OS                                                                                           |
+| sysroot      | Path        | Path to a mirror of the relevant parts of the rootfs for cross compilation and linkage with distribution provided libraries          |
+| rootfs       | Path        | Path to a snapshot of the rootfs of the system                                                                                       |
+| multiarch    | bool        | this rootfs uses a [multiarch](https://wiki.debian.org/Multiarch/HOWTO) layout should probably be true only for debian based rootfes |
+| kernels      | List        | List of Kernels supported by this OS Image                                                                                           |
 
+
+## Kernel
+
+The runtime and build configuration of kernels is described using _KernelModel_ from _automate/models/board.py_ .
+
+| Name                 | Type             | Description                                                                  |
+|----------------------|------------------|------------------------------------------------------------------------------|
+| name                 | str              | Unique identifier for this kernel config                                     |
+| description          | str              | Short human readable description of this kernel config                       |
+| commandline          | str              | Default commandline of this kernel should correspond to output of _uname -r_ |
+| config/kernel_config | Path             | Path to copy of the kernel build configuration file in shared data folder    |
+| source/kernel_source | Path             | Path to the kernel source tarball in shared data folder                      |
+| srcdir/kernel_srcdir | Path             | Relative Path to kernel source directory in extracted kernel source tarball  |
+| image                | KernelImageModel |                                                                              |
+| uboot                | UBootModel       |                                                                              |
+| default              | bool             | This kernel is started at board power up.                                    |
+
+### Notes
+
+*default*: If we have not configured the default kernel for a board this might be false for all kernels. In this case the kernels are only usable using _automate board.kexec_ .
 
 ## SoC
 
+Currently Optional: TBD
+
 ## Power Supply
+
+Currently Optional: TBD
+
+# Compiler Model
+
+Metadata format has not been frozen yet: TBD
+
