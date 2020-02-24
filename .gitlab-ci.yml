@@ -1,5 +1,10 @@
 image: centos:7
 
+stages:
+  - test
+  - integration_test
+  - deploy_test
+  - deploy
 
 before_script:
   - yum install epel-release -y
@@ -13,16 +18,28 @@ variables:
   LC_ALL: "en_US.UTF-8"
   
 test:
+  stage: test
   script:
     - set -e
     - poetry install
     - poetry run inv mypy
-    - poetry run pytest test/unit test/integration
+    - poetry run inv test 
   tags:
     - docker
 
-test_with_db:
+integration_test:
+  stage: integration_test
+  script:
+    - set -e
+    - poetry install
+    - poetry run inv mypy
+    - poetry run inv test --integration 
+  tags:
+    - docker
 
+    
+integration_test_with_db:
+  stage: integration_test
 
   services:
     - postgres:10
@@ -38,6 +55,7 @@ test_with_db:
     - set -e
     - poetry install -E postgres
     - poetry run inv mypy
-    - poetry run pytest test/unit test/integration
+    - poetry run inv test --integration
   tags:
     - docker
+
