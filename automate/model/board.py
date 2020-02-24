@@ -56,9 +56,9 @@ class KernelModel(DataModelBase):
     description: str
     version: str
     commandline: str
-    kernel_config: Path
-    kernel_source: Path
-    kernel_srcdir: Path
+    kernel_config: Path = Field(..., alias="config")
+    kernel_source: Path = Field(..., alias="source")
+    kernel_srcdir: Path = Field(..., alias="srcdir")
     image: KernelImageModel
     uboot: Optional[UBootModel] = None
     default: bool = False
