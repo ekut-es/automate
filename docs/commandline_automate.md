@@ -220,16 +220,16 @@ Examples:
 Software for boards can be built using a standard buildsystem. All buildsystem 
 follow the sequence.
 
-_automate $buildsystem.configure_: to configure the build
-_automate $buildsystem.build_: to build software
-_automate $buildsystem.install_: to install built software in a defined directory on the host system
-_automate $buildsystem.deploy_: to copy the built software to the board
+1. _automate $buildsystem.configure_: to configure the build
+2. _automate $buildsystem.build_: to build software
+3. _automate $buildsystem.install_: to install built software in a defined directory on the host system
+4. _automate $buildsystem.deploy_: to copy the built software to the board
 
-We currently have the following buildsystems available: 
+We currently have support for the following Buildsystems available: 
 
-_cmake_: for cmake based software builds
-_make_: for makefile based software builds
-_kernel_: to build linux kernels using the kbuild build system
+- _cmake_: for cmake based software builds
+- _make_: for Makefile based software builds
+- _kernel_: to build linux kernels using the kbuild/make base build system
 
 
 
@@ -237,11 +237,11 @@ _kernel_: to build linux kernels using the kbuild build system
 
 Some common administration task are automated in namespace 'admin'
 
-## automate admin.add-users
+## _automate admin.add-users_
 
-Adds all users ssh keys from 'metadata/users.yml' to all boards.
+Adds all users ssh keys from 'metadata/users.yml' to all boards and gateways.
 
-## automate admin.add-board
+## _automate admin.add-board_
 
 Adds a board to the metadata directory. This command connects to the target board 
 and tries to extract the metadata automatically. As this command is not able
@@ -265,7 +265,7 @@ the automatically generated board descriptions.
       --gw-user: username on gateway (optional if omitted use --user)
       --gw-port: port of ssh on gateway (optional default: 22)
 
-## automate admin.safe-rootfs
+## _automate admin.safe-rootfs_
 
 Safe a filesystem image of the root filesystem of a board.
 
@@ -282,7 +282,7 @@ a forceful readonly remount of the rootfs before taking the dump. In some cases 
       -b/--board: target board name
 
 
-## automate admin.build-sysroot
+## automate _admin.build-sysroot_
 
 Convert the dumped root filesystem to a sysroot for building. Sysroots 
 are not necessary for simple builds, but allow usage of libraries installed
