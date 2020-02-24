@@ -118,5 +118,5 @@ Currently Optional: TBD
 
 # Compiler Model
 
-Metadata format has not been frozen yet: TBD
+Metadata format for compilers has not been frozen yet: TBD
 
