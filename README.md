@@ -3,6 +3,7 @@
 
 
 [![pipeline status](https://atreus.informatik.uni-tuebingen.de/ties/timing/schrank/automate/badges/master/pipeline.svg)](https://atreus.informatik.uni-tuebingen.de/ties/timing/schrank/automate/commits/master)
+[![coverage report](https://atreus.informatik.uni-tuebingen.de/ties/timing/schrank/automate/badges/master/coverage.svg)](https://atreus.informatik.uni-tuebingen.de/ties/timing/schrank/automate/commits/master)
 
 ## Getting Started
 
