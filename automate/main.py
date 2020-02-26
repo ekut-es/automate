@@ -33,7 +33,8 @@ class AutoTool(Program):
         else:
             coloredlogs.install(level="DEBUG")
 
-        return super(AutoTool, self).execute()
+        res = super(AutoTool, self).execute()
+        return res
 
 
 program = AutoTool(

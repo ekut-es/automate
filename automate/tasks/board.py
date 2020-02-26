@@ -15,7 +15,7 @@ import threading
 import time
 from pathlib import Path
 
-from fabric import task
+from invoke import Exit, task
 from patchwork.files import exists
 
 from ..utils import fix_symlinks
@@ -93,7 +93,7 @@ def lock(c, board, timeout="1h"):  # pragma: no cover
     """Lock board
 
         -b/--board: target board id
-        -t/--timeout: timeout for the lock
+        -t/--timeout: timeout for the lock validity
     """
     board = c.board(board)
     board.lock(timeout=timeout)
@@ -117,9 +117,11 @@ def is_locked(c, board):  # pragma: no cover
     """
     board = c.board(board)
     if board.is_locked():
-        return 0
+        logging.info("Board is locked by other user")
+        raise Exit(code=0)
 
-    return 1
+    logging.info("Board  is available")
+    raise Exit(code=1)
 
 
 @task
@@ -130,9 +132,11 @@ def has_lock(c, board):  # pragma: no cover
     """
     board = c.board(board)
     if board.has_lock():
-        return 0
+        logging.info("We have the board lock")
+        raise Exit(code=0)
 
-    return 1
+    logging.info("We do not have the board lock")
+    raise Exit(code=1)
 
 
 @task
@@ -176,13 +180,13 @@ def install(c, board, package):  # pragma: no cover
                 board.os.distribution
             )
         )
-        return -1
+        raise Exit(code=-1)
 
     apt = "DEBIAN_FRONTEND=noninteractive sudo apt-get install -y {0}"
     with board.connect() as con:
         con.run(apt.format(package))
 
-    return 0
+    raise Exit(code=0)
 
 
 @task
