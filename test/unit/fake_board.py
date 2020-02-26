@@ -17,6 +17,12 @@ test_private_key = os.path.join(root_path, "fake_board_data", "test_id_rsa")
 test_public_key = os.path.join(root_path, "fake_board_data", "test_id_rsa.pub")
 
 
+class FakeContext:
+    class config:
+        class automate:
+            boardroot = "/tmp/"
+
+
 @yield_fixture()
 def fake_board():
     users = {"test": str(test_private_key)}
@@ -43,6 +49,6 @@ def fake_board():
             ),
         )
 
-        board = Board(None, board_model, [], identity=test_private_key)
+        board = Board(FakeContext(), board_model, [], identity=test_private_key)
 
         yield board
