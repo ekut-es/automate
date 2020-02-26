@@ -140,6 +140,21 @@ def has_lock(c, board):  # pragma: no cover
 
 
 @task
+def trylock(c, board, timeout="1h"):
+    """ Try to lock the board.
+       
+        Returns immediately, and returns 0 if lock has been acquired.
+
+        -b/--board: target board name
+        -t/--timeout: duration of the lock
+    """
+    board = c.board()
+    if board.trylock(timeout=timeout):
+        raise Exit(code=0)
+    raise Exit(code=1)
+
+
+@task
 def reboot(c, board, wait=False):  # pragma: no cover
     """Reboot  board
        
