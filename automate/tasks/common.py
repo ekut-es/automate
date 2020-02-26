@@ -32,6 +32,7 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
             "OS",
             "Connections",
             "Default Compiler",
+            "Lock Status",
         ]
         for board in c.boards():
             os = getattr(board.os, "distribution", "unknown")
@@ -47,6 +48,12 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
             except:
                 pass
 
+            lock_status = "unlocked"
+            if board.is_locked():
+                lock_status = "locked"
+            elif board.has_lock():
+                lock_status = "has_lock"
+
             board_line = [
                 board.name,
                 board.board,
@@ -54,6 +61,7 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
                 os,
                 ",".join(connections),
                 default_compiler_name,
+                lock_status,
             ]
 
             board_table.append(board_line)

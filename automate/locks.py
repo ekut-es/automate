@@ -119,56 +119,75 @@ class SimpleLockManager(LockManagerBase):
         if not user_id:
             self.user_id = getpass.getuser()
 
+        self.logger = logging.getLogger(__name__)
+
     def _do_unlock(self, board_name: str) -> None:
-        with shelve.open(self.lockfile) as lockdb:
-            if board_name in lockdb:
-                if lockdb[board_name].user_id == self.user_id:
-                    del lockdb[board_name]
+        try:
+            with shelve.open(self.lockfile) as lockdb:
+                if board_name in lockdb:
+                    if lockdb[board_name].user_id == self.user_id:
+                        del lockdb[board_name]
+        except Exception as e:
+            self.logger.error("Exception during board unlock", str(e))
+
         return None
 
     def _do_trylock(self, board_name: str, timeout: float) -> bool:
         timeout = float(timeout)
-        with shelve.open(self.lockfile) as lockdb:
-            current_timestamp = time.time()
-            if board_name in lockdb:
-                current_lock = lockdb[board_name]
-                if current_lock.user_id != self.user_id:
-                    if current_timestamp < current_lock.timestamp:
-                        return False
-                    else:
+        try:
+            with shelve.open(self.lockfile) as lockdb:
+                current_timestamp = time.time()
+                if board_name in lockdb:
+                    current_lock = lockdb[board_name]
+                    if current_lock.user_id != self.user_id:
+                        if current_timestamp < current_lock.timestamp:
+                            return False
+                        else:
+                            lockdb[board_name] = LockEntry(
+                                self.user_id, timeout
+                            )
+                            return True
+
+                    if current_lock.timestamp < timeout:
                         lockdb[board_name] = LockEntry(self.user_id, timeout)
-                        return True
+                    return True
 
-                if current_lock.timestamp < timeout:
-                    lockdb[board_name] = LockEntry(self.user_id, timeout)
-                return True
+                lockdb[board_name] = LockEntry(self.user_id, timeout)
+        except Exception as e:
+            self.logger.error("Exception during board lock", str(e))
 
-            lockdb[board_name] = LockEntry(self.user_id, timeout)
         return True
 
     def _do_haslock(self, board_name: str) -> bool:
-        with shelve.open(self.lockfile) as lockdb:
-            if board_name in lockdb:
-                current_lock = lockdb[board_name]
-                current_timestamp = time.time()
+        try:
+            with shelve.open(self.lockfile) as lockdb:
+                if board_name in lockdb:
+                    current_lock = lockdb[board_name]
+                    current_timestamp = time.time()
 
-                if (
-                    current_lock.user_id == self.user_id
-                    and current_lock.timestamp > current_timestamp
-                ):
-                    return True
+                    if (
+                        current_lock.user_id == self.user_id
+                        and current_lock.timestamp > current_timestamp
+                    ):
+                        return True
+        except Exception as e:
+            self.logger.error("Exception during has_lock", str(e))
 
         return False
 
     def _do_islocked(self, board_name: str) -> bool:
-        with shelve.open(self.lockfile) as lockdb:
-            if board_name in lockdb:
-                current_lock = lockdb[board_name]
-                current_timestamp = time.time()
-                if (
-                    current_lock.user_id != self.user_id
-                    and current_lock.timestamp > current_timestamp
-                ):
-                    return True
+        try:
+            with shelve.open(self.lockfile) as lockdb:
+                if board_name in lockdb:
+                    current_lock = lockdb[board_name]
+                    current_timestamp = time.time()
+                    if (
+                        current_lock.user_id != self.user_id
+                        and current_lock.timestamp > current_timestamp
+                    ):
+                        return True
+
+        except Exception as e:
+            self.logger.error("Exception during board islocked", str(e))
 
         return False

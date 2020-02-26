@@ -1,7 +1,11 @@
 #!/bin/bash -e
 
-BOARDS=$(automate board.board-ids)
-
+if [ -z "$1" ]
+then
+    BOARDS=$(automate board.board-ids)
+else
+    BOARDS=$1
+fi
 
 for BOARD in $BOARDS; do
     echo "Compile and run for $BOARD"
