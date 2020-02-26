@@ -638,7 +638,7 @@ description = "A framework for managing and maintaining multi-language pre-commi
 name = "pre-commit"
 optional = false
 python-versions = ">=3.6"
-version = "2.1.0"
+version = "2.1.1"
 
 [package.dependencies]
 cfgv = ">=2.0.0"
@@ -1478,8 +1478,8 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 pre-commit = [
-    {file = "pre_commit-2.1.0-py2.py3-none-any.whl", hash = "sha256:5387b53bb84ad9abc9b0845775dddd4e3243fd64cdcddaa6db28d3da6fbf06c2"},
-    {file = "pre_commit-2.1.0.tar.gz", hash = "sha256:5295fb6d652a6c5e0b4636cd2c73183efdf253d45b657ce7367183134e806fe1"},
+    {file = "pre_commit-2.1.1-py2.py3-none-any.whl", hash = "sha256:09ebe467f43ce24377f8c2f200fe3cd2570d328eb2ce0568c8e96ce19da45fa6"},
+    {file = "pre_commit-2.1.1.tar.gz", hash = "sha256:f8d555e31e2051892c7f7b3ad9f620bd2c09271d87e9eedb2ad831737d6211eb"},
 ]
 prompt-toolkit = [
     {file = "prompt_toolkit-3.0.3-py3-none-any.whl", hash = "sha256:c93e53af97f630f12f5f62a3274e79527936ed466f038953dfa379d4941f651a"},
