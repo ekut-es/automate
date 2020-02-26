@@ -21,7 +21,6 @@ pydot = {version = "^1.4.1", optional = true}
 jinjasql = {version = "^0.1.7", optional = true}
 keyring = "^21.1.0"
 setproctitle = "^1.1.10"
-pylibacl = "^0.5.4"
 
 [tool.poetry.extras]
 postgres = ["python-dotenv", "pydot", "psycopg2", "jinjasql"]
