@@ -49,6 +49,7 @@ def zynqberry_board(monkeypatch):
     monkeypatch.setattr(automate.Board, "connect", get_fake_connection)
 
     config = AutomateConfig(lazy=True)
+    config.automate.boardroot = "/tmp"
     config.automate.metadata = str(metadata_path)
     context = AutomateContext(config)
 
