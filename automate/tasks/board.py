@@ -110,6 +110,32 @@ def unlock(c, board):  # pragma: no cover
 
 
 @task
+def is_locked(c, board):  # pragma: no cover
+    """Return 0 if board is locked by other user
+
+       -b/--board: target board id 
+    """
+    board = c.board(board)
+    if board.is_locked():
+        return 0
+
+    return 1
+
+
+@task
+def has_lock(c, board):  # pragma: no cover
+    """Return 0 if board is locked by current user
+
+       -b/--board: target board id 
+    """
+    board = c.board(board)
+    if board.has_lock():
+        return 0
+
+    return 1
+
+
+@task
 def reboot(c, board, wait=False):  # pragma: no cover
     """Reboot  board
        

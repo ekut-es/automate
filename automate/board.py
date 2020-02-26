@@ -15,6 +15,7 @@ from automate.model.board import (
 
 from .builder import BaseBuilder, CMakeBuilder, KernelBuilder, MakefileBuilder
 from .compiler import CrossCompiler
+from .locks import SimpleLockManager
 from .model import BoardModel, CompilerModel
 from .model.common import Toolchain
 from .utils.kernel import KernelData
@@ -45,10 +46,13 @@ class Board(object):
         self.model = board
         self.compiler_models = compilers
         self.identity = Path(identity).absolute()
+        self.lock_manager = SimpleLockManager(
+            Path(self.context.config.automate.boardroot) / "locks.db"
+        )
 
     @property
     def id(self) -> str:
-        # FIXME: Remove and replace with hostname
+        # FIXME: Remove and replace with name
         return self.model.name
 
     @contextmanager
@@ -61,31 +65,25 @@ class Board(object):
         else:
             # Return a do nothing context manager
             try:
-                yield None
+                self.lock(timeout=timeout)
             finally:
                 pass
 
     def lock(self, timeout="1h"):
         self.logger.warning("Locking of boards is currently not implemented")
-        if self.has_lock():
-            return None
-        else:
-            # TODO: Aquire lock
-            pass
+        self.lock_manager.lock(self, timeout)
 
     def has_lock(self) -> bool:
-        return False
+        return self.lock_manager.has_lock(self)
 
     def unlock(self):
-        self.logger.warning("Unlocking of boards is currently not implemented")
+        return self.lock_manager.unlock(self)
 
-    def trylock(self):
-        return False
+    def trylock(self, timeout: str) -> bool:
+        return self.lock_manager.trylock(self, timeout)
 
     def is_locked(self) -> bool:
-        self.logger.warning("Locking is currently not implemented")
-
-        return False
+        return self.lock_manager.is_locked(self)
 
     def compiler(
         self,
@@ -166,6 +164,9 @@ class Board(object):
         /fabric.Connection/ to the board
 
         """
+
+        if self.is_locked():
+            raise Exception("Can not connect to locked board")
 
         if type != "ssh":
             raise Exception("Currently only ssh connections are supported")
