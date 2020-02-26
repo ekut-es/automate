@@ -73,7 +73,7 @@ class LockManagerBase:
             self._do_unlock(board_name)
 
     def trylock(
-        self, board: Union["Board", str], timeout: Union[timedelta, str]
+        self, board: Union["Board", str], timeout: Union[timedelta, str] = "1h"
     ) -> bool:
         if isinstance(board, str):
             board_name = board
@@ -113,9 +113,11 @@ LockEntry = namedtuple("LockEntry", ["user_id", "timestamp"])
 class SimpleLockManager(LockManagerBase):
     """Simple lock manager using a gdbm shared file identifying lock holders by the username on the current machine"""
 
-    def __init__(self, lockfile: Union[str, Path]) -> None:
+    def __init__(self, lockfile: Union[str, Path], user_id: str = "") -> None:
         self.lockfile = str(Path(lockfile).absolute())
-        self.user_id = getpass.getuser()
+        self.user_id = user_id
+        if not user_id:
+            self.user_id = getpass.getuser()
 
     def _do_unlock(self, board_name: str) -> None:
         with shelve.open(self.lockfile) as lockdb:
