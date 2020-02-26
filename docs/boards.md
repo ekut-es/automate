@@ -7,7 +7,7 @@ To add a new board run:
 		
 Optionally, but recommended:
 
-    automate 
+    automate board.build-sysroot <boardname>
 
 ## Installed Tools
 
