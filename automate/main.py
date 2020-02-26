@@ -28,7 +28,7 @@ class AutoTool(Program):
         print("  paramiko: {}".format(paramiko_version))
 
     def execute(self):
-        if bool(self.args.debug):
+        if self.args.debug.value:
             coloredlogs.install(level="DEBUG")
         else:
             if "logging" in self.config and "level" in self.config.logging:

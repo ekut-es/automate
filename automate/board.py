@@ -69,8 +69,7 @@ class Board(object):
             finally:
                 pass
 
-    def lock(self, timeout="1h"):
-        self.logger.warning("Locking of boards is currently not implemented")
+    def lock(self, timeout: str = "1h"):
         self.lock_manager.lock(self, timeout)
 
     def has_lock(self) -> bool:
@@ -79,7 +78,7 @@ class Board(object):
     def unlock(self):
         return self.lock_manager.unlock(self)
 
-    def trylock(self, timeout: str) -> bool:
+    def trylock(self, timeout: str = "1h") -> bool:
         return self.lock_manager.trylock(self, timeout)
 
     def is_locked(self) -> bool:
