@@ -28,10 +28,13 @@ class AutoTool(Program):
         print("  paramiko: {}".format(paramiko_version))
 
     def execute(self):
-        if "logging" in self.config and "level" in self.config.logging:
-            coloredlogs.install(level=self.config.logging.level)
-        else:
+        if bool(self.args.debug):
             coloredlogs.install(level="DEBUG")
+        else:
+            if "logging" in self.config and "level" in self.config.logging:
+                coloredlogs.install(level=self.config.logging.level)
+            else:
+                coloredlogs.install(level="WARNING")
 
         res = super(AutoTool, self).execute()
         return res
