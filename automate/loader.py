@@ -18,6 +18,7 @@ from .model import (
     LoadedModelBase,
     MetadataModel,
     UsersModel,
+    VersionString,
 )
 
 
@@ -110,7 +111,7 @@ class ModelLoader(object):
             self.logger.debug("Field is: {}".format(field))
 
             formatted = ""
-            if isinstance(field, str):
+            if isinstance(field, str) and not isinstance(field, VersionString):
                 template = string.Template(field)
                 formatted = do_apply_template(template, env)
                 setattr(data_model, field_name, formatted)

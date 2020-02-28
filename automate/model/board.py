@@ -54,7 +54,7 @@ class KernelImageModel(DataModelBase):
 class KernelModel(DataModelBase):
     name: str
     description: str
-    version: str
+    version: VersionString
     commandline: str
     kernel_config: Path = Field(..., alias="config")
     kernel_source: Path = Field(..., alias="source")

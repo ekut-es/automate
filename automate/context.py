@@ -170,7 +170,11 @@ class AutomateContext(invoke.Context):
 
     def compilers(self) -> Generator[Compiler, None, None]:
         """ Return iterator over configured compilers  """
-        for compiler in sorted(self.metadata.compilers, key=lambda c: c.name):
+        for compiler in sorted(
+            self.metadata.compilers,
+            key=lambda c: (c.toolchain.value, c.version),
+        ):
+
             yield Compiler(self, compiler)
 
     def compiler(self, compiler_name: str) -> Compiler:

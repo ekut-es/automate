@@ -11,6 +11,7 @@ from .model import (
     CoreModel,
     MetadataModel,
     TripleModel,
+    VersionString,
 )
 from .model.common import OS, Environment, Machine, Toolchain
 
@@ -36,7 +37,7 @@ class Compiler(object):
         return self.model.triples
 
     @property
-    def version(self) -> str:
+    def version(self) -> VersionString:
         """Compiler version"""
         return self.model.version
 

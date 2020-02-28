@@ -11,13 +11,27 @@ class VersionString(str):
     This is a very simple comparison by splitting each version 
     at . characters and then filling each component by prepending
     zeros until a length of 8 is reached, before comparison.
+   
+    So in the example above the actual comparison would be:
+
+    "00000010.00000000.00000000" > "00000009.00000000.00000000"
     """
+
+    @classmethod
+    def __get_validators__(cls):  # For pydantic
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):  # For Pydantic
+        v = str(v)
+        return cls(v)
 
     def _fill_str(self, s: str) -> str:
         filled = []
         for point in s.split("."):
             filled.append(point.zfill(8))
-        return ".".join(filled)
+        filled_str = ".".join(filled)
+        return filled_str
 
     def __lt__(self, other: str) -> bool:
         return self._fill_str(self) < self._fill_str(other)

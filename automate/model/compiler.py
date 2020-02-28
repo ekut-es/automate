@@ -22,7 +22,7 @@ class CompilerModel(LoadedModelBase):
         ..., description="List of supported target triples"
     )
     toolchain: Toolchain
-    version: str
+    version: VersionString
     basedir: str
     cc: str
     cxx: str
