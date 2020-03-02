@@ -12,49 +12,49 @@ FIT_TEMPLATE = Template(
 /dts-v1/;
 
 / {
-	description = "Simple image with single Linux kernel and FDT blob";
-	#address-cells = <1>;
+        description = "Simple image with single Linux kernel and FDT blob";
+        #address-cells = <1>;
 
-	images {
-		kernel {
-			description = "Linux kernel";
-			data = /incbin/("${kernel_image}");
-			type = "kernel";
-			arch = "${arch}";
-			os = "linux";
-			compression = "none";
-			load = <${loadaddr}>;
-			entry = <${loadaddr}>;
-			hash-1 {
-				algo = "crc32";
-			};
-			hash-2 {
-				algo = "sha1";
-			};
-		};
-		fdt-1 {
-			description = "Flattened Device Tree blob";
-			data = /incbin/("${dtb_image}");
-			type = "flat_dt";
-			arch = "${arch}";
-			compression = "none";
-			hash-1 {
-				algo = "crc32";
-			};
-			hash-2 {
-				algo = "sha1";
-			};
-		};
-	};
+        images {
+                kernel {
+                        description = "Linux kernel";
+                        data = /incbin/("${kernel_image}");
+                        type = "kernel";
+                        arch = "${arch}";
+                        os = "linux";
+                        compression = "none";
+                        load = <${loadaddr}>;
+                        entry = <${loadaddr}>;
+                        hash-1 {
+                                algo = "crc32";
+                        };
+                        hash-2 {
+                                algo = "sha1";
+                        };
+                };
+                fdt-1 {
+                        description = "Flattened Device Tree blob";
+                        data = /incbin/("${dtb_image}");
+                        type = "flat_dt";
+                        arch = "${arch}";
+                        compression = "none";
+                        hash-1 {
+                                algo = "crc32";
+                        };
+                        hash-2 {
+                                algo = "sha1";
+                        };
+                };
+        };
 
-	configurations {
-		default = "conf-1";
-		conf-1 {
-			description = "Boot Linux kernel with FDT blob";
-			kernel = "kernel";
-			fdt = "fdt-1";
-		};
-	};
+        configurations {
+                default = "conf-1";
+                conf-1 {
+                        description = "Boot Linux kernel with FDT blob";
+                        kernel = "kernel";
+                        fdt = "fdt-1";
+                };
+        };
 };
 """
 )

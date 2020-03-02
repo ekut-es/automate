@@ -549,3 +549,37 @@ def add_board(
 
         d = _recurse(d)
         yaml.dump(d, mf)
+
+
+@task
+def deploy_runtimes(c, board):
+    """ Deploy compiler runtimes to boards
+
+    Currently deploys runtime of default gcc compiler
+
+    #Arguments
+    -b/--board: name of board to deploy to
+    """
+
+    boards = []
+    if board != "all":
+        boards = list(c.boards())
+    else:
+        boards.append(c.board(board))
+
+    while boards:
+        board = boards[0]
+        board.pop()
+        if board.is_locked():
+            boards.append(board)
+        else:
+            with board.lock_ctx():
+                with board.connect() as con:
+                    compiler = board.compiler()
+                    if not compiler.runtime:
+                        con.put(compiler.runtime, "/tmp/")
+                        with con.cd("/tmp"):
+                            con.run(f"tar xvzf {compiler.runtime.name}")
+                            con.run(
+                                f"sudo cp -r {compiler.runtime.name} /opt/runtime/"
+                            )
