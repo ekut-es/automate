@@ -7,6 +7,8 @@ from ..model import CoreModel
 from .cpuinfo_arm import implementers as arm_implementers
 from .cpuinfo_arm import uarch_to_isa
 
+__all__ = ["cpuinfo"]
+
 
 def _cpuinfo(text: str) -> List[CoreModel]:
     """Parse a /proc/cpuinfo file to a list of core models
@@ -26,7 +28,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
         m = re.match(r"processor\s+: (\d+)", line)
         if m:
             if current_dict:
-                if current_dict["isa"] == "":
+                if "isa" not in current_dict or not current_dict["isa"]:
                     if current_dict["uarch"] in uarch_to_isa:
                         current_dict["isa"] = uarch_to_isa[
                             current_dict["uarch"]
@@ -37,6 +39,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
                 cpus.append(CoreModel(**current_dict))
             current_dict = {"description": ""}
             current_dict["num"] = int(m.group(1))
+            current_dict["isa"] = ""
 
         m = re.match(r"model name\s+: (.*)", line)
         if m:
@@ -71,7 +74,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
 
     if current_dict:
 
-        if current_dict["isa"] == "":
+        if "isa" not in current_dict or not current_dict["isa"]:
             if current_dict["uarch"] in uarch_to_isa:
                 current_dict["isa"] = uarch_to_isa[current_dict["uarch"]]
         current_dict["description"] = current_dict[
