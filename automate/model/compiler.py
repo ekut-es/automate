@@ -24,6 +24,7 @@ class CompilerModel(LoadedModelBase):
     toolchain: Toolchain
     version: VersionString
     basedir: str
+    runtime: str = ""
     cc: str
     cxx: str
     asm: str

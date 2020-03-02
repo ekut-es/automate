@@ -96,6 +96,10 @@ class Compiler(object):
         """Unique identifier of compiler in metadata"""
         return self.model.name
 
+    @property
+    def runtime(self) -> str:
+        return self.model.runtime
+
 
 class CrossCompiler(Compiler):
     """Represents a Compiler with board specific configuration"""

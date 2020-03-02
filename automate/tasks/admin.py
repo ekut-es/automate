@@ -562,14 +562,14 @@ def deploy_runtimes(c, board):
     """
 
     boards = []
-    if board != "all":
+    if board == "all":
         boards = list(c.boards())
     else:
         boards.append(c.board(board))
 
     while boards:
         board = boards[0]
-        board.pop()
+        boards.pop()
         if board.is_locked():
             boards.append(board)
         else:
@@ -577,9 +577,50 @@ def deploy_runtimes(c, board):
                 with board.connect() as con:
                     compiler = board.compiler()
                     if not compiler.runtime:
-                        con.put(compiler.runtime, "/tmp/")
-                        with con.cd("/tmp"):
-                            con.run(f"tar xvzf {compiler.runtime.name}")
-                            con.run(
-                                f"sudo cp -r {compiler.runtime.name} /opt/runtime/"
-                            )
+                        logging.warn(
+                            "Could not find compiler runtime for %s",
+                            compiler.name,
+                        )
+                        continue
+                    con.run("sudo mkdir -p /opt/runtimes")
+                    con.put(compiler.runtime, "/tmp")
+                    with con.cd("/opt/runtimes"):
+                        con.run(
+                            f"sudo mv /tmp/{Path(compiler.runtime).name} /opt/runtimes"
+                        )
+                        result = con.run(
+                            f"sudo tar xvJf {Path(compiler.runtime).name}"
+                        )
+                        con.run(f"sudo rm -rf {Path(compiler.runtime).name}")
+
+                        lib_dirs = set()
+                        for line in result.stdout.splitlines():
+                            file_path = Path(line)
+                            print(line)
+                            if file_path.suffix == ".so":
+                                lib_dirs.add(str(file_path.parent))
+
+                        if len(lib_dirs) < 1:
+                            continue
+
+                        runtime_name = (
+                            str(Path(list(lib_dirs)[0]).parts[0]) + ".conf"
+                        )
+                        print(runtime_name)
+
+                        sftp = con.sftp()
+
+                        sftp.chdir("/tmp")
+                        remote_file = sftp.file(runtime_name, mode="w")
+                        remote_file.write(
+                            f"#compiler runtime for {compiler.name}\n"
+                        )
+
+                        for path in lib_dirs:
+                            full_path = Path("/opt/runtimes") / path
+                            remote_file.write(f"{full_path}\n")
+
+                        con.run(
+                            f"sudo cp /tmp/{runtime_name} /etc/ld.so.conf.d/"
+                        )
+                        con.run("sudo ldconfig")
