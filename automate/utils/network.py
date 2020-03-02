@@ -1,5 +1,4 @@
 import logging
-import os
 import random
 import socket
 from io import StringIO
@@ -38,7 +37,7 @@ def connect(
 
         # Returns
         a fabric.Connection to the host
-    """
+    """  # noqa
 
     try:
         kwargs = {"key_filename": str(identity.absolute())} if identity else {}
@@ -75,7 +74,7 @@ def connect(
                         connect_kwargs={"password": password},
                     )
                     connection.open()
-                except AuthenticationException as e:
+                except AuthenticationException:
                     continue
 
                 if keyring_allowed:
@@ -92,7 +91,7 @@ def find_local_port() -> int:
 
     # Returns
     port number [int]
-    """
+    """  # noqa
 
     while True:
         port = random.randint(1024, 65536)
@@ -142,7 +141,7 @@ def rsync(
     exclude: iterable of exclude patterns
     verbose: if True print transfered files to stdout
     rsync_opts: string of additional rsync options
-    """
+    """  # noqa
 
     local_port = find_local_port()
 
