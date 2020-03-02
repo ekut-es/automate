@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 import tarfile
 from pathlib import Path
 from typing import List, Union
@@ -34,8 +33,7 @@ def fix_symlinks(base_path: Path) -> None:
 
     logging.info("Changing absolute symlinks to relative symlinks")
     links: List[str] = []
-    broken: List[str] = []
-    for root, dirs, files in os.walk(base_path):
+    for root, _, files in os.walk(base_path):
         for filename in files:
             path = os.path.join(root, filename)
             if os.path.islink(path):

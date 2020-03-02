@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from fabric import task
 
 from ..model.common import Toolchain

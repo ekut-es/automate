@@ -12,7 +12,7 @@ def init(c):
     try:
         c.database.init()
     except Exception as e:
-        loggging.error("Database initialization failed: %s", str(e))
+        logging.error("Database initialization failed: %s", str(e))
 
 
 @task
@@ -44,7 +44,7 @@ def export_board(c, board, keep=False):
 
        # Arguments
        board: name of the board
-       keep: keep database entry of board 
+       keep: keep database entry of board
     """
 
     boards = c.database.get_all_boards()

@@ -1,6 +1,4 @@
 import concurrent
-import datetime
-import getpass
 import logging
 import os.path
 import re
@@ -15,9 +13,7 @@ from pathlib import Path
 import patchwork.files
 from fabric import Connection, task
 from paramiko.ssh_exception import AuthenticationException
-from prompt_toolkit import PromptSession, prompt
-from prompt_toolkit.completion import FuzzyWordCompleter
-from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit import prompt
 from ruamel.yaml import YAML  # type: ignore
 
 from ..loader import ModelLoader
@@ -86,7 +82,7 @@ def safe_rootfs(c, board):  # pragma: no cover
     """Safe rootfs image of board
        
         -b/--board: target board name
-    """
+    """  # noqa
     bh = c.board(board)
 
     port = find_local_port()
@@ -120,8 +116,8 @@ def safe_rootfs(c, board):  # pragma: no cover
             if match:
                 device = match.group(1).strip()
                 mountpoint = match.group(2).strip()
-                fstype = match.group(3).strip()
-                args = match.group(4).strip()
+                # fstype = match.group(3).strip()
+                # args = match.group(4).strip()
 
                 if mountpoint == "/":
                     rootdevice = device
@@ -174,6 +170,9 @@ def safe_rootfs(c, board):  # pragma: no cover
                         if result != 0:
                             raise Exception("Could not write image!")
 
+                        if res.return_code != 0:
+                            raise Exception("Error during image writing")
+
             except BaseException as e:
                 if image_name.with_suffix(".tmp").exists():
                     c.run("rm {}".format(image_name.with_suffix(".tmp")))
@@ -205,7 +204,7 @@ def build_sysroot(c, board):  # pragma: no cover
     """Build compiler sysroot for board
        
         -b/--board: target board id
-    """
+    """  # noqa
 
     bh = c.board(board)
 
@@ -229,6 +228,9 @@ def build_sysroot(c, board):  # pragma: no cover
                 hide="stdout",
                 warn=True,
             )
+
+            if rsync_result.return_code != 0:
+                logging.warning("Rootfs might be incomplete")
 
             fix_symlinks(bh.os.sysroot)
 
@@ -297,7 +299,7 @@ os:
         kernel_config: 
         kernel_source: 
         default:
-"""
+"""  # noqa
 
 
 @task
@@ -313,7 +315,7 @@ def add_board(
       --gw-host: hostname of gateway (optional if omitted not gateway is configured)
       --gw-user: username on gateway (optional if omitted use --user)
       --gw-port: port of ssh on gateway (optional default: 22)
-    """
+    """  # noqa
 
     if host == "":
         raise Exception("No hostname given: --host missing")
@@ -345,7 +347,7 @@ def add_board(
             gateway=gateway_connection,
         )
         con.open()
-    except AuthenticationException as e:
+    except AuthenticationException:
         print("Could not Authenticate with public key")
 
         con = connect(

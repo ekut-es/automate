@@ -16,16 +16,16 @@ class LockManagerBase:
     """ Base Class for lock managers """
 
     def _do_unlock(self, board_name: str) -> None:
-        raise NotImplemented("_do_unlock is not implemented")
+        raise NotImplementedError("_do_unlock is not implemented")
 
     def _do_trylock(self, board_name: str, timeout: float) -> bool:
-        raise NotImplemented("_do_trylock is not implemented")
+        raise NotImplementedError("_do_trylock is not implemented")
 
     def _do_haslock(self, board_name) -> bool:
-        raise NotImplemented("_do_haslock is not implemented")
+        raise NotImplementedError("_do_haslock is not implemented")
 
     def _do_islocked(self, board_name) -> bool:
-        raise NotImplemented("_do_haslock is not implemented")
+        raise NotImplementedError("_do_haslock is not implemented")
 
     def _str_to_timedelta(self, inp: str) -> timedelta:
         inp = inp.strip()
