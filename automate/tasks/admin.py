@@ -604,9 +604,10 @@ def deploy_runtimes(c, board):
                             continue
 
                         runtime_name = (
-                            str(Path(list(lib_dirs)[0]).parts[0]) + ".conf"
+                            "00_"
+                            + str(Path(list(lib_dirs)[0]).parts[0])
+                            + ".conf"
                         )
-                        print(runtime_name)
 
                         sftp = con.sftp()
 
