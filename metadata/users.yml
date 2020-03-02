@@ -33,3 +33,10 @@ volmdenn:
     mail: nospam@example.com
     public_keys:
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHVfqEqR6dHAwEe0pZfTiiCMlQE3KNooVz4FlXcWNeXEeOl0CaBvQh2rysU3jWpnCb/9nsC2N55XdgZBrB9tUEBi4e849N3K6Sr34gfpykRcI16KP5i3Y8LA1sLlChlZS+5d3sMQ886Lb4rgWCk+pNOopegiVi1eeEUd+3pNGgRX/RTMhixLHP7UJIC1cSSaV/3M2LFxzsCLfK8AIO+lv5sTlOmhUDUVMoM48p9d/JVDnHLaWIjjosX4EgLK1Se9o6R11wVCbNqRwaiTd0KRMstDMQb5k7RnEbT+oS4zKZRWIrYhe5N3Sar5PbrlcK7kJir5F14sRBZcKyaOC/tk6X volmdenn@ducky"
+
+
+dreixler:
+    name: "Stefan Dreixler"
+    mail: nospam@example.com
+    public_keys:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDhkTYVRHuWzGwb9Yq+SsSKVFLe21SwE5tgYwb0WWrgZFwrLWkOrEkMjHZgPmpblMcSyTeCCWfSR3ZgXLbLiO2tRFNpVh38yC9KO/l/Ge/p0qdZ/yMNqJyD+j9l1YnnYkY8FqU0kML/V+USK6tfquywN6zcrZrdtGRDKXdI9HPe0Dx/GLWq/18kX97NMy3WZrFUF9SfGONWJpMqB5nYjqBEe0+mw9/yeHl51mMgwTEXbSE57va+gGV6y9mQtXX6ZNk7Abfn+uVnulpK0BABsqF4MkRXl1n2vkh0zgyo1f0yE2OxUImLZzgvTmCU5A/XwFsJXNPRotqjKJ2vwsq8B74RklmjYvr/Yc3OSTM8ihQ5jMBqiVW1m39D8aVsqCADYn7G8Qma7wrCKZZ35cdCluptKu604Sk9se1zYRG8sQP4gKhofWY8Umst5JDfxiBJJ7R7WLCCbhUYg9PHx1QNUtSPGECF1vpcfSZ6M6FrUiXvvIF0x6q0fkI21zf5zEVD6vHTrjhzNJ6US4qCnuuUH8g07JN5Aqb5gtatmoa9iSXqAu+8LmyjpTHU5fE0coChty1D46uh1dH3gwA2rDUOuBJUnCCo915Y8dNtor3nqZZPYaR5pVafo4wQX+OWSWvPNWoh5Pw+bOdLe+p4HdyJBG95vs7VqlnWx/mKN2viOX+Arw=="
