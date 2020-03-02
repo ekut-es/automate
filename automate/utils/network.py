@@ -100,7 +100,7 @@ def find_local_port() -> int:
         try:
             sock.bind(("0.0.0.0", port))
             return port
-        except:
+        except Exception:
             logging.debug("Port {} is not bindable".format(port))
 
 

@@ -130,7 +130,7 @@ class KernelConfigBuilder:
         fragment = ""
         try:
             fragment = "\n".join(self.predefined_config(name))
-        except PredefinedNotFoundException as e:
+        except PredefinedNotFoundException:
             pass
         return fragment
 

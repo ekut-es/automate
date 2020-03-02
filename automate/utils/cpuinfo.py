@@ -1,7 +1,5 @@
-import collections
-import logging
 import re
-from typing import Any, Dict, List, NamedTuple, Tuple, Union
+from typing import Any, Dict, List
 
 from fabric import Connection
 
@@ -15,7 +13,7 @@ def _cpuinfo(text: str) -> List[CoreModel]:
 
     # Arguments
     text: contents of cpuinfo file
-   
+
     # Returns
     List of Core Models for the cpus in cpuinfo
     """
@@ -54,17 +52,6 @@ def _cpuinfo(text: str) -> List[CoreModel]:
 
             current_dict["vendor"] = vendor
 
-        m = re.match(r"CPU architecture\s*: (\S+)", line)
-        if m:
-            architecture_key = int(m.group(1), 10)
-            isa = ""
-            current_dict["isa"] = isa
-
-        m = re.match(r"CPU variant\s*: (\S+)", line)
-        if m:
-            variant_key = int(m.group(1), 16)
-            # TODO: Currently we do nothing with this information
-
         m = re.match(r"CPU part\s*: (\S+)", line)
         if m:
             part_key = int(m.group(1), 16)
@@ -97,15 +84,13 @@ def _cpuinfo(text: str) -> List[CoreModel]:
 
 def cpuinfo(con: Connection) -> List[CoreModel]:
     """Parse remote CPU info over ssh connection
-    
+
     # Arguments
-    con: fabric.Connection for the 
+    con: fabric.Connection for the
 
     # Returns
     A list of CoreModel with the parsed cpuinfos
     """
-    cpus: List[CoreModel] = []
-
     result = con.run("cat /proc/cpuinfo", hide="stdout", warn=True)
     if result.return_code != 0:
         return []
