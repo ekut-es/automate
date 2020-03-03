@@ -4,7 +4,7 @@ import os.path
 import sys
 import time
 from pathlib import Path
-from typing import Any, Generator, List, Optional
+from typing import Any, Generator, List, Optional, Union
 
 import invoke
 from fabric import Connection
@@ -15,6 +15,7 @@ from .compiler import Compiler
 from .config import AutomateConfig
 from .database import Database, database_enabled
 from .loader import ModelLoader
+from .model.common import Toolchain
 from .utils.network import connect
 
 
@@ -168,7 +169,7 @@ class AutomateContext(invoke.Context):
             )
         )
 
-    def compilers(self) -> Generator[Compiler, None, None]:
+    def compilers(self,) -> Generator[Compiler, None, None]:
         """ Return iterator over configured compilers  """
         for compiler in sorted(
             self.metadata.compilers,
@@ -177,11 +178,28 @@ class AutomateContext(invoke.Context):
 
             yield Compiler(self, compiler)
 
-    def compiler(self, compiler_name: str) -> Compiler:
-        """Return Compiler object for Compiler identified by compiler_name"""
+    def compiler(
+        self,
+        compiler_name: str = "",
+        toolchain: Union[Toolchain, str] = Toolchain.GCC,
+    ) -> Compiler:
+        """
+        Return Compiler object for Compiler identified by compiler_name,
+        or newest compiler from toolchain if compiler_name is empty
+        """
 
-        for compiler in self.metadata.compilers:
-            if compiler.name == compiler_name:
+        if compiler_name:
+            for compiler in self.metadata.compilers:
+                if compiler.name == compiler_name:
+                    return Compiler(self, compiler)
+
+        if isinstance(toolchain, str):
+            toolchain = Toolchain(toolchain)
+
+        for compiler in reversed(
+            sorted(self.metadata.compilers, key=lambda x: x.version)
+        ):
+            if compiler.toolchain == toolchain:
                 return Compiler(self, compiler)
 
         raise Exception(
