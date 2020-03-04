@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+import logging
 import sys
 
 import coloredlogs
-from invoke import Collection, Config, Program
+from invoke import Collection, Config, Exit, Program, Result, UnexpectedExit
 
 from . import __version__ as self_version
 from . import tasks
@@ -36,8 +37,19 @@ class AutoTool(Program):
             else:
                 coloredlogs.install(level="WARNING")
 
-        res = super(AutoTool, self).execute()
-        return res
+        try:
+            super(AutoTool, self).execute()
+        except UnexpectedExit as e:
+            raise e
+        except Exit as e:
+            raise e
+        except Exception as e:
+            if not self.args.debug.value:
+                result = Result(exited=1)
+                logging.fatal("Unexpected Exit: %s", str(e))
+                raise UnexpectedExit(result, reason=str(e))
+            else:
+                raise e
 
 
 program = AutoTool(
