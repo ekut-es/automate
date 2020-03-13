@@ -1,3 +1,4 @@
+import io
 import logging
 import os
 import string
@@ -58,8 +59,9 @@ class ModelLoader(object):
 
         for file_name in files:
             self.logger.debug("Loading metadata from {}".format(file_name))
-            with open(file_name) as f:
+            with io.open(file_name, encoding="utf-8") as f:
                 mtime = datetime.utcfromtimestamp(os.path.getmtime(file_name))
+
                 yaml_dict = self.yaml.load(f)
                 yaml_dict["model_file"] = file_name
                 yaml_dict["model_file_mtime"] = mtime
@@ -199,7 +201,7 @@ class ModelLoader(object):
         )
         users_file = metadata_path / "users.yml"
 
-        with users_file.open() as f:
+        with io.open(users_file, encoding="utf-8") as f:
             mtime = datetime.utcfromtimestamp(os.path.getmtime(users_file))
             yaml_dict = self.yaml.load(f)
 

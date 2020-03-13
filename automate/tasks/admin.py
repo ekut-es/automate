@@ -55,26 +55,38 @@ def add_users(c):  # pragma: no cover
         if board.gateway is not None:
             gateways.add(FrozenGateway(**board.gateway.dict()))
 
-        with board.connect() as con:
+        try:
+            with board.connect() as con:
 
-            sftp = con.sftp()
-            homedir = board.homedir()
+                sftp = con.sftp()
+                homedir = board.homedir()
 
-            copy_keys(sftp, users, homedir)
+                copy_keys(sftp, users, homedir)
+        except Exception as e:
+            logging.error(
+                f"Could not connect to board {board.name} please try again later"
+            )
 
     for gw in gateways:
         identity = os.path.expanduser(c.config.automate.identity)
-        with Connection(
-            host=gw.host,
-            user=gw.username,
-            port=gw.port,
-            connect_kwargs={"key_filename": identity},
-        ) as con:
+        try:
 
-            result = con.run("echo $HOME", hide=True)
-            gw_homedir = Path(result.stdout.strip())
-            sftp = con.sftp()
-            copy_keys(sftp, users, gw_homedir)
+            with Connection(
+                host=gw.host,
+                user=gw.username,
+                port=gw.port,
+                connect_kwargs={"key_filename": identity},
+            ) as con:
+
+                result = con.run("echo $HOME", hide=True)
+                gw_homedir = Path(result.stdout.strip())
+                sftp = con.sftp()
+                copy_keys(sftp, users, gw_homedir)
+
+        except Exception as e:
+            logging.error(
+                f"Could not connect to gw {gw.host} please try again later"
+            )
 
 
 @task
