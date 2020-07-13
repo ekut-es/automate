@@ -76,8 +76,7 @@ def doc(c):
 
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
-        c.run("rm -f mkdocs.yml")
-        c.run("pydocmd serve")
+        c.run("pydoc-markdown --server")
 
 
 @task
