@@ -8,6 +8,7 @@ for BOARD in $BOARDS; do
     automate  make.configure   $BOARD -s hello_make 
     automate  make.build       $BOARD 
     automate  board.lock       $BOARD 
+    automate  board.run        $BOARD "mkdir -p /home/es/run"
     automate  make.deploy      $BOARD
     automate  board.run        $BOARD ./hello_make/hello 
     automate  board.unlock     $BOARD 
