@@ -1,0 +1,37 @@
+loaders:
+  - type: python
+processors:
+  - type: filter
+  - type: smart
+  - type: crossref
+renderer:
+  type: mkdocs
+  pages:
+    - title: Home
+      name: index
+      source: README.md
+    - title: Configuration
+      name: configuration
+      source: docs/configuration.md
+    - title: Commandline Interface
+      children:
+        - title: automate
+          source: docs/commandline_automate.md
+        - title: automate-run
+          source: docs/commandline_run.md 
+    - title: Metadata Model
+      source: docs/model.md
+    - title: Setup
+      children:
+        - title: Boards
+          source: docs/boards.md
+        - title: Gateway
+          source: docs/gateway.md
+    - title: Development
+      source: docs/development.md
+
+    - title: API Documentation
+      contents:
+        - 'automate/*'
+  mkdocs_config:
+    theme: material
