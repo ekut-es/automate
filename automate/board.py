@@ -65,7 +65,7 @@ class Board(object):
         else:
             # Return a do nothing context manager
             try:
-                self.lock(timeout=timeout)
+                yield None
             finally:
                 pass
 
