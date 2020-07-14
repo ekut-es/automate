@@ -28,13 +28,15 @@ class CMakeBuilder(BaseBuilder):
         prefix: install prefix on the board
         cmake_definitions: extra cmake definitions 
         """
-
-        if cross_compiler is None:
-            cross_compiler = self.board.compiler()
-
         super(CMakeBuilder, self).configure(
-            cross_compiler=cross_compiler, srcdir=srcdir, prefix=prefix
+            cross_compiler=cross_compiler,
+            srcdir=srcdir,
+            prefix=prefix,
+            extra_flags=extra_flags,
+            override_flags=override_flags,
         )
+
+        cross_compiler = self.cross_compiler
 
         self.clean()
         self._mkbuilddir()

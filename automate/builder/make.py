@@ -1,14 +1,25 @@
 import logging
 from pathlib import Path, PosixPath
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 from ruamel.yaml import YAML
 
 from ..utils.network import rsync
 from .builder import BaseBuilder
 
+if TYPE_CHECKING:
+    import automate.compiler
+
 
 class MakefileBuilder(BaseBuilder):
-    def configure(self, cross_compiler=None, srcdir="", prefix=""):
+    def configure(
+        self,
+        cross_compiler: "Optional[automate.compiler.CrossCompiler]" = None,
+        srcdir: Union[Path, str] = "",
+        prefix: Union[Path, str] = "",
+        extra_flags: Optional[Dict[str, str]] = None,
+        override_flags: Optional[Dict[str, str]] = None,
+    ):
         """ Configure a makefile build
         
             1. Copy source directory to build directory 
@@ -16,13 +27,19 @@ class MakefileBuilder(BaseBuilder):
         """
 
         super(MakefileBuilder, self).configure(
-            cross_compiler=cross_compiler, srcdir=srcdir, prefix=prefix
+            cross_compiler=cross_compiler,
+            srcdir=srcdir,
+            prefix=prefix,
+            extra_flags=extra_flags,
+            override_flags=override_flags,
         )
+
+        cross_compiler = self.cross_compiler
 
         self._mkbuilddir()
         self.context.run(f"rsync -ar --delete {self.srcdir} {self.builddir}")
 
-        buildvars = {}
+        buildvars: Dict[str, Any] = {}
         buildvars["CC"] = cross_compiler.bin_path / cross_compiler.cc
         buildvars["CXX"] = cross_compiler.bin_path / cross_compiler.cxx
         buildvars["CFLAGS"] = cross_compiler.cflags

@@ -107,13 +107,14 @@ class BaseBuilder(object):
         override_flags: dict of flags to override for compilation and linkage 
         """
 
-        if cross_compiler is None:
-            cross_compiler = self.board.compiler()
-        else:
-            cross_compiler = deepcopy(cross_compiler)
+        if cross_compiler is not None:
+            self.cross_compiler = deepcopy(cross_compiler)
 
         if override_flags is not None:
-            cross_compiler.configure(**override_flags)
+            self.cross_compiler.configure(**override_flags)
+
+        if extra_flags is not None:
+            self.cross_compiler.configure_extend(**extra_flags)
 
         if srcdir:
             self.state.srcdir = Path(srcdir).absolute()
