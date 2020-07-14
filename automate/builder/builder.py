@@ -2,6 +2,7 @@ import logging
 import multiprocessing
 import os
 import shutil
+from copy import deepcopy
 from pathlib import Path
 from string import Template
 from typing import TYPE_CHECKING, Dict, Optional, Union
@@ -92,11 +93,28 @@ class BaseBuilder(object):
         cross_compiler: CrossCompiler = None,
         srcdir: Union[Path, str] = "",
         prefix: Union[Path, str] = "",
+        extra_flags: Optional[Dict[str, str]] = None,
+        override_flags: Optional[Dict[str, str]] = None,
     ):
-        "Configure the build"
+        """
+        Configure the build
+        
+        # Arguments
+        cross_compler: Cross compiler object to use for the build
+        srcdir: source directory
+        prefix: install prefix
+        extra_flags: dict of flags to append for compilation and linkage
+        override_flags: dict of flags to override for compilation and linkage 
+        """
 
-        if cross_compiler is None:
-            cross_compiler = self.board.compiler()
+        if cross_compiler is not None:
+            self.cross_compiler = deepcopy(cross_compiler)
+
+        if override_flags is not None:
+            self.cross_compiler.configure(**override_flags)
+
+        if extra_flags is not None:
+            self.cross_compiler.configure_extend(**extra_flags)
 
         if srcdir:
             self.state.srcdir = Path(srcdir).absolute()

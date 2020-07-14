@@ -2,12 +2,16 @@ from invoke import task
 
 
 @task()
-def build(c, board_id):
+def build(c, board_id, flags="", ldflags=""):
     "Builds run cmake"
 
     board = c.board(board_id)
     builder = board.builder("make")
-    builder.configure(cross_compiler=board.compiler(), srcdir="hello")
+    builder.configure(
+        cross_compiler=board.compiler(),
+        srcdir="hello",
+        extra_flags={"flags": flags, "ldflags": ldflags},
+    )
     builder.build()
     builder.install()
 

@@ -1,8 +1,9 @@
 import logging
 import shlex
 import subprocess
+from copy import deepcopy
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from . import board
 from .model import (
@@ -128,6 +129,34 @@ class CrossCompiler(Compiler):
         self._enable_sysroot = True
         self._isa_opt = True
         self._uarch_opt = True
+
+    def configure_extend(
+        self,
+        flags: Optional[str] = None,
+        cflags: Optional[str] = None,
+        cxxflags: Optional[str] = None,
+        ldflags: Optional[str] = None,
+        libs: Optional[str] = None,
+    ) -> None:
+        """ Extend compiler flags
+
+        For arguments see configure 
+        """
+
+        if flags is not None:
+            self._flags.extend(shlex.split(flags))
+
+        if cflags is not None:
+            self._cflags.extend(shlex.split(cflags))
+
+        if cxxflags is not None:
+            self._cxxflags.extend(shlex.split(cxxflags))
+
+        if ldflags is not None:
+            self._ldflags.extend(shlex.split(ldflags))
+
+        if libs is not None:
+            self._libs.extend(shlex.split(libs))
 
     def configure(
         self,
@@ -410,3 +439,19 @@ class CrossCompiler(Compiler):
             For now this is just "<cwd>/builds/<board_id>"
         """
         return Path("builds") / str(self.board.name)
+
+    def __deepcopy__(self, memo) -> "CrossCompiler":
+        copy = CrossCompiler(self.context, self.model, self.board)
+
+        copy.check_multiarch = deepcopy(self.check_multiarch, memo)
+        copy.core = deepcopy(self.core, memo)
+        copy._flags = deepcopy(self._flags, memo)
+        copy._cflags = deepcopy(self._cflags, memo)
+        copy._cxxflags = deepcopy(self._cxxflags, memo)
+        copy._ldflags = deepcopy(self._ldflags, memo)
+        copy._libs = deepcopy(self._libs, memo)
+        copy._enable_sysroot = deepcopy(self._enable_sysroot, memo)
+        copy._isa_opt = deepcopy(self._isa_opt, memo)
+        copy._uarch_opt = deepcopy(self._uarch_opt, memo)
+
+        return copy
