@@ -51,14 +51,14 @@ class MakefileBuilder(BaseBuilder):
 
         self._save_state()
 
-    def build(self):
+    def build(self, target=""):
         """Run make with default target and set BUILDVARS for board"""
 
         buildvars = self.state.buildvars
 
         with self.context.cd(str(self.builddir / self.srcdir.name)):
             self.context.run(
-                f"make -j{self._num_build_cpus()} CC=\"{buildvars['CC']}\" CXX=\"{buildvars['CXX']}\" CFLAGS=\"{buildvars['CFLAGS']}\" CXXFLAGS=\"{buildvars['CXXFLAGS']}\" LDFLAGS=\"{buildvars['LDFLAGS']}\" LDLIBS=\"{buildvars['LDLIBS']}\""
+                f"make -j{self._num_build_cpus()} {target} CC=\"{buildvars['CC']}\" CXX=\"{buildvars['CXX']}\" CFLAGS=\"{buildvars['CFLAGS']}\" CXXFLAGS=\"{buildvars['CXXFLAGS']}\" LDFLAGS=\"{buildvars['LDFLAGS']}\" LDLIBS=\"{buildvars['LDLIBS']}\""
             )
 
     def install(self):
