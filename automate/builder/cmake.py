@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from ..utils.network import rsync
 from .builder import BaseBuilder
@@ -15,6 +15,8 @@ class CMakeBuilder(BaseBuilder):
         cross_compiler: "Optional[automate.compiler.CrossCompiler]" = None,
         srcdir: Union[Path, str] = "",
         prefix: Union[Path, str] = "",
+        extra_flags: Optional[Dict[str, str]] = None,
+        override_flags: Optional[Dict[str, str]] = None,
         cmake_definitions: List[str] = [],
     ):
         """
