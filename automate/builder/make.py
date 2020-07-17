@@ -21,8 +21,8 @@ class MakefileBuilder(BaseBuilder):
         override_flags: Optional[Dict[str, str]] = None,
     ):
         """ Configure a makefile build
-        
-            1. Copy source directory to build directory 
+
+            1. Copy source directory to build directory
             2. Record build variables in build_directory/buildvars.yml
         """
 
@@ -42,6 +42,7 @@ class MakefileBuilder(BaseBuilder):
         buildvars: Dict[str, Any] = {}
         buildvars["CC"] = cross_compiler.bin_path / cross_compiler.cc
         buildvars["CXX"] = cross_compiler.bin_path / cross_compiler.cxx
+        buildvars["AR"] = cross_compiler.bin_path /cross_compiler.ar
         buildvars["CFLAGS"] = cross_compiler.cflags
         buildvars["CXXFLAGS"] = cross_compiler.cxxflags
         buildvars["LDFLAGS"] = cross_compiler.ldflags
@@ -58,7 +59,7 @@ class MakefileBuilder(BaseBuilder):
 
         with self.context.cd(str(self.builddir / self.srcdir.name)):
             self.context.run(
-                f"make -j{self._num_build_cpus()} {target} CC=\"{buildvars['CC']}\" CXX=\"{buildvars['CXX']}\" CFLAGS=\"{buildvars['CFLAGS']}\" CXXFLAGS=\"{buildvars['CXXFLAGS']}\" LDFLAGS=\"{buildvars['LDFLAGS']}\" LDLIBS=\"{buildvars['LDLIBS']}\""
+                f"make -j{self._num_build_cpus()} {target} CC=\"{buildvars['CC']}\" CXX=\"{buildvars['CXX']}\" AR=\"{buildvars['AR']}\" CFLAGS=\"{buildvars['CFLAGS']}\" CXXFLAGS=\"{buildvars['CXXFLAGS']}\" LDFLAGS=\"{buildvars['LDFLAGS']}\" LDLIBS=\"{buildvars['LDLIBS']}\""
             )
 
     def install(self):
@@ -67,12 +68,12 @@ class MakefileBuilder(BaseBuilder):
 
     def deploy(self, delete=False):
         """Deploy package on board
-        
+
            Just copies build_directory/srcdir_name to the rundir
 
-           # Arguments 
+           # Arguments
 
-           delete: if true delete remove non existant files from install prefix on the board 
+           delete: if true delete remove non existant files from install prefix on the board
         """
 
         with self.board.connect() as con:
