@@ -82,6 +82,11 @@ class Compiler(object):
         return self.model.prefix + self.model.ld
 
     @property
+    def ar(self) -> str:
+        """Binary name of Archiver"""
+        return self.model.prefix + self.model.ar
+
+    @property
     def toolchain(self) -> Toolchain:
         """Toolchain family of the compiler eg. LLVM or GCC"""
         return self.model.toolchain
@@ -140,7 +145,7 @@ class CrossCompiler(Compiler):
     ) -> None:
         """ Extend compiler flags
 
-        For arguments see configure 
+        For arguments see configure
         """
 
         if flags is not None:
@@ -169,8 +174,8 @@ class CrossCompiler(Compiler):
         isa_opt=True,
         enable_sysroot=True,
     ) -> None:
-        """ Set compiler options 
-    
+        """ Set compiler options
+
     # Arguments
     flags: Basic flags (used for compilation and linkags)
     cflags: flags for C compiler
@@ -205,7 +210,7 @@ class CrossCompiler(Compiler):
     def gcc_toolchain(self) -> Union[None, "CrossCompiler"]:
         """GCC toolchain to use for LLVM based cross compilers
 
-        The gcc toolchain is used to provide the linker, 
+        The gcc toolchain is used to provide the linker,
         and the runtime libraries libgcc and libstdc++
         """
         if self.toolchain == Toolchain.LLVM:
@@ -376,7 +381,7 @@ class CrossCompiler(Compiler):
     @property
     def ldflags(self):
         """LDFLAGS for this compiler
-        
+
         These flags are appended to the linker commandline before object files
         """
         flags = []
@@ -396,7 +401,7 @@ class CrossCompiler(Compiler):
 
     @property
     def libs(self) -> str:
-        """LIBFLAGS for this compiler 
+        """LIBFLAGS for this compiler
 
         These flags are appended to the linker driver commandline after the objectfiles
         Currently not used
@@ -435,7 +440,7 @@ class CrossCompiler(Compiler):
 
     @property
     def default_builddir(self) -> Path:
-        """ The default build directory for this cross compiler / board combinarion 
+        """ The default build directory for this cross compiler / board combinarion
             For now this is just "<cwd>/builds/<board_id>"
         """
         return Path("builds") / str(self.board.name)

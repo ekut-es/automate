@@ -29,6 +29,7 @@ class CompilerModel(LoadedModelBase):
     cxx: str
     asm: str
     ld: str
+    ar: str
     isa_map: Dict[str, str]
     uarch_map: Dict[str, str]
     description: str = ""

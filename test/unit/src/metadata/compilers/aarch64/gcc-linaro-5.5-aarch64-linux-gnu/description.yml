@@ -12,6 +12,7 @@ cc: gcc
 cxx: g++
 asm: as
 ld: ld
+ar: ar
 multiarch: True
 
 isa_map: []
