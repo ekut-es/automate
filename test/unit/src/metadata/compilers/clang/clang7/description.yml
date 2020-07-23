@@ -1,6 +1,6 @@
 name: clang-70
 triples:
-  - 
+  -
     machine: aarch64
     os: linux
     environment: gnu
@@ -12,14 +12,15 @@ triples:
     machine: arm
     os: linux
     environment: gnueabi
-    
+
 toolchain: llvm
 version: 7.0.1
 basedir: /afs/wsi/es/tools/clang/7.0
 cc: clang
 cxx: clang++
 asm: llvm-as
-ld: lld  
+ld: lld
+ar: llvm-ar
 multiarch: True
 
 isa_map:

@@ -12,6 +12,7 @@ cc: gcc
 cxx: g++
 asm: as
 ld: ld
+ar: ar
 multiarch: True
 
 isa_map:
@@ -20,7 +21,7 @@ isa_map:
   armv8.2-a: -march=armv8.2-a
   armv8.3-a: -march=armv8.3-a
   armv8.4-a: -march=armv8.4-a
-  
+
 uarch_map:
   cortex-a35:     -mcpu=cortex-a35
   cortex-a53:     -mcpu=cortex-a53
@@ -51,22 +52,22 @@ uarch_map:
   #- cortex-a73.cortex-a35
   #- cortex-a73.cortex-a53
   #- cortex-a75.cortex-a55
-  
+
 #features:
 #  crc: Enable CRC extension. This is on by default for -march=armv8.1-a.
-#  
+#
 #  crypto: Enable Crypto extension. This also enables Advanced SIMD and floating-point instructions.
-#  fp: Enable floating-point instructions. This is on by default for all possible values for options -march and -mcpu. 
+#  fp: Enable floating-point instructions. This is on by default for all possible values for options -march and -mcpu.
 #  simd: Enable Advanced SIMD instructions. This also enables floating-point instructions. This is on by default for all possible values for options -march and -mcpu.
-#  sve: Enable Scalable Vector Extension instructions. This also enables Advanced SIMD and floating-point instructions. 
-#  lse: Enable Large System Extension instructions. This is on by default for -march=armv8.1-a. 
-#  rdma: Enable Round Double Multiply Accumulate instructions. This is on by default for -march=armv8.1-a. 
-#  fp16: Enable FP16 extension. This also enables floating-point instructions. 
+#  sve: Enable Scalable Vector Extension instructions. This also enables Advanced SIMD and floating-point instructions.
+#  lse: Enable Large System Extension instructions. This is on by default for -march=armv8.1-a.
+#  rdma: Enable Round Double Multiply Accumulate instructions. This is on by default for -march=armv8.1-a.
+#  fp16: Enable FP16 extension. This also enables floating-point instructions.
 #  fp16fml: Enable FP16 fmla extension. This also enables FP16 extensions and floating-point instructions. This option is enabled by default for -march=armv8.4-a. Use of this option with architectures prior to Armv8.2-A is not supported.
-#  rcpc: Enable the RcPc extension. This does not change code generation from GCC, but is passed on to the assembler, enabling inline asm statements to use instructions from the RcPc extension. 
-#  dotprod: Enable the Dot Product extension. This also enables Advanced SIMD instructions. 
-#  aes: Enable the Armv8-a aes and pmull crypto extension. This also enables Advanced SIMD instructions. 
-#  sha2: Enable the Armv8-a sha2 crypto extension. This also enables Advanced SIMD instructions. 
-#  sha3: Enable the sha512 and sha3 crypto extension. This also enables Advanced SIMD instructions. Use of this option with architectures prior to Armv8.2-A is not supported. 
+#  rcpc: Enable the RcPc extension. This does not change code generation from GCC, but is passed on to the assembler, enabling inline asm statements to use instructions from the RcPc extension.
+#  dotprod: Enable the Dot Product extension. This also enables Advanced SIMD instructions.
+#  aes: Enable the Armv8-a aes and pmull crypto extension. This also enables Advanced SIMD instructions.
+#  sha2: Enable the Armv8-a sha2 crypto extension. This also enables Advanced SIMD instructions.
+#  sha3: Enable the sha512 and sha3 crypto extension. This also enables Advanced SIMD instructions. Use of this option with architectures prior to Armv8.2-A is not supported.
 #  sm4: Enable the sm3 and sm4 crypto extension. This also enables Advanced SIMD instructions. Use of this option with architectures prior to Armv8.2-A is not supported.
 

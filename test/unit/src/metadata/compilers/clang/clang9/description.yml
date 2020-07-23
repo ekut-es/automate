@@ -1,6 +1,6 @@
 name: clang-90
 triples:
-  - 
+  -
     machine: aarch64
     os: linux
     environment: gnu
@@ -12,14 +12,15 @@ triples:
     machine: arm
     os: linux
     environment: gnueabi
-    
+
 toolchain: llvm
 version: 9.0.0
 basedir: /afs/wsi/es/tools/clang/9.0
 cc: clang
 cxx: clang++
 asm: llvm-as
-ld: lld  
+ld: lld
+ar: llvm-ar
 multiarch: true
 
 isa_map:
