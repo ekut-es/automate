@@ -36,8 +36,7 @@ mkdocs-material = "^4.5"
 pygments = "^2.5"
 coverage = {version = "^4.5", extras = ["toml"]}
 mock-ssh-server = "^0.8.0"
-isort = {version = "^4.3", extras = ["pyproject"]}
-pylint = "^2.4"
+isort = {version = "^5.2", extras = ["pyproject"]}
 snakeviz = "^2.0.1"
 devtools = {version = "^0.5.1", extras = ["pygments"]}
 black = "^19.10b0"
