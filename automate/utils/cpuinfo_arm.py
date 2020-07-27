@@ -1,6 +1,5 @@
 from typing import Dict, Tuple
 
-
 arm_cpus: Dict[int, str] = {
     0x810: "arm810",
     0x920: "arm920",

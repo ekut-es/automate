@@ -42,7 +42,7 @@ class MakefileBuilder(BaseBuilder):
         buildvars: Dict[str, Any] = {}
         buildvars["CC"] = cross_compiler.bin_path / cross_compiler.cc
         buildvars["CXX"] = cross_compiler.bin_path / cross_compiler.cxx
-        buildvars["AR"] = cross_compiler.bin_path /cross_compiler.ar
+        buildvars["AR"] = cross_compiler.bin_path / cross_compiler.ar
         buildvars["CFLAGS"] = cross_compiler.cflags
         buildvars["CXXFLAGS"] = cross_compiler.cxxflags
         buildvars["LDFLAGS"] = cross_compiler.ldflags
