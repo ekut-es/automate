@@ -5,8 +5,8 @@ from ..utils.network import rsync
 from .builder import BaseBuilder
 
 if TYPE_CHECKING:
-    import automate.compiler
     import automate.board
+    import automate.compiler
 
 
 class CMakeBuilder(BaseBuilder):
@@ -67,6 +67,12 @@ class CMakeBuilder(BaseBuilder):
             toolchain_file.write(
                 "set(CMAKE_CXX_COMPILER {}/{})\n".format(
                     cross_compiler.bin_path, cross_compiler.cxx
+                )
+            )
+
+            toolchain_file.write(
+                "set(CMAKE_AR {}/{})\n".format(
+                    cross_compiler.bin_path, cross_compiler.ar
                 )
             )
             toolchain_file.write("\n")
