@@ -122,6 +122,7 @@ class SimpleLockManager(LockManagerBase):
         self.logger = logging.getLogger(__name__)
 
     def _do_unlock(self, board_name: str) -> None:
+        """ releases the lock from board with board_name """
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
@@ -133,6 +134,15 @@ class SimpleLockManager(LockManagerBase):
         return None
 
     def _do_trylock(self, board_name: str, timeout: float) -> bool:
+        """ 
+        checks if board with board_name is locked
+        if the desired board is locked it will be checked
+            if user owns the lock and if so the lease will be updated
+            if the user does not own the lock it will be checked if the lease is still valid
+                if the lease is valid the lock will be denied -> False
+                if the lease is invalid the lock will be granted -> True
+        if the desired board is not locked the the lock will be granted -> True
+        """
         timeout = float(timeout)
         try:
             with shelve.open(self.lockfile) as lockdb:
@@ -159,6 +169,7 @@ class SimpleLockManager(LockManagerBase):
         return True
 
     def _do_haslock(self, board_name: str) -> bool:
+        """ checks if user owns the lock for board with board_name """
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
@@ -176,6 +187,7 @@ class SimpleLockManager(LockManagerBase):
         return False
 
     def _do_islocked(self, board_name: str) -> bool:
+        """ checks if board with board_name is locked by any user """
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
