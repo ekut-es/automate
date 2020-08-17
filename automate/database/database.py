@@ -302,16 +302,16 @@ class Database:
             self.logger.error(e)
 
 
-    def unlock():
+    def unlock(self):
         None
 
-    def trylock():
+    def trylock(self):
         None
 
-    def haslock():
+    def haslock(self):
         None
 
-    def islocked():
+    def islocked(self):
         None
 
     
