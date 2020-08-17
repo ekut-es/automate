@@ -452,9 +452,10 @@ create table docs (
 );
 
 create table locks (
-    board_name varchar(255),
-    user_id varchar(255),
-    lease timestamp with time zone 
+    board_name varchar(255) not null,
+    user_id varchar(255) not null,
+    lease timestamp with time zone not null,
+    unique(board_name)
 );
 
 create user der_schrank password 'md5d1b1cc38471f60d4ced326b59c9c69f5';

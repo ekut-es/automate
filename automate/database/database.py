@@ -300,3 +300,18 @@ class Database:
         except Exception as e:
             self.logger.error("ERROR: database import failed")
             self.logger.error(e)
+
+
+    def unlock():
+        None
+
+    def trylock():
+        None
+
+    def haslock():
+        None
+
+    def islocked():
+        None
+
+    
