@@ -26,8 +26,6 @@ drop table if exists socs;
 
 drop table if exists foundries;
 
-drop user der_schrank;
-
 create table foundries (
     id serial primary key,
     name varchar(255),
@@ -458,7 +456,4 @@ create table locks (
     unique(board_name)
 );
 
-create user der_schrank password 'md5d1b1cc38471f60d4ced326b59c9c69f5';
-grant select, insert, update, delete on all tables in schema public to der_schrank;
-grant select, update on all sequences in schema public to der_schrank;
 commit;
