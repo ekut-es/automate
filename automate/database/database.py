@@ -331,8 +331,13 @@ class Database:
         if lock == None:
             return False
 
-        # TODO check user_id and lease
-        return True
+        if (
+            lock['user_id'] == user_id
+            and lock['lease'] > lock['current_timestamp']
+        ):
+            return True
+
+        return False
 
 
     def islocked(self, board_name: str) -> bool:

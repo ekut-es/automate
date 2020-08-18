@@ -102,7 +102,10 @@ def test_database_insert_board(db):
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
 def test_lock(db):
 
-    db.unlock('test_board', 'test_user')
+    # no lock has been aquired for test_board -> haslock == False
+    assert not db.haslock("test_board", "test_user")
+
+    #db.unlock('test_board', 'test_user')
 
     # no lock for 'test_board' has been aquired such that islocked == False
-    assert not db.islocked("test_board")
+    #assert not db.islocked("test_board")
