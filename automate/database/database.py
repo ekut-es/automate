@@ -64,8 +64,8 @@ class Database:
         self.password = password
 
         try:
-            connection = psycopg2.connect(self.connection_string)
-            self.cursor = connection.cursor(
+            self.connection = psycopg2.connect(self.connection_string)
+            self.cursor = self.connection.cursor(
                 cursor_factory=psycopg2.extras.DictCursor
             )
         except Exception as e:
@@ -96,6 +96,7 @@ class Database:
 
         self.insert_lock_query = self.__load_query("insert_lock")
         self.select_lock_for_board = self.__load_query("select_lock_for_board")
+        self.delete_lock_for_board = self.__load_query("delete_lock_for_board")
 
 
     def __load_query(self, name: str) -> str:
@@ -308,14 +309,31 @@ class Database:
             self.logger.error(e)
 
 
-    def unlock(self):
-        None
+    def unlock(self, board_name: str, user_id: str) -> None:
+        query, bind_params = self.j.prepare_query(
+            self.delete_lock_for_board, {"board_name": board_name, "user_id": user_id}
+        )
+        self.cursor.execute(query)
+        self.connection.commit()
+
 
     def trylock(self):
         None
 
-    def haslock(self):
-        None
+
+    def haslock(self, board_name: str, user_id: str) -> bool:
+        query, bind_params = self.j.prepare_query(
+            self.select_lock_for_board, {"board_name": board_name}
+        )
+        self.cursor.execute(query)
+        lock = self.cursor.fetchone()
+    
+        if lock == None:
+            return False
+
+        # TODO check user_id and lease
+        return True
+
 
     def islocked(self, board_name: str) -> bool:
         query, bind_params = self.j.prepare_query(
