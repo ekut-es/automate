@@ -17,9 +17,9 @@ def test_lock_manager(db):
     eves_lock_manager = LockManager(db, "eve")
 
     # nobody has a lock on test_board 
-    assert not local_lock_manager.is_locked(board_name)
-    assert not bobs_lock_manager.is_locked(board_name)
-    assert not eves_lock_manager.is_locked(board_name)
+    assert local_lock_manager.is_locked(board_name) == False
+    assert bobs_lock_manager.is_locked(board_name) == False
+    assert eves_lock_manager.is_locked(board_name) == False
 
 #assert local_lock_manager.trylock(board_name, timedelta(seconds=5))
 
