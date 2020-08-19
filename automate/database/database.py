@@ -95,8 +95,10 @@ class Database:
         #self.init_database_query = self.__load_query("init_database")
 
         self.insert_lock_query = self.__load_query("insert_lock")
-        self.select_lock_for_board = self.__load_query("select_lock_for_board")
-        self.delete_lock_for_board = self.__load_query("delete_lock_for_board")
+        self.select_lock_for_board_query = self.__load_query("select_lock_for_board")
+        self.delete_lock_for_board_query = self.__load_query("delete_lock_for_board")
+        self.transfer_lock_for_board_query = self.__load_query("transfer_lock_for_board")
+        self.update_lock_lease_for_board_query = self.__load_query("update_lock_lease_for_board")
 
 
     def __load_query(self, name: str) -> str:
@@ -311,21 +313,63 @@ class Database:
 
     def unlock(self, board_name: str, user_id: str) -> None:
         query, bind_params = self.j.prepare_query(
-            self.delete_lock_for_board, {"board_name": board_name, "user_id": user_id}
+            self.delete_lock_for_board_query, {"board_name": board_name, "user_id": user_id}
         )
+        # TODO catch exception
         self.cursor.execute(query)
         self.connection.commit()
 
 
-    def trylock(self):
-        None
+    def trylock(self, board_name: str, user_id: str, lease_duration: int) -> bool:
+        # check if board is locked
+        query, bind_params = self.j.prepare_query(
+            self.select_lock_for_board_query, {"board_name": board_name}
+        )
+        self.cursor.execute(query)
+        self.connection.commit()
+        lock = self.cursor.fetchone()
+        
+        # board is locked 
+        if lock != None:
+            if lock['user_id'] != user_id:
+                # board is locked by other user
+                if lock['lease'] > lock['current_timestamp']:
+                    return False
+                # transfer lock
+                else:
+                    query, bind_params = self.j.prepare_query(
+                        self.transfer_lock_for_board_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
+                    )       
+                    self.cursor.execute(query)
+                    self.connection.commit()
+                    return True
+
+            # user has lock and lease will be updated
+            else:
+                query, bind_params = self.j.prepare_query(
+                    self.update_lock_lease_for_board_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
+                )
+                self.cursor.execute(query)
+                self.connection.commit()
+                return True
+
+        # board is not locked -> aquire lock 
+        else:
+            query, bind_params = self.j.prepare_query(
+                self.insert_lock_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
+            )
+            # TODO catch exception
+            self.cursor.execute(query)
+            self.connection.commit()
+            return True
 
 
     def haslock(self, board_name: str, user_id: str) -> bool:
         query, bind_params = self.j.prepare_query(
-            self.select_lock_for_board, {"board_name": board_name}
+            self.select_lock_for_board_query, {"board_name": board_name}
         )
         self.cursor.execute(query)
+        self.connection.commit()
         lock = self.cursor.fetchone()
     
         if lock == None:
@@ -342,9 +386,19 @@ class Database:
 
     def islocked(self, board_name: str) -> bool:
         query, bind_params = self.j.prepare_query(
-            self.select_lock_for_board, {"board_name": board_name}
+            self.select_lock_for_board_query, {"board_name": board_name}
         )
         self.cursor.execute(query)
+        self.connection.commit()
         lock = self.cursor.fetchone()
 
-        return lock != None 
+        # no lock exists
+        if lock == None:
+            return False
+
+        # board is locked
+        if lock['lease'] > lock['current_timestamp']:
+            return True
+
+        # lock exists but lease is invalid
+        return False

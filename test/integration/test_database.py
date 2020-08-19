@@ -1,6 +1,8 @@
 import os
 from typing import Generator
 
+import time
+
 import pytest
 from pytest import fixture
 
@@ -100,12 +102,51 @@ def test_database_insert_board(db):
 
 
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
-def test_lock(db):
+def test_database_locks(db):
 
-    # no lock has been aquired for test_board -> haslock == False
-    assert not db.haslock("test_board", "test_user")
+    # nobody has a lock on test_board 
+    assert not db.islocked("test_board")
 
-    #db.unlock('test_board', 'test_user')
+    # alice should not have a lock on test_board
+    assert not db.haslock("test_board", "alice")
 
-    # no lock for 'test_board' has been aquired such that islocked == False
-    #assert not db.islocked("test_board")
+    # nobody has a lock on test_board -> grant lock to alice for 5 sec
+    assert db.trylock("test_board", "alice", 5)
+
+    # eve tries to acquire the lock but wont get it
+    assert not db.trylock("test_board", "eve", 5)
+
+    # alice releases the lock from test_board
+    db.unlock("test_board", "alice")
+
+    # nobody has a lock on test_board 
+    assert not db.islocked("test_board")
+
+    # nobody has a lock on test_board -> grant lock to bob for 5 sec
+    assert db.trylock("test_board", "bob", 5)
+
+    # eve tries to acquire the lock but wont get it
+    assert not db.trylock("test_board", "eve", 5)
+
+    # bob extends lock by 10 sec 
+    assert db.trylock("test_board", "bob", 10)
+
+    time.sleep(6)
+
+    # eve tries to acquire the lock but wont get it
+    assert not db.trylock("test_board", "eve", 5)
+
+    time.sleep(6)
+
+    # lock on test_board for bob has expired
+    assert not db.islocked("test_board")
+
+    # lock on test_board for bob has expired -> grant lock to alice for 5 sec
+    assert db.trylock("test_board", "alice", 5)
+
+    # alice releases the lock from test_board
+    db.unlock("test_board", "alice")
+
+    # nobody has a lock on test_board 
+    assert not db.islocked("test_board")
+
