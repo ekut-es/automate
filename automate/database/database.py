@@ -306,6 +306,7 @@ class Database:
 
         try:
             self.cursor.execute(query)
+            self.connection.commit()
         except Exception as e:
             self.logger.error("ERROR: database import failed")
             self.logger.error(e)
@@ -315,9 +316,12 @@ class Database:
         query, bind_params = self.j.prepare_query(
             self.delete_lock_for_board_query, {"board_name": board_name, "user_id": user_id}
         )
-        # TODO catch exception
-        self.cursor.execute(query)
-        self.connection.commit()
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+        except Exception as e:
+            self.logger.error("ERROR: unlocking of '" + board_name + "' failed")
+            self.logger.error(e)
 
 
     def trylock(self, board_name: str, user_id: str, lease_duration: int) -> bool:
@@ -325,8 +329,13 @@ class Database:
         query, bind_params = self.j.prepare_query(
             self.select_lock_for_board_query, {"board_name": board_name}
         )
-        self.cursor.execute(query)
-        self.connection.commit()
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+        except Exception as e:
+            self.logger.error("ERROR: could not access lock for '" + board_name + "'")
+            self.logger.error(e)
+
         lock = self.cursor.fetchone()
         
         # board is locked 
@@ -339,9 +348,14 @@ class Database:
                 else:
                     query, bind_params = self.j.prepare_query(
                         self.transfer_lock_for_board_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
-                    )       
-                    self.cursor.execute(query)
-                    self.connection.commit()
+                    )
+                    try:
+                        self.cursor.execute(query)
+                        self.connection.commit()
+                    except Exception as e:
+                        self.logger.error("ERROR: transfer of lock for '" + board_name + "' failed")
+                        self.logger.error(e)
+
                     return True
 
             # user has lock and lease will be updated
@@ -349,8 +363,13 @@ class Database:
                 query, bind_params = self.j.prepare_query(
                     self.update_lock_lease_for_board_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
                 )
-                self.cursor.execute(query)
-                self.connection.commit()
+                try:
+                    self.cursor.execute(query)
+                    self.connection.commit()
+                except Exception as e:
+                    self.logger.error("ERROR: update of lock lease for '" + board_name + "' failed")
+                    self.logger.error(e)
+
                 return True
 
         # board is not locked -> aquire lock 
@@ -358,9 +377,13 @@ class Database:
             query, bind_params = self.j.prepare_query(
                 self.insert_lock_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
             )
-            # TODO catch exception
-            self.cursor.execute(query)
-            self.connection.commit()
+            try:
+                self.cursor.execute(query)
+                self.connection.commit()
+            except Exception as e:
+                self.logger.error("ERROR: acquiring lock for '" + board_name + "' failed")
+                self.logger.error(e)
+
             return True
 
 
@@ -368,8 +391,13 @@ class Database:
         query, bind_params = self.j.prepare_query(
             self.select_lock_for_board_query, {"board_name": board_name}
         )
-        self.cursor.execute(query)
-        self.connection.commit()
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+        except Exception as e:
+            self.logger.error("ERROR: could not access lock for '" + board_name + "'")
+            self.logger.error(e)
+
         lock = self.cursor.fetchone()
     
         if lock == None:
@@ -388,8 +416,13 @@ class Database:
         query, bind_params = self.j.prepare_query(
             self.select_lock_for_board_query, {"board_name": board_name}
         )
-        self.cursor.execute(query)
-        self.connection.commit()
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+        except Exception as e:
+            self.logger.error("ERROR: could not access lock for '" + board_name + "'")
+            self.logger.error(e)
+
         lock = self.cursor.fetchone()
 
         # no lock exists
