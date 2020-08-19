@@ -56,10 +56,7 @@ class LockManagerBase:
         else:
             delta = timeout
 
-        timeout_absolute = datetime.now() + delta
-        timeout_seconds = timeout_absolute.timestamp()
-
-        while not self._do_trylock(board_name, timeout_seconds):
+        while not self._do_trylock(board_name, delta.seconds):
             time.sleep(0.5)
 
     def unlock(self, board: Union["Board", str]) -> None:
@@ -85,10 +82,7 @@ class LockManagerBase:
         else:
             delta = timeout
 
-        timeout_absolute = datetime.now() + delta
-        timeout_seconds = timeout_absolute.timestamp()
-
-        return self._do_trylock(board_name, timeout_seconds)
+        return self._do_trylock(board_name, delta.seconds)
 
     def has_lock(self, board: Union["Board", str]) -> bool:
         if isinstance(board, str):
@@ -113,7 +107,7 @@ LockEntry = namedtuple("LockEntry", ["user_id", "timestamp"])
 class SimpleLockManager(LockManagerBase):
     """Simple lock manager using a gdbm shared file identifying lock holders by the username on the current machine"""
 
-    def __init__(self, lockfile: Union[str, Path], user_id: str = "") -> None:
+    def __init__(self, lockfile: Union[str, Path], user_id: str = "", db = None) -> None:
         self.lockfile = str(Path(lockfile).absolute())
         self.user_id = user_id
         if not user_id:
@@ -143,7 +137,12 @@ class SimpleLockManager(LockManagerBase):
                 if the lease is invalid the lock will be granted -> True
         if the desired board is not locked the the lock will be granted -> True
         """
-        timeout = float(timeout)
+        
+        delta = timedelta(seconds=timeout)
+        timeout_absolute = datetime.now() + delta
+        timeout_seconds = timeout_absolute.timestamp()
+        timeout = timeout_seconds
+
         try:
             with shelve.open(self.lockfile) as lockdb:
                 current_timestamp = time.time()
@@ -203,3 +202,28 @@ class SimpleLockManager(LockManagerBase):
             self.logger.error("Exception during board islocked", str(e))
 
         return False
+
+
+class LockManager(LockManagerBase):
+    """ lock manager using the database for distributed locks """
+
+    def __init__(self, database, user_id: str = "") -> None:
+        self.database = database
+        self.user_id = user_id
+
+        if not user_id or user_id == "":
+            self.user_id = getpass.getuser()
+
+        self.logger = logging.getLogger(__name__)
+
+    def _do_unlock(self, board_name: str) -> None:
+        self.database.unlock(board_name)
+
+    def _do_trylock(self, board_name: str, timeout: float) -> bool:
+        return self.database.trylock(board_name, self.user_id, timeout) 
+
+    def _do_haslock(self, board_name: str) -> bool:
+        return self.database.haslock(board_name, self.user_id) 
+
+    def _do_islocked(self, board_name: str) -> bool:
+        return self.database.islocked(board_name)
