@@ -1,6 +1,8 @@
 import pytest
 from pytest import fixture
 
+import time
+
 from automate.database import Database, database_enabled
 from automate.locks import LockManager
 from datetime import datetime, timedelta
@@ -21,48 +23,61 @@ def test_lock_manager(db):
     assert bobs_lock_manager.is_locked(board_name) == False
     assert eves_lock_manager.is_locked(board_name) == False
 
-#assert local_lock_manager.trylock(board_name, timedelta(seconds=5))
+    assert local_lock_manager.has_lock(board_name) == False
+    assert bobs_lock_manager.has_lock(board_name) == False
+    assert eves_lock_manager.has_lock(board_name) == False
 
-    # alice should not have a lock on test_board
-#assert not db.haslock("test_board", "alice")
+    # nobody has a lock on test_board -> grant lock to local user for 5 sec
+    assert local_lock_manager.trylock(board_name, "5") == True
 
-    # nobody has a lock on test_board -> grant lock to alice for 5 sec
-#assert db.trylock("test_board", "alice", 5)
+    # eve and bob try to acquire the lock but wont get it
+    assert eves_lock_manager.trylock(board_name, "5") == False
+    assert bobs_lock_manager.trylock(board_name, "5") == False
 
-    # eve tries to acquire the lock but wont get it
-#assert not db.trylock("test_board", "eve", 5)
-
-    # alice releases the lock from test_board
-#db.unlock("test_board", "alice")
+    # local user releases the lock from test_board
+    local_lock_manager.unlock(board_name) 
 
     # nobody has a lock on test_board 
-#assert not db.islocked("test_board")
+    assert local_lock_manager.is_locked(board_name) == False
+    assert bobs_lock_manager.is_locked(board_name) == False
+    assert eves_lock_manager.is_locked(board_name) == False
+
+    assert local_lock_manager.has_lock(board_name) == False
+    assert bobs_lock_manager.has_lock(board_name) == False
+    assert eves_lock_manager.has_lock(board_name) == False
 
     # nobody has a lock on test_board -> grant lock to bob for 5 sec
-#assert db.trylock("test_board", "bob", 5)
+    assert bobs_lock_manager.trylock(board_name, "5") == True
 
-    # eve tries to acquire the lock but wont get it
-#assert not db.trylock("test_board", "eve", 5)
+    # local user and eve try to acquire the lock but wont get it
+    assert local_lock_manager.trylock(board_name, "5") == False
+    assert eves_lock_manager.trylock(board_name, "5") == False
 
     # bob extends lock by 10 sec 
-#assert db.trylock("test_board", "bob", 10)
+    assert bobs_lock_manager.trylock(board_name, "10") == True
 
-#time.sleep(6)
+    time.sleep(6)
 
-    # eve tries to acquire the lock but wont get it
-#assert not db.trylock("test_board", "eve", 5)
+    # local user eve try to acquire the lock but wont get it
+    assert local_lock_manager.trylock(board_name, "5") == False
+    assert eves_lock_manager.trylock(board_name, "5") == False
 
-#time.sleep(6)
+    time.sleep(6)
 
     # lock on test_board for bob has expired
-#assert not db.islocked("test_board")
+    assert bobs_lock_manager.is_locked(board_name) == False
 
-    # lock on test_board for bob has expired -> grant lock to alice for 5 sec
-#assert db.trylock("test_board", "alice", 5)
+    # lock on test_board for bob has expired -> grant lock to local user for 5 sec
+    assert local_lock_manager.trylock(board_name) == True
 
-    # alice releases the lock from test_board
-#db.unlock("test_board", "alice")
+    # local user releases the lock from test_board
+    local_lock_manager.unlock(board_name) 
 
     # nobody has a lock on test_board 
-#assert not db.islocked("test_board")
+    assert local_lock_manager.is_locked(board_name) == False
+    assert bobs_lock_manager.is_locked(board_name) == False
+    assert eves_lock_manager.is_locked(board_name) == False
 
+    assert local_lock_manager.has_lock(board_name) == False
+    assert bobs_lock_manager.has_lock(board_name) == False
+    assert eves_lock_manager.has_lock(board_name) == False

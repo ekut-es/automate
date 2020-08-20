@@ -217,7 +217,7 @@ class LockManager(LockManagerBase):
         self.logger = logging.getLogger(__name__)
 
     def _do_unlock(self, board_name: str) -> None:
-        self.database.unlock(board_name)
+        self.database.unlock(board_name, self.user_id)
 
     def _do_trylock(self, board_name: str, timeout: float) -> bool:
         return self.database.trylock(board_name, self.user_id, timeout) 
