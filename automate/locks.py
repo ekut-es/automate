@@ -208,7 +208,7 @@ class SimpleLockManager(LockManagerBase):
         return False
 
 
-class LockManager(LockManagerBase):
+class DatabaseLockManager(LockManagerBase):
     """ lock manager using the database for distributed locks """
 
     def __init__(self, database: Database, user_id: str = "") -> None:
