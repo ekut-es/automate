@@ -26,6 +26,8 @@ drop table if exists socs;
 
 drop table if exists foundries;
 
+drop table if exists locks;
+
 create table foundries (
     id serial primary key,
     name varchar(255),
@@ -450,4 +452,11 @@ create table docs (
     title varchar(255),
     location varchar(1024),
     unique(board_id, title, location)
+);
+
+create table locks (
+    board_name varchar(255) not null,
+    user_id varchar(255) not null,
+    lease timestamp with time zone not null,
+    unique(board_name)
 );

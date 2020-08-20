@@ -1,14 +1,13 @@
+import time
 from typing import Generator
 
-import time
-
 import pytest
+from db import db
 from pytest import fixture
 
 from automate.database import Database, database_enabled
 from automate.model import BoardModel, OSModel, TripleModel
 
-from db import db
 
 @fixture
 def test_boards() -> Generator[BoardModel, None, None]:
@@ -91,7 +90,7 @@ def test_database_locks(db):
 
     board_name = "test_board"
 
-    # nobody has a lock on test_board 
+    # nobody has a lock on test_board
     assert db.islocked(board_name) == False
 
     # alice should not have a lock on test_board
@@ -106,7 +105,7 @@ def test_database_locks(db):
     # alice releases the lock from test_board
     db.unlock(board_name, "alice")
 
-    # nobody has a lock on test_board 
+    # nobody has a lock on test_board
     assert db.islocked(board_name) == False
 
     # nobody has a lock on test_board -> grant lock to bob for 5 sec
@@ -115,7 +114,7 @@ def test_database_locks(db):
     # eve tries to acquire the lock but wont get it
     assert db.trylock(board_name, "eve", 5) == False
 
-    # bob extends lock by 10 sec 
+    # bob extends lock by 10 sec
     assert db.trylock(board_name, "bob", 10) == True
 
     time.sleep(6)
@@ -126,7 +125,7 @@ def test_database_locks(db):
     time.sleep(6)
 
     # lock on test_board for bob has expired
-    assert db.islocked(board_name) == False
+    assert db.islocked(board_name, "alice") == False
 
     # lock on test_board for bob has expired -> grant lock to alice for 5 sec
     assert db.trylock(board_name, "alice", 5) == True
@@ -134,6 +133,5 @@ def test_database_locks(db):
     # alice releases the lock from test_board
     db.unlock(board_name, "alice")
 
-    # nobody has a lock on test_board 
-    assert db.islocked(board_name) == False
-
+    # nobody has a lock on test_board
+    assert db.islocked(board_name, "horst") == False
