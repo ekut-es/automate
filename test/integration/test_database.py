@@ -91,7 +91,7 @@ def test_database_locks(db):
     board_name = "test_board"
 
     # nobody has a lock on test_board
-    assert db.islocked(board_name) == False
+    assert db.islocked(board_name, 'alice') == False
 
     # alice should not have a lock on test_board
     assert db.haslock(board_name, "alice") == False
@@ -106,7 +106,7 @@ def test_database_locks(db):
     db.unlock(board_name, "alice")
 
     # nobody has a lock on test_board
-    assert db.islocked(board_name) == False
+    assert db.islocked(board_name, "eve") == False
 
     # nobody has a lock on test_board -> grant lock to bob for 5 sec
     assert db.trylock(board_name, "bob", 5) == True
@@ -122,7 +122,7 @@ def test_database_locks(db):
     # eve tries to acquire the lock but wont get it
     assert db.trylock(board_name, "eve", 5) == False
 
-    time.sleep(6)
+    time.sleep(10)
 
     # lock on test_board for bob has expired
     assert db.islocked(board_name, "alice") == False
