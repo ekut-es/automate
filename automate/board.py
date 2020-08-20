@@ -51,7 +51,9 @@ class Board(object):
                 LockManager, SimpleLockManager
             ] = LockManager(context.database)
         else:
-            self.lock_manager = SimpleLockManager(context.config.boardroot)
+            self.lock_manager = SimpleLockManager(
+                context.config.automate.boardroot
+            )
 
     @property
     def id(self) -> str:
