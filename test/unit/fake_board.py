@@ -18,6 +18,8 @@ test_public_key = os.path.join(root_path, "fake_board_data", "test_id_rsa.pub")
 
 
 class FakeContext:
+    database = None
+
     class config:
         class automate:
             boardroot = "/tmp/"
