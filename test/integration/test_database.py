@@ -89,49 +89,51 @@ def test_database_insert_board(db):
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
 def test_database_locks(db):
 
+    board_name = "test_board"
+
     # nobody has a lock on test_board 
-    assert db.islocked("test_board") == False
+    assert db.islocked(board_name) == False
 
     # alice should not have a lock on test_board
-    assert db.haslock("test_board", "alice") == False
+    assert db.haslock(board_name, "alice") == False
 
     # nobody has a lock on test_board -> grant lock to alice for 5 sec
-    assert db.trylock("test_board", "alice", 5) == True
+    assert db.trylock(board_name, "alice", 5) == True
 
     # eve tries to acquire the lock but wont get it
-    assert db.trylock("test_board", "eve", 5) == False
+    assert db.trylock(board_name, "eve", 5) == False
 
     # alice releases the lock from test_board
-    db.unlock("test_board", "alice")
+    db.unlock(board_name, "alice")
 
     # nobody has a lock on test_board 
-    assert db.islocked("test_board") == False
+    assert db.islocked(board_name) == False
 
     # nobody has a lock on test_board -> grant lock to bob for 5 sec
-    assert db.trylock("test_board", "bob", 5) == True
+    assert db.trylock(board_name, "bob", 5) == True
 
     # eve tries to acquire the lock but wont get it
-    assert db.trylock("test_board", "eve", 5) == False
+    assert db.trylock(board_name, "eve", 5) == False
 
     # bob extends lock by 10 sec 
-    assert db.trylock("test_board", "bob", 10) == True
+    assert db.trylock(board_name, "bob", 10) == True
 
     time.sleep(6)
 
     # eve tries to acquire the lock but wont get it
-    assert db.trylock("test_board", "eve", 5) == False
+    assert db.trylock(board_name, "eve", 5) == False
 
     time.sleep(6)
 
     # lock on test_board for bob has expired
-    assert db.islocked("test_board") == False
+    assert db.islocked(board_name) == False
 
     # lock on test_board for bob has expired -> grant lock to alice for 5 sec
-    assert db.trylock("test_board", "alice", 5) == True
+    assert db.trylock(board_name, "alice", 5) == True
 
     # alice releases the lock from test_board
-    db.unlock("test_board", "alice")
+    db.unlock(board_name, "alice")
 
     # nobody has a lock on test_board 
-    assert db.islocked("test_board") == False
+    assert db.islocked(board_name) == False
 
