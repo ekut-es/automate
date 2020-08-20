@@ -230,4 +230,4 @@ class LockManager(LockManagerBase):
         return self.database.haslock(board_name, self.user_id)
 
     def _do_islocked(self, board_name: str) -> bool:
-        return self.database.islocked(board_name)
+        return self.database.islocked(board_name, self.user_id)

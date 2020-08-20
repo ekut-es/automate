@@ -24,6 +24,7 @@ try:
     import psycopg2  # type: ignore
     import psycopg2.extras  # type: ignore
     from dotenv import load_dotenv  # type: ignore
+
     from jinjasql import JinjaSql  # type; ignore
 
     enabled = True
@@ -92,14 +93,21 @@ class Database:
             "select_all_docs_for_board"
         )
         self.insert_board_query = self.__load_query("insert_board")
-        #self.init_database_query = self.__load_query("init_database")
+        # self.init_database_query = self.__load_query("init_database")
 
         self.insert_lock_query = self.__load_query("insert_lock")
-        self.select_lock_for_board_query = self.__load_query("select_lock_for_board")
-        self.delete_lock_for_board_query = self.__load_query("delete_lock_for_board")
-        self.transfer_lock_for_board_query = self.__load_query("transfer_lock_for_board")
-        self.update_lock_lease_for_board_query = self.__load_query("update_lock_lease_for_board")
-
+        self.select_lock_for_board_query = self.__load_query(
+            "select_lock_for_board"
+        )
+        self.delete_lock_for_board_query = self.__load_query(
+            "delete_lock_for_board"
+        )
+        self.transfer_lock_for_board_query = self.__load_query(
+            "transfer_lock_for_board"
+        )
+        self.update_lock_lease_for_board_query = self.__load_query(
+            "update_lock_lease_for_board"
+        )
 
     def __load_query(self, name: str) -> str:
         sql_file_path = self.QUERIES_DIR + "/" + name + ".sql"
@@ -112,13 +120,11 @@ class Database:
         query = sql_file.read()
         return query
 
-
     def init(self) -> None:
         """Initialize an database without locks"""
         None
-        #query = self.init_database_query
-        #self.cursor.execute(query)
-
+        # query = self.init_database_query
+        # self.cursor.execute(query)
 
     def get_all_boards(self) -> List[BoardModelDB]:
         self.cursor.execute(self.all_boards_query)
@@ -255,7 +261,6 @@ class Database:
 
         return board_models
 
-
     def insert_board(
         self, board_model: BoardModel, additional_data: Any
     ) -> None:
@@ -311,10 +316,10 @@ class Database:
             self.logger.error("ERROR: database import failed")
             self.logger.error(e)
 
-
     def unlock(self, board_name: str, user_id: str) -> None:
         query, bind_params = self.j.prepare_query(
-            self.delete_lock_for_board_query, {"board_name": board_name, "user_id": user_id}
+            self.delete_lock_for_board_query,
+            {"board_name": board_name, "user_id": user_id},
         )
         try:
             self.cursor.execute(query)
@@ -323,8 +328,9 @@ class Database:
             self.logger.error("ERROR: unlocking of '" + board_name + "' failed")
             self.logger.error(e)
 
-
-    def trylock(self, board_name: str, user_id: str, lease_duration: int) -> bool:
+    def trylock(
+        self, board_name: str, user_id: str, lease_duration: int
+    ) -> bool:
         # check if board is locked
         query, bind_params = self.j.prepare_query(
             self.select_lock_for_board_query, {"board_name": board_name}
@@ -333,27 +339,38 @@ class Database:
             self.cursor.execute(query)
             self.connection.commit()
         except Exception as e:
-            self.logger.error("ERROR: could not access lock for '" + board_name + "'")
+            self.logger.error(
+                "ERROR: could not access lock for '" + board_name + "'"
+            )
             self.logger.error(e)
 
         lock = self.cursor.fetchone()
-        
-        # board is locked 
+
+        # board is locked
         if lock != None:
-            if lock['user_id'] != user_id:
+            if lock["user_id"] != user_id:
                 # board is locked by other user
-                if lock['lease'] > lock['current_timestamp']:
+                if lock["lease"] > lock["current_timestamp"]:
                     return False
                 # transfer lock
                 else:
                     query, bind_params = self.j.prepare_query(
-                        self.transfer_lock_for_board_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
+                        self.transfer_lock_for_board_query,
+                        {
+                            "board_name": board_name,
+                            "user_id": user_id,
+                            "lease_duration": lease_duration,
+                        },
                     )
                     try:
                         self.cursor.execute(query)
                         self.connection.commit()
                     except Exception as e:
-                        self.logger.error("ERROR: transfer of lock for '" + board_name + "' failed")
+                        self.logger.error(
+                            "ERROR: transfer of lock for '"
+                            + board_name
+                            + "' failed"
+                        )
                         self.logger.error(e)
 
                     return True
@@ -361,33 +378,49 @@ class Database:
             # user has lock and lease will be updated
             else:
                 query, bind_params = self.j.prepare_query(
-                    self.update_lock_lease_for_board_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
+                    self.update_lock_lease_for_board_query,
+                    {
+                        "board_name": board_name,
+                        "user_id": user_id,
+                        "lease_duration": lease_duration,
+                    },
                 )
                 try:
                     self.cursor.execute(query)
                     self.connection.commit()
                 except Exception as e:
-                    self.logger.error("ERROR: update of lock lease for '" + board_name + "' failed")
+                    self.logger.error(
+                        "ERROR: update of lock lease for '"
+                        + board_name
+                        + "' failed"
+                    )
                     self.logger.error(e)
 
                 return True
 
-        # board is not locked -> aquire lock 
+        # board is not locked -> aquire lock
         else:
             query, bind_params = self.j.prepare_query(
-                self.insert_lock_query, {"board_name": board_name, "user_id": user_id, "lease_duration": lease_duration}
+                self.insert_lock_query,
+                {
+                    "board_name": board_name,
+                    "user_id": user_id,
+                    "lease_duration": lease_duration,
+                },
             )
             try:
                 self.cursor.execute(query)
                 self.connection.commit()
             except Exception as e:
-                self.logger.error("ERROR: acquiring lock for '" + board_name + "' failed")
+                self.logger.error(
+                    "ERROR: acquiring lock for '" + board_name + "' failed"
+                )
                 self.logger.error(e)
 
             return True
 
-
     def haslock(self, board_name: str, user_id: str) -> bool:
+        self.logger.info("Test if %s has lock for %s", user_id, board_name)
         query, bind_params = self.j.prepare_query(
             self.select_lock_for_board_query, {"board_name": board_name}
         )
@@ -395,24 +428,26 @@ class Database:
             self.cursor.execute(query)
             self.connection.commit()
         except Exception as e:
-            self.logger.error("ERROR: could not access lock for '" + board_name + "'")
+            self.logger.error(
+                "ERROR: could not access lock for '" + board_name + "'"
+            )
             self.logger.error(e)
 
         lock = self.cursor.fetchone()
-    
+        self.logger.info("Current Lock: %s", str(lock))
         if lock == None:
             return False
 
         if (
-            lock['user_id'] == user_id
-            and lock['lease'] > lock['current_timestamp']
+            lock["user_id"] == user_id
+            and lock["lease"] > lock["current_timestamp"]
         ):
             return True
 
         return False
 
-
-    def islocked(self, board_name: str) -> bool:
+    def islocked(self, board_name: str, user_id: str) -> bool:
+        self.logger.info("Test if board is locked %s", board_name)
         query, bind_params = self.j.prepare_query(
             self.select_lock_for_board_query, {"board_name": board_name}
         )
@@ -420,17 +455,22 @@ class Database:
             self.cursor.execute(query)
             self.connection.commit()
         except Exception as e:
-            self.logger.error("ERROR: could not access lock for '" + board_name + "'")
+            self.logger.error(
+                "ERROR: could not access lock for '" + board_name + "'"
+            )
             self.logger.error(e)
 
         lock = self.cursor.fetchone()
-
+        self.logger.info("Current Lock: %s", str(lock))
         # no lock exists
         if lock == None:
             return False
 
         # board is locked
-        if lock['lease'] > lock['current_timestamp']:
+        if (
+            lock["lease"] > lock["current_timestamp"]
+            and lock["user_id"] != user_id
+        ):
             return True
 
         # lock exists but lease is invalid
