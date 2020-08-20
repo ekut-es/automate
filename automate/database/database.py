@@ -24,6 +24,7 @@ try:
     import psycopg2  # type: ignore
     import psycopg2.extras  # type: ignore
     from dotenv import load_dotenv  # type: ignore
+
     from jinjasql import JinjaSql  # type; ignore
 
     enabled = True

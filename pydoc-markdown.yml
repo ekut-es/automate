@@ -31,7 +31,34 @@ renderer:
       source: docs/development.md
 
     - title: API Documentation
-      contents:
-        - 'automate/*'
+      children:
+        - title: Boards
+          contents: 
+            - 'automate.board.*' 
+        - title: Cross Compilers
+          contents: 
+            - 'automate.compiler.*'
+        - title: Builders
+          contents: 
+            - 'automate.builder.cmake.*'
+            - 'automate.builder.kernel.*'
+            - 'automate.builder.make.*'  
+            - 'automate.builder.spec.*'
+        - title: Model
+          contents: 
+            - 'autoamte.model.model_base.*'
+            - 'automate.model.board.*'
+            - 'automate.model.common.*'
+            - 'automate.model.compiler.*'
+            - 'automate.model.metadata.*'
+            - 'automate.model.user.*'
+        - title: Utilities
+          contents:
+            - 'automate.utils.*' 
+        - title: Database Integration
+          contents:
+            - 'automate.database.*'        
+           
+
   mkdocs_config:
     theme: material

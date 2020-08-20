@@ -1258,6 +1258,7 @@ postgres = ["python-dotenv", "pydot", "psycopg2", "jinjasql"]
 
 [metadata]
 content-hash = "6af2c33d2d9048a7d1570c4d0cdba6ce76c5e9182ae0971a3f6ecf2f2bc2bdf9"
+lock-version = "1.0"
 python-versions = "^3.6"
 
 [metadata.files]

@@ -1,7 +1,8 @@
 import os
 
-from automate import AutomateConfig, AutomateContext
 from monkeypatch_state import monkeypatch_state
+
+from automate import AutomateConfig, AutomateContext
 
 root_path = os.path.dirname(os.path.abspath(__file__))
 metadata_path = os.path.join(root_path, "src", "metadata")

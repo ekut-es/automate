@@ -19,9 +19,9 @@ class AutoTool(Program):
         return core_args
 
     def print_version(self):
+        from fabric import __version__ as fabric_version
         from invoke import __version__ as invoke_version
         from paramiko import __version__ as paramiko_version
-        from fabric import __version__ as fabric_version
 
         print("version: {}".format(self_version))
         print("  fabric: {}".format(fabric_version))

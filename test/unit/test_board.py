@@ -2,13 +2,13 @@ import io
 import os.path
 
 from fabric import Connection
+from fake_board import fake_board, test_private_key
+from monkeypatch_state import monkeypatch_state
 from pytest import raises, yield_fixture
 
 import automate
 from automate.config import AutomateConfig
 from automate.context import AutomateContext
-from fake_board import fake_board, test_private_key
-from monkeypatch_state import monkeypatch_state
 
 root_path = os.path.dirname(os.path.abspath(__file__))
 metadata_path = os.path.join(root_path, "src", "metadata")

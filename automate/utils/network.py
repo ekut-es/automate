@@ -11,6 +11,41 @@ from paramiko.ssh_exception import AuthenticationException
 from prompt_toolkit import prompt
 
 
+class GatewayManagingConnection(fabric.Connection):
+    def __init__(
+        self,
+        host,
+        user=None,
+        port=None,
+        config=None,
+        gateway=None,
+        forward_agent=None,
+        connect_timeout=None,
+        connect_kwargs=None,
+        inline_ssh_env=None,
+    ):
+        super().__init__(
+            host,
+            user,
+            port,
+            config,
+            gateway,
+            forward_agent,
+            connect_timeout,
+            connect_kwargs,
+            inline_ssh_env,
+        )
+        self.gateway = gateway
+
+    def __enter__(self, *args, **kwargs):
+        return super().__enter__(*args, **kwargs)
+
+    def __exit__(self, *args, **kwargs):
+        if self.gateway:
+            self.gateway.close()
+        return super().__exit__(*args, **kwargs)
+
+
 def connect(
     host: str,
     user: str,
@@ -41,7 +76,7 @@ def connect(
 
     try:
         kwargs = {"key_filename": str(identity.absolute())} if identity else {}
-        connection = fabric.Connection(
+        connection = GatewayManagingConnection(
             host,
             user=user,
             port=port,
@@ -65,7 +100,7 @@ def connect(
                         is_password=True,
                     )
                 try:
-                    connection = fabric.Connection(
+                    connection = GatewayManagingConnection(
                         user=user,
                         host=host,
                         port=port,
