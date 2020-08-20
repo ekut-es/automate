@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
 
+from .database import Database
+
 if TYPE_CHECKING:
     from automate.board import Board
 
@@ -107,7 +109,9 @@ LockEntry = namedtuple("LockEntry", ["user_id", "timestamp"])
 class SimpleLockManager(LockManagerBase):
     """Simple lock manager using a gdbm shared file identifying lock holders by the username on the current machine"""
 
-    def __init__(self, lockfile: Union[str, Path], user_id: str = "", db = None) -> None:
+    def __init__(
+        self, lockfile: Union[str, Path], user_id: str = "", db=None
+    ) -> None:
         self.lockfile = str(Path(lockfile).absolute())
         self.user_id = user_id
         if not user_id:
@@ -137,7 +141,7 @@ class SimpleLockManager(LockManagerBase):
                 if the lease is invalid the lock will be granted -> True
         if the desired board is not locked the the lock will be granted -> True
         """
-        
+
         delta = timedelta(seconds=timeout)
         timeout_absolute = datetime.now() + delta
         timeout_seconds = timeout_absolute.timestamp()
@@ -207,7 +211,7 @@ class SimpleLockManager(LockManagerBase):
 class LockManager(LockManagerBase):
     """ lock manager using the database for distributed locks """
 
-    def __init__(self, database, user_id: str = "") -> None:
+    def __init__(self, database: Database, user_id: str = "") -> None:
         self.database = database
         self.user_id = user_id
 
@@ -220,10 +224,10 @@ class LockManager(LockManagerBase):
         self.database.unlock(board_name, self.user_id)
 
     def _do_trylock(self, board_name: str, timeout: float) -> bool:
-        return self.database.trylock(board_name, self.user_id, timeout) 
+        return self.database.trylock(board_name, self.user_id, int(timeout))
 
     def _do_haslock(self, board_name: str) -> bool:
-        return self.database.haslock(board_name, self.user_id) 
+        return self.database.haslock(board_name, self.user_id)
 
     def _do_islocked(self, board_name: str) -> bool:
         return self.database.islocked(board_name)
