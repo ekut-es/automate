@@ -93,7 +93,7 @@ class Database:
             "select_all_docs_for_board"
         )
         self.insert_board_query = self.__load_query("insert_board")
-        # self.init_database_query = self.__load_query("init_database")
+        self.init_database_query = self.__load_query("init_database")
 
         self.insert_lock_query = self.__load_query("insert_lock")
         self.select_lock_for_board_query = self.__load_query(
@@ -121,10 +121,9 @@ class Database:
         return query
 
     def init(self) -> None:
-        """Initialize an database without locks"""
-        None
-        # query = self.init_database_query
-        # self.cursor.execute(query)
+        """Initialize an database with locks"""
+        query = self.init_database_query
+        self.cursor.execute(query)
 
     def get_all_boards(self) -> List[BoardModelDB]:
         self.cursor.execute(self.all_boards_query)
