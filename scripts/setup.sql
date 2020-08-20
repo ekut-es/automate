@@ -449,6 +449,8 @@ create table docs (
     unique(board_id, title, location)
 );
 
+drop table if exists locks
+
 create table locks (
     board_name varchar(255) not null,
     user_id varchar(255) not null,

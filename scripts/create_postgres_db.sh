@@ -3,9 +3,10 @@
 DATABASE="der_schrank_test"
 USER="der_schrank_test"
 PASSWORD="der_schrank_test"
+
 MD5_HASH=$(echo -n "md5"; echo -n "${PASSWORD}${USER}" | md5sum | awk '{print $1}')
 
-echo "Creating database to run postgres tests"
+echo "Creating database"
 createdb ${DATABASE} || exit 1
 
 echo "Creating database tables"
