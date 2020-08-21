@@ -74,5 +74,6 @@ sudo su - postgres
 ```
 
 ## Connect to Database
+
 Add `DATABASE`, `USER`, and `PASSWORD` to your `automate.yml` and if necessary activate a proper port forwarding. 
 
