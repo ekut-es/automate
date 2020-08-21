@@ -39,7 +39,7 @@ class AutomateContext(invoke.Context):
 
         self._setup_database()
 
-        loader = ModelLoader(config, database=self.database)
+        loader = ModelLoader(config)  # , database=self.database)
         self.metadata = loader.load()
 
     def _setup_database(

@@ -18,3 +18,4 @@ builds/
 htmlcov
 _build/
 mkdocs.yml
+.*.swp

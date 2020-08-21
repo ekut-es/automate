@@ -15,7 +15,7 @@ from automate.model.board import (
 
 from .builder import BaseBuilder, CMakeBuilder, KernelBuilder, MakefileBuilder
 from .compiler import CrossCompiler
-from .locks import SimpleLockManager
+from .locks import DatabaseLockManager, SimpleLockManager
 from .model import BoardModel, CompilerModel
 from .model.common import Toolchain
 from .utils.kernel import KernelData
@@ -46,9 +46,14 @@ class Board(object):
         self.model = board
         self.compiler_models = compilers
         self.identity = Path(identity).absolute()
-        self.lock_manager = SimpleLockManager(
-            Path(self.context.config.automate.boardroot) / "locks.db"
-        )
+        if context.database is not None:
+            self.lock_manager: Union[
+                DatabaseLockManager, SimpleLockManager
+            ] = DatabaseLockManager(context.database)
+        else:
+            self.lock_manager = SimpleLockManager(
+                context.config.automate.boardroot
+            )
 
     @property
     def id(self) -> str:
