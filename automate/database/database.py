@@ -419,7 +419,7 @@ class Database:
             return True
 
     def haslock(self, board_name: str, user_id: str) -> bool:
-        self.logger.info("Test if %s has lock for %s", user_id, board_name)
+        self.logger.debug("Test if %s has lock for %s", user_id, board_name)
         query, bind_params = self.j.prepare_query(
             self.select_lock_for_board_query, {"board_name": board_name}
         )
@@ -433,7 +433,7 @@ class Database:
             self.logger.error(e)
 
         lock = self.cursor.fetchone()
-        self.logger.info("Current Lock: %s", str(lock))
+        self.logger.debug("Current Lock: %s", str(lock))
         if lock == None:
             return False
 
@@ -446,7 +446,7 @@ class Database:
         return False
 
     def islocked(self, board_name: str, user_id: str) -> bool:
-        self.logger.info("Test if board is locked %s", board_name)
+        self.logger.debug("Test if board is locked %s", board_name)
         query, bind_params = self.j.prepare_query(
             self.select_lock_for_board_query, {"board_name": board_name}
         )
@@ -460,7 +460,7 @@ class Database:
             self.logger.error(e)
 
         lock = self.cursor.fetchone()
-        self.logger.info("Current Lock: %s", str(lock))
+        self.logger.debug("Current Lock: %s", str(lock))
         # no lock exists
         if lock == None:
             return False

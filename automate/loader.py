@@ -93,9 +93,7 @@ class ModelLoader(object):
 
         def do_apply_template(template, env):
             try:
-                self.logger.debug("Template is: {}".format(template.template))
                 formatted = template.safe_substitute(env)
-                self.logger.debug("Formatted field: {}".format(formatted))
                 return formatted
             except ValueError as e:  # pragma: no cover
                 self.logger.error(str(e))
@@ -108,9 +106,7 @@ class ModelLoader(object):
                 raise e
 
         for field_name in data_model.__fields__:
-            self.logger.debug("Field_name is: {}".format(field_name))
             field = getattr(data_model, field_name)
-            self.logger.debug("Field is: {}".format(field))
 
             formatted = ""
             if isinstance(field, str) and not isinstance(field, VersionString):
@@ -166,8 +162,9 @@ class ModelLoader(object):
         if self.database:
             self.logger.info("getting boards from database")
             database_boards = self.database.get_all_boards()
-            self.logger.debug(
-                "Boards %s", " ".join((b.name for b in database_boards))
+            self.logger.info(
+                "Boards from database %s",
+                " ".join((b.name for b in database_boards)),
             )
             boards = self._merge_metadata(boards, database_boards)
 
@@ -185,12 +182,6 @@ class ModelLoader(object):
                     str(self.config.automate.boardroot)
                 ),
             }
-
-            self.logger.debug("Applying templates")
-            self._apply_templates(data_model, template_env)
-
-            self.logger.debug("Datadict after applying templates")
-            self.logger.debug(data_model.dict())
 
         return data_model
 

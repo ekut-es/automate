@@ -79,7 +79,7 @@ class AutomateContext(invoke.Context):
                     except OSError as e:
                         pidfile.unlink()
                     else:
-                        logging.debug("Forwarder process exists")
+                        logging.info("Forwarder process exists")
                         continue
             new_forwarder_started = True
             self.logger.info(
@@ -105,7 +105,7 @@ class AutomateContext(invoke.Context):
                     f"automate-forward {forward['local_port']} {forward['remote_port']}"
                 )
 
-                logging.debug("Forked forwarder %d", os.getpid())
+                logging.info("Forked forwarder %d", os.getpid())
 
                 sys.stdout = pidfile.with_suffix(".stdout").open("w")
                 sys.stderr = pidfile.with_suffix(".stderr").open("w")
