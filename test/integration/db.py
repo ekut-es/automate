@@ -1,11 +1,11 @@
 import os
+from typing import Generator
 
 import pytest
 from pytest import fixture
 
-from typing import Generator
-
 from automate.database import Database, database_enabled
+
 
 @fixture
 def db() -> Generator[Database, None, None]:

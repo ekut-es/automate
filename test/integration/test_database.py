@@ -91,7 +91,7 @@ def test_database_locks(db):
     board_name = "test_board"
 
     # nobody has a lock on test_board
-    assert db.islocked(board_name, 'alice') == False
+    assert db.islocked(board_name, "alice") == False
 
     # alice should not have a lock on test_board
     assert db.haslock(board_name, "alice") == False

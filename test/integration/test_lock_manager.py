@@ -55,5 +55,3 @@ def test_lock_manager(db):
 
     # bob extends lock by 10 sec
     assert bobs_lock_manager.trylock(board_name, "10") == True
-
-    
