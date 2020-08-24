@@ -171,6 +171,7 @@ class ModelLoader(object):
         data_model = MetadataModel(compilers=compilers, boards=boards)
 
         if expand_templates:
+            self.logger.info("Expanding templates in metadata files")
             template_env = {
                 "metadata": os.path.expanduser(
                     str(self.config.automate.metadata)
@@ -182,6 +183,8 @@ class ModelLoader(object):
                     str(self.config.automate.boardroot)
                 ),
             }
+
+            self._apply_templates(data_model, template_env)
 
         return data_model
 

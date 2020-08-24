@@ -56,8 +56,8 @@ os:
   distribution: debian
   release: ''
   description: ''
-  sysroot: ${boardroot}/${board_id}/sysroot
-  rootfs: ${boardroot}/${board_id}/${board_id}.img
+  sysroot: ${boardroot}/${board_name}/sysroot
+  rootfs: ${boardroot}/${board_name}/${board_name}.img
   multiarch: true
   kernels:
     -
