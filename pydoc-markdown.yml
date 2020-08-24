@@ -27,6 +27,8 @@ renderer:
           source: docs/boards.md
         - title: Gateway
           source: docs/gateway.md
+        - title: Database
+          source: docs/database.md
     - title: Development
       source: docs/development.md
 
