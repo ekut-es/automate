@@ -69,8 +69,8 @@ build_doc:
     - set -e
     - poetry install
     - poetry run pydoc-markdown --build --site-dir site
-    - mkdir -p /afs/wsi/home/gerum/public_html/autojail
-    - cp -r build/docs/site/* /afs/wsi/home/gerum/public_html/autojail
+    - mkdir -p /afs/wsi/home/gerum/public_html/automate
+    - cp -r build/docs/site/* /afs/wsi/home/gerum/public_html/automate
   stage: deploy
   tags:
     - afs
