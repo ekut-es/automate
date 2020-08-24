@@ -41,11 +41,19 @@ renderer:
           contents: 
             - 'automate.compiler.*'
         - title: Builders
-          contents: 
-            - 'automate.builder.cmake.*'
-            - 'automate.builder.kernel.*'
-            - 'automate.builder.make.*'  
-            - 'automate.builder.spec.*'
+          children:
+            - title: cMake
+              contents:
+                - 'automate.builder.cmake.*'
+            - title: kernel
+              contents:
+               - 'automate.builder.kernel.*'
+            - title: make
+              contents:
+                - 'automate.builder.make.*'
+            - title: spec  
+              contents:
+                - 'automate.builder.spec.*'
         - title: Model
           contents: 
             - 'autoamte.model.model_base.*'
