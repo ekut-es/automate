@@ -19,3 +19,5 @@ htmlcov
 _build/
 mkdocs.yml
 .*.swp
+.history/ 
+build/
