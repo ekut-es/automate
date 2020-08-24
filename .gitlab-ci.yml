@@ -59,3 +59,18 @@ integration_test_with_db:
   tags:
     - docker
 
+
+build_doc:
+  script:
+    - set -e
+    - poetry install
+    - poetry pydoc-markdown --build --site-dir site
+    - mkdir -p /afs/wsi/home/gerum/public_html/autojail
+    - cp -r build/docs/site/* /afs/wsi/home/gerum/public_html/autojail
+  stage: deploy
+  tags:
+    - afs
+
+  only:
+    refs:
+      - master
