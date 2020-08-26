@@ -72,3 +72,10 @@ renderer:
 
   mkdocs_config:
     theme: material
+    
+    markdown_extensions:
+      - def_list
+      - pymdownx.highlight:
+          use_pygments: true
+          linenums: true
+      
