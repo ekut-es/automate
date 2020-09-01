@@ -27,14 +27,16 @@ class KeepLockThread(threading.Thread):
 
         super().__init__()
 
-    def keep_alive_thread(self):
+    def run(self):
 
         while True:
             self.stop_event.wait(self.current_timeout // 2)
             if self.stop_event.is_set():
                 return
-
-            self.manager.lock(self.board_name, self.timeout_increase)
+            logging.info(
+                "Increasing lock time by %d seconds", self.timeout_increase
+            )
+            self.manager.lock(self.board_name, str(self.timeout_increase))
             self.current_timeout = self.timeout_increase
 
     def stop(self):

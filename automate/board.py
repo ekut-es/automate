@@ -47,7 +47,7 @@ class Board(object):
             ] = DatabaseLockManager(context.database)
         else:
             self.lock_manager = SimpleLockManager(
-                context.config.automate.boardroot
+                Path(context.config.automate.boardroot) / "locks.db"
             )
 
     @property
@@ -170,6 +170,11 @@ class Board(object):
         locking_thread = None
         if self.has_lock():
             locking_thread = self.lock_manager.keep_lock(self)
+            logging.info("Keep alive thread started")
+        else:
+            logging.info(
+                "We do not have the lock, no keep alive thread is started"
+            )
 
         if type != "ssh":
             raise Exception("Currently only ssh connections are supported")
