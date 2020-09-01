@@ -4,10 +4,9 @@ import os.path
 import sys
 import time
 from pathlib import Path
-from typing import Any, Generator, List, Optional, Union
+from typing import Generator, Optional, Union
 
 import invoke
-from fabric import Connection
 from setproctitle import setproctitle
 
 from .board import Board
@@ -76,7 +75,7 @@ class AutomateContext(invoke.Context):
                     pid = int(pid_f.read())
                     try:
                         os.kill(pid, 0)
-                    except OSError as e:
+                    except OSError:
                         pidfile.unlink()
                     else:
                         logging.info("Forwarder process exists")
@@ -125,7 +124,7 @@ class AutomateContext(invoke.Context):
                     with connection.forward_local(
                         local_port=forward["local_port"],
                         remote_port=forward["remote_port"],
-                    ) as fw:
+                    ):
                         while True:
                             time.sleep(1.0)
                             print(connection)
