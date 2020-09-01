@@ -1,12 +1,12 @@
 import getpass
 import logging
-import os
 import shelve
+import threading
 import time
 from collections import namedtuple
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from .database import Database
 
@@ -14,8 +14,40 @@ if TYPE_CHECKING:
     from automate.board import Board
 
 
+class KeepLockThread(threading.Thread):
+    def __init__(
+        self, manager, board_name, current_timeout, timeout_increase=60
+    ):
+        self.manager = manager
+        self.board_name = board_name
+        self.current_timeout = timeout_increase
+        self.timeout_increase = timeout_increase
+
+        self.stop_event = threading.Event()
+
+        super().__init__()
+
+    def run(self):
+
+        while True:
+            self.stop_event.wait(self.current_timeout // 2)
+            if self.stop_event.is_set():
+                return
+            logging.info(
+                "Increasing lock time by %d seconds", self.timeout_increase
+            )
+            self.manager.lock(self.board_name, str(self.timeout_increase))
+            self.current_timeout = self.timeout_increase
+
+    def stop(self):
+        self.stop_event.set()
+
+
 class LockManagerBase:
     """ Base Class for lock managers """
+
+    def __init__(self):
+        pass
 
     def _do_unlock(self, board_name: str) -> None:
         raise NotImplementedError("_do_unlock is not implemented")
@@ -102,6 +134,26 @@ class LockManagerBase:
 
         return self._do_islocked(board_name)
 
+    def get_lock_timeout(self, board: Union["Board", str]) -> int:
+        """ Returns the remaining lock time for the board in seconds """
+        return 5
+
+    def keep_lock(self, board: Union["Board", str]) -> Optional[KeepLockThread]:
+        if isinstance(board, str):
+            board_name = board
+        else:
+            board_name = board.name
+
+        if not self.has_lock(board_name):
+            return None
+        else:
+            timeout = self.get_lock_timeout(board_name)
+
+            thread = KeepLockThread(self, board_name, timeout)
+            thread.start()
+
+        return thread
+
 
 LockEntry = namedtuple("LockEntry", ["user_id", "timestamp"])
 
@@ -112,6 +164,7 @@ class SimpleLockManager(LockManagerBase):
     def __init__(
         self, lockfile: Union[str, Path], user_id: str = "", db=None
     ) -> None:
+        super(SimpleLockManager, self).__init__()
         self.lockfile = str(Path(lockfile).absolute())
         self.user_id = user_id
         if not user_id:
@@ -212,6 +265,8 @@ class DatabaseLockManager(LockManagerBase):
     """ lock manager using the database for distributed locks """
 
     def __init__(self, database: Database, user_id: str = "") -> None:
+        super(DatabaseLockManager, self).__init__()
+
         self.database = database
         self.user_id = user_id
 

@@ -6,12 +6,7 @@ from typing import TYPE_CHECKING, Any, List, Union
 
 from fabric import Connection
 
-from automate.model.board import (
-    CoreModel,
-    OSModel,
-    SSHConnectionModel,
-    UARTConnectionModel,
-)
+from automate.model.board import SSHConnectionModel
 
 from .builder import BaseBuilder, CMakeBuilder, KernelBuilder, MakefileBuilder
 from .compiler import CrossCompiler
@@ -52,7 +47,7 @@ class Board(object):
             ] = DatabaseLockManager(context.database)
         else:
             self.lock_manager = SimpleLockManager(
-                context.config.automate.boardroot
+                Path(context.config.automate.boardroot) / "locks.db"
             )
 
     @property
@@ -172,12 +167,19 @@ class Board(object):
         if self.is_locked():
             raise Exception("Can not connect to locked board")
 
+        locking_thread = None
+        if self.has_lock():
+            locking_thread = self.lock_manager.keep_lock(self)
+            logging.info("Keep alive thread started")
+        else:
+            logging.info(
+                "We do not have the lock, no keep alive thread is started"
+            )
+
         if type != "ssh":
             raise Exception("Currently only ssh connections are supported")
 
         for connection in self.model.connections:
-            from .model import SSHConnectionModel
-
             if isinstance(connection, SSHConnectionModel):
                 host = connection.host
                 user = connection.username
@@ -204,6 +206,7 @@ class Board(object):
                     identity=self.identity,
                     gateway=gateway_connection,
                     timeout=timeout,
+                    locking_thread=locking_thread,
                 )
                 return c
 
@@ -248,7 +251,7 @@ class Board(object):
                 connection = self.connect()
                 connection.open()
                 return connection
-            except Exception as e:
+            except Exception:
                 self.logger.info("Waiting for reconnection")
                 time.sleep(3)
 
