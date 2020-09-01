@@ -1,13 +1,12 @@
 import logging
 import os
 import os.path
+import socket
 import sys
 import time
-from pathlib import Path
-from typing import Any, Generator, List, Optional, Union
+from typing import Generator, Optional, Union
 
 import invoke
-from fabric import Connection
 from setproctitle import setproctitle
 
 from .board import Board
@@ -16,6 +15,7 @@ from .config import AutomateConfig
 from .database import Database, database_enabled
 from .loader import ModelLoader
 from .model.common import Toolchain
+from .utils.appdirs import runtime_dir
 from .utils.network import connect
 
 
@@ -69,18 +69,66 @@ class AutomateContext(invoke.Context):
         new_forwarder_started = False
         for forward in self.config.automate.forwards:
             pidfile = (
-                Path("/tmp") / f"automate_forward_{forward['local_port']}.pid"
+                runtime_dir() / f"automate_forward_{forward['local_port']}.pid"
+            )
+            socketfile = (
+                runtime_dir() / f"automate_forward_{forward['local_port']}.sock"
             )
             if pidfile.exists():
+                self.logger.info("Pidfile exists")
                 with pidfile.open() as pid_f:
                     pid = int(pid_f.read())
                     try:
                         os.kill(pid, 0)
-                    except OSError as e:
+                    except OSError:
                         pidfile.unlink()
+                        if socketfile.exists():
+                            socketfile.unlink()
                     else:
                         logging.info("Forwarder process exists")
-                        continue
+                        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                        try:
+                            sock.connect(str(socketfile).encode("utf-8"))
+                        except socket.error:
+                            raise Exception(
+                                f"Could not connect to forwarder socket {str(socketfile)} please kill forwarder process  {pid}"
+                            )
+
+                        current_remote_port = ""
+                        try:
+                            self.logger.info("Requesting remote port")
+                            # Send data
+                            message = "remote_port\n"
+                            sock.sendall(message.encode("utf-8"))
+
+                            data = ""
+
+                            while len(data) == 0 or data[-1] != "\n":
+                                data += sock.recv(16).decode("utf-8")
+                            current_remote_port = data.strip()
+                        except:
+                            self.logger.warning(
+                                "Execption during remote handler setup"
+                            )
+                        finally:
+                            sock.close()
+
+                        self.logger.info(
+                            "Received remote port: %s", current_remote_port
+                        )
+
+                        if forward["remote_port"] == int(current_remote_port):
+                            continue
+                        else:
+                            self.logger.info(
+                                "Remote ports did not match actual: %s expected: %s",
+                                current_remote_port,
+                                forward["remote_port"],
+                            )
+                            os.kill(pid, 9)
+            else:
+                self.logger.info("Pidfile does not exist %s", str(pidfile))
+
             new_forwarder_started = True
             self.logger.info(
                 f'forwarding {forward["local_port"]} to {forward["host"]}:{forward["remote_port"]}'
@@ -109,10 +157,16 @@ class AutomateContext(invoke.Context):
 
                 sys.stdout = pidfile.with_suffix(".stdout").open("w")
                 sys.stderr = pidfile.with_suffix(".stderr").open("w")
-                # sys.stdin = open("/dev/null")
 
                 with pidfile.open("w") as pid_f:
                     pid_f.write(str(os.getpid()))
+
+                if socketfile.exists():
+                    socketfile.unlink()
+
+                server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                server_sock.bind(str(socketfile).encode("utf-8"))
+                server_sock.listen(1)
 
                 connection = connect(
                     forward["host"],
@@ -125,12 +179,34 @@ class AutomateContext(invoke.Context):
                     with connection.forward_local(
                         local_port=forward["local_port"],
                         remote_port=forward["remote_port"],
-                    ) as fw:
+                    ):
                         while True:
-                            time.sleep(1.0)
-                            print(connection)
-                            sys.stdout.flush()
+                            client_socket, client_address = server_sock.accept()
+                            command = ""
+                            while len(command) == 0 or command[-1] != "\n":
+                                command += client_socket.recv(16).decode(
+                                    "utf-8"
+                                )
+                            command = command.strip()
 
+                            if command == "remote_port":
+                                client_socket.sendall(
+                                    f'{forward["remote_port"]}\n'.encode(
+                                        "utf-8"
+                                    )
+                                )
+                            elif command == "local_port":
+                                client_socket.sendall(
+                                    f'{forward["local_port"]}\n'.encode("utf-8")
+                                )
+                            elif command == "shutdown":
+                                client_socket.sendall("ok\n".encode("utf-8"))
+                            else:
+                                client_socket.sendall(
+                                    "error: unknown command".encode("utf-8")
+                                )
+
+                            client_socket.close()
         if new_forwarder_started:
             logging.info("Waiting for forwarder setup")
             time.sleep(1.0)
