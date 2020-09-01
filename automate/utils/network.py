@@ -10,6 +10,8 @@ import keyring
 from paramiko.ssh_exception import AuthenticationException
 from prompt_toolkit import prompt
 
+from ..locks import KeepLockThread
+
 
 class GatewayManagingConnection(fabric.Connection):
     def __init__(
@@ -23,6 +25,7 @@ class GatewayManagingConnection(fabric.Connection):
         connect_timeout=None,
         connect_kwargs=None,
         inline_ssh_env=None,
+        locking_thread=None,
     ):
         super().__init__(
             host,
@@ -36,14 +39,23 @@ class GatewayManagingConnection(fabric.Connection):
             inline_ssh_env,
         )
         self.gateway = gateway
+        self.locking_thread = None
 
     def __enter__(self, *args, **kwargs):
         return super().__enter__(*args, **kwargs)
 
     def __exit__(self, *args, **kwargs):
-        if self.gateway:
-            self.gateway.close()
+        self.close()
         return super().__exit__(*args, **kwargs)
+
+    def close(self, *args, **kwargs):
+        if self.gateway is not None:
+            self.gateway.close()
+        if self.locking_thread is not None:
+            self.locking_thread.stop()
+            self.locking_thread.join()
+
+        return super().close()
 
 
 def connect(
@@ -56,6 +68,7 @@ def connect(
     keyring_allowed: bool = True,
     gateway: Optional[fabric.Connection] = None,
     timeout: int = 30,
+    locking_thread: Optional[KeepLockThread] = None,
 ) -> fabric.Connection:
     """ Get a fabric connection to a remote host 
 
@@ -83,6 +96,7 @@ def connect(
             connect_timeout=timeout,
             gateway=gateway,
             connect_kwargs=kwargs,
+            locking_thread=locking_thread,
         )
         connection.open()
     except AuthenticationException as e:
@@ -107,6 +121,7 @@ def connect(
                         gateway=gateway,
                         connect_timeout=timeout,
                         connect_kwargs={"password": password},
+                        locking_thread=locking_thread,
                     )
                     connection.open()
                 except AuthenticationException:
