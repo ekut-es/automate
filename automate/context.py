@@ -66,7 +66,6 @@ class AutomateContext(invoke.Context):
         self,
     ) -> None:  # Start forwarder processes for port forwarding if corresponding processes do not exist already
 
-        new_forwarder_started = False
         for forward in self.config.automate.forwards:
             pidfile = (
                 runtime_dir() / f"automate_forward_{forward['local_port']}.pid"
@@ -106,7 +105,7 @@ class AutomateContext(invoke.Context):
                             while len(data) == 0 or data[-1] != "\n":
                                 data += sock.recv(16).decode("utf-8")
                             current_remote_port = data.strip()
-                        except:
+                        except socket.error:
                             self.logger.warning(
                                 "Execption during remote handler setup"
                             )
@@ -129,10 +128,12 @@ class AutomateContext(invoke.Context):
             else:
                 self.logger.info("Pidfile does not exist %s", str(pidfile))
 
-            new_forwarder_started = True
             self.logger.info(
                 f'forwarding {forward["local_port"]} to {forward["host"]}:{forward["remote_port"]}'
             )
+
+            if socketfile.exists():
+                socketfile.unlink()
 
             connection = connect(
                 forward["host"],
@@ -199,6 +200,11 @@ class AutomateContext(invoke.Context):
                                 client_socket.sendall(
                                     f'{forward["local_port"]}\n'.encode("utf-8")
                                 )
+                            elif command == "connected":
+                                connected = connection.is_connected
+                                client_socket.sendall(
+                                    f"{connected}\n".encode("utf-8")
+                                )
                             elif command == "shutdown":
                                 client_socket.sendall("ok\n".encode("utf-8"))
                             else:
@@ -207,9 +213,43 @@ class AutomateContext(invoke.Context):
                                 )
 
                             client_socket.close()
-        if new_forwarder_started:
+
             logging.info("Waiting for forwarder setup")
-            time.sleep(1.0)
+            forwarder_wait_retries = 10
+            for _ in range(forwarder_wait_retries):
+                if socketfile.exists():
+                    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                    try:
+                        self.logger.debug("try connect")
+                        sock.connect(str(socketfile).encode("utf-8"))
+                        self.logger.debug("connected")
+                    except socket.error:
+                        pass
+                    else:
+                        self.logger.debug("send request")
+                        sock.sendall("connected\n".encode("utf-8"))
+                        data = ""
+                        self.logger.debug("receive_data")
+                        try:
+                            while len(data) == 0 or data[-1] != "\n":
+                                data += sock.recv(16).decode("utf-8")
+                                self.logger.debug("data %s", data)
+                            data = data.strip()
+                        except socket.timeout:
+                            self.logger.debug("timeout")
+                        except socket.error as e:
+                            self.logger.debug("error %s", str(e))
+
+                        self.logger.debug("received data %s", data)
+                        if data == "True":
+                            self.logger.debug(
+                                "Successfully connected forwarders"
+                            )
+                            break
+                    finally:
+                        sock.close()
+
+                time.sleep(0.1)
 
         logging.debug("Setup forwards finished")
 
