@@ -463,6 +463,8 @@ class Database:
     def lease_time(self, board_name: str) -> timedelta:
         lock = self._select_lock_for_board(board_name)
         if lock:
-            return timedelta(lock["lease"] - lock["current_timestamp"])
+            delta = lock["lease"] - lock["current_timestamp"]
+            assert isinstance(delta, timedelta)
+            return delta
 
         return timedelta()

@@ -302,7 +302,8 @@ class SimpleLockManager(LockManagerBase):
                     lock_timestamp = current_lock.timestamp
 
                     delta = lock_timestamp - current_timestamp
-                    return timedelta(delta)
+                    assert isinstance(delta, timedelta)
+                    return delta
 
         except Exception as e:
             self.logger.error("Exception during board islocked", str(e))
