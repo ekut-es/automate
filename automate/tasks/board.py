@@ -1,7 +1,3 @@
-import concurrent.futures
-import contextlib
-import gzip
-import io
 import logging
 import os.path
 import random
