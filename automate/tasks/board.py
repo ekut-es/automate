@@ -1,20 +1,10 @@
 import logging
 import os.path
-import random
-import re
-import shlex
-import shutil
-import socket
-import subprocess
-import tempfile
-import threading
-import time
 from pathlib import Path
 
 from invoke import Exit, task
 
-from ..utils import fix_symlinks
-from ..utils.network import find_local_port, rsync
+from ..utils.network import rsync
 
 
 @task
