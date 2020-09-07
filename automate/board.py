@@ -1,3 +1,4 @@
+import datetime
 import logging
 import time
 from contextlib import contextmanager
@@ -56,10 +57,10 @@ class Board(object):
         return self.model.name
 
     @contextmanager
-    def lock_ctx(self, timeout: str = "1h"):
+    def lock_ctx(self, lease_time: str = "1h"):
         if not self.has_lock():
             try:
-                yield self.lock(timeout=timeout)
+                yield self.lock(lease_time=lease_time)
             finally:
                 self.unlock()
         else:
@@ -69,8 +70,8 @@ class Board(object):
             finally:
                 pass
 
-    def lock(self, timeout: str = "1h"):
-        self.lock_manager.lock(self, timeout)
+    def lock(self, lease_time: str = "1h"):
+        self.lock_manager.lock(self, lease_time)
 
     def has_lock(self) -> bool:
         return self.lock_manager.has_lock(self)
@@ -78,11 +79,17 @@ class Board(object):
     def unlock(self):
         return self.lock_manager.unlock(self)
 
-    def trylock(self, timeout: str = "1h") -> bool:
-        return self.lock_manager.trylock(self, timeout)
+    def trylock(self, lease_time: str = "1h") -> bool:
+        return self.lock_manager.trylock(self, lease_time)
 
     def is_locked(self) -> bool:
         return self.lock_manager.is_locked(self)
+
+    def lock_lease_time(self) -> datetime.timedelta:
+        return self.lock_manager.lease_time(self)
+
+    def lock_holder(self) -> str:
+        return self.lock_manager.lock_holder(self)
 
     def compiler(
         self,

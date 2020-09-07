@@ -1,9 +1,5 @@
-import inspect
 import logging
-import os
-import pprint
-import sys
-from datetime import datetime
+from datetime import timedelta
 from os.path import dirname, join
 from typing import Any, List
 
@@ -23,7 +19,6 @@ from ..model import (
 try:
     import psycopg2  # type: ignore
     import psycopg2.extras  # type: ignore
-    from dotenv import load_dotenv  # type: ignore
 
     from jinjasql import JinjaSql  # type; ignore
 
@@ -315,6 +310,23 @@ class Database:
             self.logger.error("ERROR: database import failed")
             self.logger.error(e)
 
+    def _select_lock_for_board(self, board_name: str):
+        query, bind_params = self.j.prepare_query(
+            self.select_lock_for_board_query, {"board_name": board_name}
+        )
+        try:
+            self.cursor.execute(query)
+            self.connection.commit()
+        except Exception as e:
+            self.logger.error(
+                "ERROR: could not access lock for '" + board_name + "'"
+            )
+            self.logger.error(e)
+
+        lock = self.cursor.fetchone()
+
+        return lock
+
     def unlock(self, board_name: str, user_id: str) -> None:
         query, bind_params = self.j.prepare_query(
             self.delete_lock_for_board_query,
@@ -331,22 +343,10 @@ class Database:
         self, board_name: str, user_id: str, lease_duration: int
     ) -> bool:
         # check if board is locked
-        query, bind_params = self.j.prepare_query(
-            self.select_lock_for_board_query, {"board_name": board_name}
-        )
-        try:
-            self.cursor.execute(query)
-            self.connection.commit()
-        except Exception as e:
-            self.logger.error(
-                "ERROR: could not access lock for '" + board_name + "'"
-            )
-            self.logger.error(e)
-
-        lock = self.cursor.fetchone()
+        lock = self._select_lock_for_board(board_name)
 
         # board is locked
-        if lock != None:
+        if lock is not None:
             if lock["user_id"] != user_id:
                 # board is locked by other user
                 if lock["lease"] > lock["current_timestamp"]:
@@ -420,21 +420,10 @@ class Database:
 
     def haslock(self, board_name: str, user_id: str) -> bool:
         self.logger.debug("Test if %s has lock for %s", user_id, board_name)
-        query, bind_params = self.j.prepare_query(
-            self.select_lock_for_board_query, {"board_name": board_name}
-        )
-        try:
-            self.cursor.execute(query)
-            self.connection.commit()
-        except Exception as e:
-            self.logger.error(
-                "ERROR: could not access lock for '" + board_name + "'"
-            )
-            self.logger.error(e)
+        lock = self._select_lock_for_board(board_name)
 
-        lock = self.cursor.fetchone()
         self.logger.debug("Current Lock: %s", str(lock))
-        if lock == None:
+        if lock is None:
             return False
 
         if (
@@ -447,22 +436,10 @@ class Database:
 
     def islocked(self, board_name: str, user_id: str) -> bool:
         self.logger.debug("Test if board is locked %s", board_name)
-        query, bind_params = self.j.prepare_query(
-            self.select_lock_for_board_query, {"board_name": board_name}
-        )
-        try:
-            self.cursor.execute(query)
-            self.connection.commit()
-        except Exception as e:
-            self.logger.error(
-                "ERROR: could not access lock for '" + board_name + "'"
-            )
-            self.logger.error(e)
-
-        lock = self.cursor.fetchone()
+        lock = self._select_lock_for_board(board_name)
         self.logger.debug("Current Lock: %s", str(lock))
         # no lock exists
-        if lock == None:
+        if lock is None:
             return False
 
         # board is locked
@@ -474,3 +451,19 @@ class Database:
 
         # lock exists but lease is invalid
         return False
+
+    def lock_holder(self, board_name: str) -> str:
+        lock = self._select_lock_for_board(board_name)
+        if lock:
+            return str(lock["user_id"])
+
+        return ""
+
+    def lease_time(self, board_name: str) -> timedelta:
+        lock = self._select_lock_for_board(board_name)
+        if lock:
+            delta = lock["lease"] - lock["current_timestamp"]
+            assert isinstance(delta, timedelta)
+            return delta
+
+        return timedelta()

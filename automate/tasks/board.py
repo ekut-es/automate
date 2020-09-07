@@ -1,7 +1,3 @@
-import concurrent.futures
-import contextlib
-import gzip
-import io
 import logging
 import os.path
 import random
@@ -16,7 +12,6 @@ import time
 from pathlib import Path
 
 from invoke import Exit, task
-from patchwork.files import exists
 
 from ..utils import fix_symlinks
 from ..utils.network import find_local_port, rsync
@@ -89,14 +84,20 @@ def get(c, board, remote, local=""):  # pragma: no cover
 
 
 @task
-def lock(c, board, timeout="1h"):  # pragma: no cover
+def lock(c, board, lease_time="1h", timeout=""):  # pragma: no cover
     """Lock board
 
         -b/--board: target board id
-        -t/--timeout: timeout for the lock validity
+        -t/--timeout: timeout for the lock (deprecated use lease-time)
+        -l/--lease-time: The board is kept locked for at least lease_time
     """
     board = c.board(board)
-    board.lock(timeout=timeout)
+    if timeout != "":
+        logging.warning(
+            "-t/--timeout has been deprecated please use -l/--lease-time instead"
+        )
+        lease_time = timeout
+    board.lock(lease_time=lease_time)
 
 
 @task
@@ -215,6 +216,7 @@ def shell(c, board):  # pragma: no cover
 
     with board.connect() as con:
         con.run("$SHELL", pty=True)
+        print("Finished")
 
 
 @task

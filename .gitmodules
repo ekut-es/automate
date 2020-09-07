@@ -6,3 +6,6 @@
 	path = metadata/compilers
 	url = ../compilers.git
 	branch = master
+[submodule "external/firmata"]
+	path = external/firmata
+	url = https://github.com/firmata/arduino.git
