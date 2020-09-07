@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 from os.path import dirname, join
 from typing import Any, List
 
@@ -19,7 +19,6 @@ from ..model import (
 try:
     import psycopg2  # type: ignore
     import psycopg2.extras  # type: ignore
-    from dotenv import load_dotenv  # type: ignore
 
     from jinjasql import JinjaSql  # type; ignore
 
@@ -347,7 +346,7 @@ class Database:
         lock = self._select_lock_for_board(board_name)
 
         # board is locked
-        if lock != None:
+        if lock is not None:
             if lock["user_id"] != user_id:
                 # board is locked by other user
                 if lock["lease"] > lock["current_timestamp"]:
@@ -424,7 +423,7 @@ class Database:
         lock = self._select_lock_for_board(board_name)
 
         self.logger.debug("Current Lock: %s", str(lock))
-        if lock == None:
+        if lock is None:
             return False
 
         if (
@@ -440,7 +439,7 @@ class Database:
         lock = self._select_lock_for_board(board_name)
         self.logger.debug("Current Lock: %s", str(lock))
         # no lock exists
-        if lock == None:
+        if lock is None:
             return False
 
         # board is locked
