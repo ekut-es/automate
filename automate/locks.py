@@ -16,16 +16,12 @@ if TYPE_CHECKING:
 
 class KeepLockThread(threading.Thread):
     def __init__(
-        self,
-        manager,
-        board_name,
-        current_lease_time,
-        lease_time_increase=60 * 10,
+        self, manager, board_name, current_lease_time, lease_time_increase=90,
     ):
         self.manager = manager
         self.board_name = board_name
         self.current_lease_time = current_lease_time
-        self.lease_time_increase = lease_time_increase
+        self.lease_time_increase = max(lease_time_increase, 60)
 
         self.stop_event = threading.Event()
 
@@ -34,7 +30,8 @@ class KeepLockThread(threading.Thread):
     def run(self):
 
         while True:
-            self.stop_event.wait(self.current_lease_time // 2)
+            wait_time = max(0, self.current_lease_time - 30)
+            self.stop_event.wait(wait_time)
             if self.stop_event.is_set():
                 return
             logging.info(
