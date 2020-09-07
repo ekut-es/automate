@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import tabulate
 from invoke import task
 
@@ -49,10 +51,12 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
                 pass
 
             lock_status = "unlocked"
-            if board.is_locked():
-                lock_status = "locked"
-            elif board.has_lock():
-                lock_status = "has_lock"
+            if board.is_locked() or board.has_lock():
+                lock_user = board.lock_holder()
+                lock_lease_time_end = datetime.now() + board.lock_lease_time()
+                lock_status = (
+                    f"locked by {lock_user} until {lock_lease_time_end}"
+                )
 
             board_line = [
                 board.name,

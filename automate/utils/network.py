@@ -39,7 +39,7 @@ class GatewayManagingConnection(fabric.Connection):
             inline_ssh_env,
         )
         self.gateway = gateway
-        self.locking_thread = None
+        self.locking_thread = locking_thread
 
     def __enter__(self, *args, **kwargs):
         return super().__enter__(*args, **kwargs)
@@ -48,14 +48,20 @@ class GatewayManagingConnection(fabric.Connection):
         self.close()
         return super().__exit__(*args, **kwargs)
 
-    def close(self, *args, **kwargs):
-        if self.gateway is not None:
-            self.gateway.close()
+    def close(self):
         if self.locking_thread is not None:
             self.locking_thread.stop()
             self.locking_thread.join()
+            self.locking_thread = None
+
+        if self.gateway is not None:
+            self.gateway.close()
+            self.gateway = None
 
         return super().close()
+
+    def __del__(self):
+        self.close()
 
 
 def connect(
