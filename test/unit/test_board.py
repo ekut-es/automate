@@ -68,6 +68,18 @@ def test_fake_board_connection(fake_board, monkeypatch):
     connection.run("ls")
 
 
+def test_fake_board_nested_connection(fake_board, monkeypatch):
+    monkeypatch.setattr("sys.stdin", io.StringIO(""))
+    with fake_board.connect() as con:
+        with fake_board.connect() as con2:
+            assert con.is_connected
+            assert con2.is_connected
+
+            assert con == con2
+
+        assert con.is_connected
+
+
 def test_zynqberry_board_has_builders(zynqberry_board):
     board = zynqberry_board
 

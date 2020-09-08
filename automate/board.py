@@ -100,7 +100,7 @@ class _ConnectionContextManager(AbstractContextManager):
 
     def __exit__(self, *exc_details):
         if not self.nested:
-            c = self.board.connection
+            c = self.board._connection
             self.board.connection = None
             c.__exit__(*exc_details)
 
