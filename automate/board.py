@@ -1,7 +1,7 @@
 import datetime
 import logging
 import time
-from contextlib import contextmanager
+from contextlib import AbstractContextManager, contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, List, Union
 
@@ -19,6 +19,94 @@ from .utils.network import connect
 
 if TYPE_CHECKING:
     import automate.context
+
+
+class _ConnectionContextManager(AbstractContextManager):
+    """Context manager for board connections to allow reuse of board connections"""
+
+    def __init__(self, board, type: str = "ssh", timeout: int = 30):
+        self.board = board
+        self.timeout = timeout
+        self.type = type
+        self.nested = (
+            board._connection is not None and board._connection.is_connected
+        )
+        self._connect()
+
+    def _connect(self):
+        board = self.board
+        if self.type != "ssh":
+            raise Exception("Currently only ssh connections are supported")
+        if board._connection is not None and board._connection.is_connected:
+            locking_thread = None
+            if board.has_lock() and not board._connection.locking_thread:
+                board._connection.locking_thread = board.lock_manager.keep_lock(
+                    board
+                )
+                logging.info("Keep alive thread started")
+
+            return board._connection
+
+        locking_thread = None
+        if board.has_lock():
+            locking_thread = board.lock_manager.keep_lock(board)
+            logging.info("Keep alive thread started")
+        else:
+            logging.info(
+                "We do not have the lock, no keep alive thread is started"
+            )
+
+        for connection in board.model.connections:
+            if isinstance(connection, SSHConnectionModel):
+                host = connection.host
+                user = connection.username
+                port = connection.port
+
+                gateway_connection = None
+                if board.model.gateway:
+                    gw_host = board.model.gateway.host
+                    gw_user = board.model.gateway.username
+                    gw_port = board.model.gateway.port
+
+                    gateway_connection = connect(
+                        gw_host,
+                        gw_user,
+                        gw_port,
+                        identity=board.identity,
+                        timeout=self.timeout,
+                    )
+
+                c = connect(
+                    host,
+                    user,
+                    port,
+                    identity=board.identity,
+                    gateway=gateway_connection,
+                    timeout=self.timeout,
+                    locking_thread=locking_thread,
+                )
+
+                c.open()
+
+                board._connection = c
+                return c
+
+        raise Exception(
+            "Could not get ssh connection for {}".format(board.model.name)
+        )
+
+    def __enter__(self):
+        return self.board._connection
+
+    def __exit__(self, *exc_details):
+        if not self.nested:
+            c = self.board.connection
+            self.board.connection = None
+            c.__exit__(*exc_details)
+
+    def __getattr__(self, attr: str) -> Any:
+        """proxy model properties if they are not shadowed by an own property"""
+        return getattr(self.board._connection, attr)
 
 
 class Board(object):
@@ -158,7 +246,6 @@ class Board(object):
                     res.append(cc)
         return res
 
-    @contextmanager
     def connect(self, type: str = "ssh", timeout: int = 30) -> Connection:
         """
         Return a fabric.Connection to the board.
@@ -176,75 +263,7 @@ class Board(object):
         if self.is_locked():
             raise Exception("Can not connect to locked board")
 
-        if type != "ssh":
-            raise Exception("Currently only ssh connections are supported")
-        if self._connection is not None and self._connection.is_connected:
-            locking_thread = None
-            if self.has_lock() and not self._connection.locking_thread:
-                self._connection.locking_thread = self.lock_manager.keep_lock(
-                    self
-                )
-                logging.info("Keep alive thread started")
-
-            try:
-                yield self._connection
-            finally:
-                return
-
-        locking_thread = None
-        if self.has_lock():
-            locking_thread = self.lock_manager.keep_lock(self)
-            logging.info("Keep alive thread started")
-        else:
-            logging.info(
-                "We do not have the lock, no keep alive thread is started"
-            )
-
-        for connection in self.model.connections:
-            if isinstance(connection, SSHConnectionModel):
-                host = connection.host
-                user = connection.username
-                port = connection.port
-
-                gateway_connection = None
-                if self.model.gateway:
-                    gw_host = self.model.gateway.host
-                    gw_user = self.model.gateway.username
-                    gw_port = self.model.gateway.port
-
-                    gateway_connection = connect(
-                        gw_host,
-                        gw_user,
-                        gw_port,
-                        identity=self.identity,
-                        timeout=timeout,
-                    )
-
-                c = connect(
-                    host,
-                    user,
-                    port,
-                    identity=self.identity,
-                    gateway=gateway_connection,
-                    timeout=timeout,
-                    locking_thread=locking_thread,
-                )
-
-                c.open()
-
-                self._connection = c
-
-                try:
-                    yield c
-                finally:
-                    c.close()
-                    if self._connection == c:
-                        self._connection = None
-                    return None
-
-        raise Exception(
-            "Could not get ssh connection for {}".format(self.model.name)
-        )
+        return _ConnectionContextManager(self, timeout=timeout, type=type)
 
     def reboot(self, wait=True) -> Union[Connection, None]:
         """ Starts a new connection to the device and initiates a reboot
