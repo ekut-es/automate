@@ -154,10 +154,11 @@ def find_local_port() -> int:
         port = random.randint(1024, 65536)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
+            logging.debug("selected local port: %d", port)
             sock.bind(("0.0.0.0", port))
             sock.close()
             return port
-        except Exception:
+        except Exception as e:
             logging.debug("Port {} is not bindable".format(port))
 
 
@@ -172,6 +173,7 @@ def find_remote_port(con) -> int:
         port = random.randint(1024, 65536)
         result = con.run(f"nc -zv localhost {port}", hide="both", warn=True)
         if result.exited != 0:
+            logging.debug("selected remote port: %d", port)
             return port
         logging.info("Command nc exited with %s", str(result.exited))
 
