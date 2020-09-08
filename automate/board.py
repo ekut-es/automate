@@ -50,6 +50,7 @@ class Board(object):
             self.lock_manager = SimpleLockManager(
                 Path(context.config.automate.boardroot) / "locks.db"
             )
+        self._connection = None
 
     @property
     def id(self) -> str:
@@ -157,6 +158,7 @@ class Board(object):
                     res.append(cc)
         return res
 
+    @contextmanager
     def connect(self, type: str = "ssh", timeout: int = 30) -> Connection:
         """
         Return a fabric.Connection to the board.
@@ -174,6 +176,21 @@ class Board(object):
         if self.is_locked():
             raise Exception("Can not connect to locked board")
 
+        if type != "ssh":
+            raise Exception("Currently only ssh connections are supported")
+        if self._connection is not None and self._connection.is_connected:
+            locking_thread = None
+            if self.has_lock() and not self._connection.locking_thread:
+                self._connection.locking_thread = self.lock_manager.keep_lock(
+                    self
+                )
+                logging.info("Keep alive thread started")
+
+            try:
+                yield self._connection
+            finally:
+                return
+
         locking_thread = None
         if self.has_lock():
             locking_thread = self.lock_manager.keep_lock(self)
@@ -182,9 +199,6 @@ class Board(object):
             logging.info(
                 "We do not have the lock, no keep alive thread is started"
             )
-
-        if type != "ssh":
-            raise Exception("Currently only ssh connections are supported")
 
         for connection in self.model.connections:
             if isinstance(connection, SSHConnectionModel):
@@ -215,10 +229,21 @@ class Board(object):
                     timeout=timeout,
                     locking_thread=locking_thread,
                 )
-                return c
+
+                c.open()
+
+                self._connection = c
+
+                try:
+                    yield c
+                finally:
+                    c.close()
+                    if self._connection == c:
+                        self._connection = None
+                    return None
 
         raise Exception(
-            "Could not find ssh connection for {}".format(self.model.name)
+            "Could not get ssh connection for {}".format(self.model.name)
         )
 
     def reboot(self, wait=True) -> Union[Connection, None]:
@@ -256,7 +281,6 @@ class Board(object):
         while not connected:
             try:
                 connection = self.connect()
-                connection.open()
                 return connection
             except Exception:
                 self.logger.info("Waiting for reconnection")
