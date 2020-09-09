@@ -102,17 +102,7 @@ class LockManagerBase:
         board: Union["Board", str],
         lease_time: Union[timedelta, str] = "1h",
     ) -> None:
-        if isinstance(board, str):
-            board_name = board
-        else:
-            board_name = board.name
-
-        if isinstance(lease_time, str):
-            delta = self._str_to_timedelta(lease_time)
-        else:
-            delta = lease_time
-
-        while not self._do_trylock(board_name, delta.seconds):
+        while not self.trylock(board, lease_time):
             time.sleep(0.5)
 
     def unlock(self, board: Union["Board", str]) -> None:
@@ -139,6 +129,11 @@ class LockManagerBase:
             delta = self._str_to_timedelta(lease_time)
         else:
             delta = lease_time
+
+        if self.has_lock(board_name):
+            current_delta = self.lease_time(board_name)
+            if current_delta > delta:
+                return True
 
         return self._do_trylock(board_name, delta.seconds)
 

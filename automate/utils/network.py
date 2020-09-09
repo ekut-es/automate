@@ -265,7 +265,9 @@ def rsync(
                     con.run("rm -f /tmp/rsync-ad-hoc.{rsync_id}.*")
         except Exception as e:
             retry = True
+            if retries == 0:
+                raise e
+
+            logging.critical("Channel exception during rsync retrying %s")
+            logging.debug("Exception: %s", str(e))
             time.sleep(0.5)
-            logging.critical(
-                "Channel exception during rsync retrying %s", str(e)
-            )
