@@ -189,6 +189,8 @@ def rsync(
     exclude: Iterable[str] = (),
     delete: bool = False,
     verbose: bool = False,
+    rsync_timeout: int = 5,
+    retries: int = 5,
     rsync_opts: str = "",
 ) -> None:
     """ RSync files or folders to board 
@@ -205,12 +207,15 @@ def rsync(
     source: local path should end in "/" if the complete folder is synced
     target: remote_path
     exclude: iterable of exclude patterns
+    rsync_timeout: --timeout argument for rsync
+    retries: number of retries if rsync fails
     verbose: if True print transfered files to stdout
     rsync_opts: string of additional rsync options
     """  # noqa
     retry = True
-    while retry:
+    while retry and retries > 0:
         retry = False
+        retries -= 1
         rsync_id = random.randint(0, 2 ** 31)
         local_port = find_local_port()
         remote_port = find_remote_port(con)
@@ -241,7 +246,7 @@ def rsync(
                     remote_path = (
                         f"rsync://localhost:{local_port}/files/{target}"
                     )
-                    rsync_cmd = f"rsync {delete_flag} {exclude_opts} -pthrz {rsync_opts} {source} {remote_path}"
+                    rsync_cmd = f"rsync --timeout {rsync_timeout} {delete_flag} {exclude_opts} -pthrz {rsync_opts} {source} {remote_path}"
                     logging.info("Running {}".format(rsync_cmd))
                     con.local(rsync_cmd)
                 except Exception as e:
@@ -258,7 +263,7 @@ def rsync(
                     con.run(f"kill  {rsync_pid}", hide="out")
 
                     con.run("rm -f /tmp/rsync-ad-hoc.{rsync_id}.*")
-        except ChannelException as e:
+        except Exception as e:
             retry = True
             time.sleep(0.5)
             logging.critical(
