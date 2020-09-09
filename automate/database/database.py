@@ -118,7 +118,7 @@ class Database:
             cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             yield cursor
         finally:
-            self.connection_pool.putconn()
+            self.connection_pool.putconn(conn=conn)
 
     def __load_query(self, name: str) -> str:
         sql_file_path = self.QUERIES_DIR + "/" + name + ".sql"
@@ -134,8 +134,10 @@ class Database:
     def init(self) -> None:
         """Initialize an database with locks"""
         query = self.init_database_query
-        with self.cursor() as cursor:
+        with self.connection() as conn:
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             cursor.execute(query)
+            conn.commit()
 
     def get_all_boards(self) -> List[BoardModelDB]:
         with self.cursor() as cursor:

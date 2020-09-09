@@ -8,7 +8,7 @@ Source: [https://yallalabs.com/linux/how-to-install-postgresql-10-on-centos-7-rh
 ## Add PostgreSQL 10 Repo to yum
 
 ```
-sudo um install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm -y`
+sudo yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm -y`
 ```
 
 

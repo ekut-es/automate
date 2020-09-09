@@ -42,33 +42,32 @@ def test_database_init(db):
 
     db.init()
 
-    cursor = db.cursor
+    with db.cursor() as cursor:
+        cursor.execute(
+            "select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';"
+        )
 
-    cursor.execute(
-        "select relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';"
-    )
+        result = cursor.fetchall()
 
-    result = cursor.fetchall()
+        result = [item for sublist in result for item in sublist]
 
-    result = [item for sublist in result for item in sublist]
-
-    assert "docs" in result
-    assert "os_kernels" in result
-    assert "board_oss" in result
-    assert "distributions" in result
-    assert "environments" in result
-    assert "machines" in result
-    assert "oss" in result
-    assert "board_cpu_core_extensions" in result
-    assert "board_cpu_cores" in result
-    assert "cpu_uarch_implementations" in result
-    assert "cpu_uarchs" in result
-    assert "cpu_implementers" in result
-    assert "cpu_isas" in result
-    assert "boards" in result
-    assert "power_connectors" in result
-    assert "socs" in result
-    assert "foundries" in result
+        assert "docs" in result
+        assert "os_kernels" in result
+        assert "board_oss" in result
+        assert "distributions" in result
+        assert "environments" in result
+        assert "machines" in result
+        assert "oss" in result
+        assert "board_cpu_core_extensions" in result
+        assert "board_cpu_cores" in result
+        assert "cpu_uarch_implementations" in result
+        assert "cpu_uarchs" in result
+        assert "cpu_implementers" in result
+        assert "cpu_isas" in result
+        assert "boards" in result
+        assert "power_connectors" in result
+        assert "socs" in result
+        assert "foundries" in result
 
 
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
