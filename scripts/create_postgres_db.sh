@@ -13,9 +13,6 @@ dropdb ${DATABASE}
 echo "Creating database"
 createdb ${DATABASE} || exit 1
 
-#echo "Creating database tables"
-#psql ${DATABASE} -f setup.sql || exit 1
-
 echo "Set permissions for database ${DATABASE}"
 psql ${DATABASE} -c "\
 drop user if exists ${USER};\
