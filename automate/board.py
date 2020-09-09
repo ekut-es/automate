@@ -31,6 +31,10 @@ class _ConnectionContextManager(AbstractContextManager):
         self.nested = (
             board._connection is not None and board._connection.is_connected
         )
+        self.locking_thread = None
+        if not self.nested:
+            self.locking_thread = board.lock_manager.keep_lock(board.name)
+
         self._connect()
 
     def _connect(self):
@@ -38,23 +42,10 @@ class _ConnectionContextManager(AbstractContextManager):
         if self.type != "ssh":
             raise Exception("Currently only ssh connections are supported")
         if board._connection is not None and board._connection.is_connected:
-            locking_thread = None
-            if board.has_lock() and not board._connection.locking_thread:
-                board._connection.locking_thread = board.lock_manager.keep_lock(
-                    board
-                )
-                logging.info("Keep alive thread started")
-
             return board._connection
 
-        locking_thread = None
-        if board.has_lock():
-            locking_thread = board.lock_manager.keep_lock(board)
-            logging.info("Keep alive thread started")
-        else:
-            logging.info(
-                "We do not have the lock, no keep alive thread is started"
-            )
+        self.locking_thread = board.lock_manager.keep_lock(board)
+        logging.info("Keep alive thread started")
 
         for connection in board.model.connections:
             if isinstance(connection, SSHConnectionModel):
@@ -83,7 +74,6 @@ class _ConnectionContextManager(AbstractContextManager):
                     identity=board.identity,
                     gateway=gateway_connection,
                     timeout=self.timeout,
-                    locking_thread=locking_thread,
                 )
 
                 c.open()
@@ -99,10 +89,22 @@ class _ConnectionContextManager(AbstractContextManager):
         return self.board._connection
 
     def __exit__(self, *exc_details):
+
+        if self.locking_thread is not None:
+            self.locking_thread.stop()
+            self.locking_thread.join()
+            self.locking_thread = None
+
         if not self.nested:
             c = self.board._connection
             self.board.connection = None
             c.__exit__(*exc_details)
+
+    def __del__(self):
+        if self.locking_thread is not None:
+            self.locking_thread.stop()
+            self.locking_thread.join()
+            self.locking_thread = None
 
     def __getattr__(self, attr: str) -> Any:
         """proxy model properties if they are not shadowed by an own property"""

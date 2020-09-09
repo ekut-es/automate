@@ -1,13 +1,14 @@
 import logging
 import random
 import socket
+import time
 from io import StringIO
 from pathlib import Path
 from typing import Iterable, Optional
 
 import fabric
 import keyring
-from paramiko.ssh_exception import AuthenticationException
+from paramiko.ssh_exception import AuthenticationException, ChannelException
 from patchwork.files import exists
 from prompt_toolkit import prompt
 
@@ -26,7 +27,6 @@ class GatewayManagingConnection(fabric.Connection):
         connect_timeout=None,
         connect_kwargs=None,
         inline_ssh_env=None,
-        locking_thread=None,
     ):
         super().__init__(
             host,
@@ -40,7 +40,6 @@ class GatewayManagingConnection(fabric.Connection):
             inline_ssh_env,
         )
         self.gateway = gateway
-        self.locking_thread = locking_thread
 
     def __enter__(self, *args, **kwargs):
         return super().__enter__(*args, **kwargs)
@@ -50,11 +49,6 @@ class GatewayManagingConnection(fabric.Connection):
         return super().__exit__(*args, **kwargs)
 
     def close(self):
-        if self.locking_thread is not None:
-            self.locking_thread.stop()
-            self.locking_thread.join()
-            self.locking_thread = None
-
         if self.gateway is not None:
             self.gateway.close()
             self.gateway = None
@@ -75,7 +69,6 @@ def connect(
     keyring_allowed: bool = True,
     gateway: Optional[fabric.Connection] = None,
     timeout: int = 30,
-    locking_thread: Optional[KeepLockThread] = None,
 ) -> fabric.Connection:
     """ Get a fabric connection to a remote host 
 
@@ -103,7 +96,6 @@ def connect(
             connect_timeout=timeout,
             gateway=gateway,
             connect_kwargs=kwargs,
-            locking_thread=locking_thread,
         )
         connection.open()
     except AuthenticationException as e:
@@ -128,7 +120,6 @@ def connect(
                         gateway=gateway,
                         connect_timeout=timeout,
                         connect_kwargs={"password": password},
-                        locking_thread=locking_thread,
                     )
                     connection.open()
                 except AuthenticationException:
@@ -217,41 +208,59 @@ def rsync(
     verbose: if True print transfered files to stdout
     rsync_opts: string of additional rsync options
     """  # noqa
-    rsync_id = random.randint(0, 2 ** 31)
-    local_port = find_local_port()
-    remote_port = find_remote_port(con)
-    logging.info("Starting rsync daemon on port: %d", remote_port)
-    with con.forward_local(local_port, remote_port):
+    retry = True
+    while retry:
+        retry = False
+        rsync_id = random.randint(0, 2 ** 31)
+        local_port = find_local_port()
+        remote_port = find_remote_port(con)
+        logging.info("Starting rsync daemon on port: %d", remote_port)
         try:
-            con.put(
-                StringIO(RSYNC_SPEC.format(port=remote_port, id=rsync_id)),
-                f"/tmp/rsync-ad-hoc.{rsync_id}.conf",
+            with con.forward_local(local_port, remote_port):
+                try:
+                    con.put(
+                        StringIO(
+                            RSYNC_SPEC.format(port=remote_port, id=rsync_id)
+                        ),
+                        f"/tmp/rsync-ad-hoc.{rsync_id}.conf",
+                    )
+
+                    con.run(
+                        f"rsync --daemon --config /tmp/rsync-ad-hoc.{rsync_id}.conf"
+                    )
+                    con.run(f"mkdir -p {target}")
+
+                    delete_flag = "--delete" if delete else ""
+
+                    exclude_opts = " ".join(
+                        ["--exclude %s" % e for e in exclude]
+                    )
+                    if verbose:
+                        rsync_opts = "-v " + rsync_opts
+
+                    remote_path = (
+                        f"rsync://localhost:{local_port}/files/{target}"
+                    )
+                    rsync_cmd = f"rsync {delete_flag} {exclude_opts} -pthrz {rsync_opts} {source} {remote_path}"
+                    logging.info("Running {}".format(rsync_cmd))
+                    con.local(rsync_cmd)
+                except Exception as e:
+                    print(e)
+                    raise (e)
+                finally:
+                    result = con.run(
+                        f"cat /tmp/rsync-ad-hoc.{rsync_id}.pid", hide="out"
+                    )
+                    rsync_pid = result.stdout
+                    logging.info(
+                        f"Killing remote rsync deamon with pid: {rsync_pid}"
+                    )
+                    con.run(f"kill  {rsync_pid}", hide="out")
+
+                    con.run("rm -f /tmp/rsync-ad-hoc.{rsync_id}.*")
+        except ChannelException as e:
+            retry = True
+            time.sleep(0.5)
+            logging.critical(
+                "Channel exception during rsync retrying %s", str(e)
             )
-
-            con.run(
-                f"rsync --daemon --config /tmp/rsync-ad-hoc.{rsync_id}.conf"
-            )
-            con.run(f"mkdir -p {target}")
-
-            delete_flag = "--delete" if delete else ""
-
-            exclude_opts = " ".join(["--exclude %s" % e for e in exclude])
-            if verbose:
-                rsync_opts = "-v " + rsync_opts
-
-            remote_path = f"rsync://localhost:{local_port}/files/{target}"
-            rsync_cmd = f"rsync {delete_flag} {exclude_opts} -pthrz {rsync_opts} {source} {remote_path}"
-            logging.info("Running {}".format(rsync_cmd))
-            con.local(rsync_cmd)
-        except Exception as e:
-            print(e)
-            raise (e)
-        finally:
-            result = con.run(
-                f"cat /tmp/rsync-ad-hoc.{rsync_id}.pid", hide="out"
-            )
-            rsync_pid = result.stdout
-            logging.info(f"Killing remote rsync deamon with pid: {rsync_pid}")
-            con.run(f"kill  {rsync_pid}", hide="out")
-
-            con.run("rm -f /tmp/rsync-ad-hoc.{rsync_id}.*")
