@@ -42,9 +42,13 @@ def all(c):
     "Build example for all boards then execute on all boards"
 
     for board in c.boards():
-        print(f"Build and Deploy for {board.id}")
-        build(c, board.id)
+        if not board.is_locked():
+            print(f"Build and Deploy for {board.id}")
+            build(c, board.id)
 
     for board in c.boards():
         print(f"Run for {board.id}")
-        run(c, board.id)
+        if not board.is_locked():
+            run(c, board.id)
+        else:
+            print("Could not lock {board.id} skipping")

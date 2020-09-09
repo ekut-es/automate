@@ -5,12 +5,13 @@ USER="der_schrank_test"
 PASSWORD="der_schrank_test"
 
 MD5_HASH=$(echo -n "md5"; echo -n "${PASSWORD}${USER}" | md5sum | awk '{print $1}')
+echo "Password md5 hash: $MD5_HASH"
+
+echo "Droping database if exists"
+dropdb ${DATABASE}
 
 echo "Creating database"
 createdb ${DATABASE} || exit 1
-
-echo "Creating database tables"
-psql ${DATABASE} -f setup.sql || exit 1
 
 echo "Set permissions for database ${DATABASE}"
 psql ${DATABASE} -c "\

@@ -1,4 +1,5 @@
 import logging
+from contextlib import contextmanager
 from datetime import timedelta
 from os.path import dirname, join
 from typing import Any, List
@@ -19,8 +20,8 @@ from ..model import (
 try:
     import psycopg2  # type: ignore
     import psycopg2.extras  # type: ignore
-
     from jinjasql import JinjaSql  # type; ignore
+    from psycopg2.pool import ThreadedConnectionPool
 
     enabled = True
 except:
@@ -49,9 +50,6 @@ class Database:
            password: password for connection
         """
         self.logger = logging.getLogger(__name__)
-        self.connection_string = "host={} port={} dbname={} user={} password={}".format(
-            host, port, db, user, password
-        )
 
         self.host = host
         self.port = port
@@ -60,15 +58,16 @@ class Database:
         self.password = password
 
         try:
-            self.connection = psycopg2.connect(self.connection_string)
-            self.cursor = self.connection.cursor(
-                cursor_factory=psycopg2.extras.DictCursor
+            self.connection_pool = ThreadedConnectionPool(
+                1, 10, host=host, port=port, user=user, password=password
             )
         except Exception as e:
             self.logger.error(
-                "could not connnect to database: '"
-                + self.connection_string
-                + "'"
+                "could not connnect to database: 'host=%s port=%d db=%s user=%s password=%s'",
+                host,
+                port,
+                user,
+                password,
             )
             self.logger.error(e)
 
@@ -104,6 +103,23 @@ class Database:
             "update_lock_lease_for_board"
         )
 
+    @contextmanager
+    def connection(self):
+        try:
+            conn = self.connection_pool.getconn()
+            yield conn
+        finally:
+            self.connection_pool.putconn(conn)
+
+    @contextmanager
+    def cursor(self):
+        try:
+            conn = self.connection_pool.getconn()
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            yield cursor
+        finally:
+            self.connection_pool.putconn(conn=conn)
+
     def __load_query(self, name: str) -> str:
         sql_file_path = self.QUERIES_DIR + "/" + name + ".sql"
         try:
@@ -118,140 +134,145 @@ class Database:
     def init(self) -> None:
         """Initialize an database with locks"""
         query = self.init_database_query
-        self.cursor.execute(query)
+        with self.connection() as conn:
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            cursor.execute(query)
+            conn.commit()
 
     def get_all_boards(self) -> List[BoardModelDB]:
-        self.cursor.execute(self.all_boards_query)
-        boards = self.cursor.fetchall()
+        with self.cursor() as cursor:
+            cursor.execute(self.all_boards_query)
+            boards = cursor.fetchall()
 
-        board_models = []
+            board_models = []
 
-        for board in boards:
-            query, bind_params = self.j.prepare_query(
-                self.all_cpu_cores_for_board_query, {"board_id": board["id"]}
-            )
-            self.cursor.execute(query)
-            cpu_cores = self.cursor.fetchall()
-
-            query, bind_params = self.j.prepare_query(
-                self.os_for_board_query, {"board_id": board["id"]}
-            )
-            self.cursor.execute(query)
-            os = self.cursor.fetchone()
-
-            query, bind_params = self.j.prepare_query(
-                self.all_docs_for_board_query, {"board_id": board["id"]}
-            )
-            self.cursor.execute(query)
-            docs = self.cursor.fetchall()
-
-            query, bind_params = self.j.prepare_query(
-                self.all_kernels_for_os_query, {"board_id": board["id"]}
-            )
-            self.cursor.execute(query)
-            kernels = self.cursor.fetchall()
-
-            kernel_models = []
-
-            for kernel in kernels:
-                kernel_image_model = KernelImageModel(
-                    **{
-                        "build_path": kernel["image_build_path"],
-                        "deploy_path": kernel["image_deploy_path"],
-                    }
+            for board in boards:
+                query, bind_params = self.j.prepare_query(
+                    self.all_cpu_cores_for_board_query,
+                    {"board_id": board["id"]},
                 )
+                cursor.execute(query)
+                cpu_cores = cursor.fetchall()
 
-                uboot_model = None
+                query, bind_params = self.j.prepare_query(
+                    self.os_for_board_query, {"board_id": board["id"]}
+                )
+                cursor.execute(query)
+                os = cursor.fetchone()
 
-                if (
-                    kernel["uboot_loadaddr"] is not None
-                    and kernel["uboot_image_name"] is not None
-                    and kernel["uboot_dtb_image"] is not None
-                ):
-                    uboot_model = UBootModel(
+                query, bind_params = self.j.prepare_query(
+                    self.all_docs_for_board_query, {"board_id": board["id"]}
+                )
+                cursor.execute(query)
+                docs = cursor.fetchall()
+
+                query, bind_params = self.j.prepare_query(
+                    self.all_kernels_for_os_query, {"board_id": board["id"]}
+                )
+                cursor.execute(query)
+                kernels = cursor.fetchall()
+
+                kernel_models = []
+
+                for kernel in kernels:
+                    kernel_image_model = KernelImageModel(
                         **{
-                            "loadaddr": kernel["uboot_loadaddr"],
-                            "image_name": kernel["uboot_image_name"],
-                            "dtb_image": kernel["uboot_dtb_image"],
+                            "build_path": kernel["image_build_path"],
+                            "deploy_path": kernel["image_deploy_path"],
                         }
                     )
 
-                kernel_model = KernelModel(
+                    uboot_model = None
+
+                    if (
+                        kernel["uboot_loadaddr"] is not None
+                        and kernel["uboot_image_name"] is not None
+                        and kernel["uboot_dtb_image"] is not None
+                    ):
+                        uboot_model = UBootModel(
+                            **{
+                                "loadaddr": kernel["uboot_loadaddr"],
+                                "image_name": kernel["uboot_image_name"],
+                                "dtb_image": kernel["uboot_dtb_image"],
+                            }
+                        )
+
+                    kernel_model = KernelModel(
+                        **{
+                            "name": "",  # A name uniquely identifies a a triple of kernel_configuration/commandline/kernel_source code
+                            "description": kernel["description"],
+                            "version": kernel["version"],
+                            "commandline": kernel["command_line"],
+                            "kernel_config": kernel["kernel_config"],
+                            "kernel_source": kernel["kernel_source"],
+                            "kernel_srcdir": kernel["kernel_srcdir"],
+                            "image": kernel_image_model,
+                            "uboot": uboot_model,
+                            "default": kernel["is_default"],
+                        }
+                    )
+
+                    kernel_models.append(kernel_model)
+
+                triple_model = TripleModel(
                     **{
-                        "name": "",  # A name uniquely identifies a a triple of kernel_configuration/commandline/kernel_source code
-                        "description": kernel["description"],
-                        "version": kernel["version"],
-                        "commandline": kernel["command_line"],
-                        "kernel_config": kernel["kernel_config"],
-                        "kernel_source": kernel["kernel_source"],
-                        "kernel_srcdir": kernel["kernel_srcdir"],
-                        "image": kernel_image_model,
-                        "uboot": uboot_model,
-                        "default": kernel["is_default"],
+                        "machine": os["machine"],
+                        "os": os["os"],
+                        "environment": os["environment"],
                     }
                 )
 
-                kernel_models.append(kernel_model)
+                os_model = OSModel(
+                    **{
+                        "triple": triple_model,
+                        "distribution": os["distribution"],
+                        "release": os["release"],
+                        "description": os["description"],
+                        "sysroot": os["sysroot"],
+                        "rootfs": os["rootfs"],
+                        "multiarch": os["multiarch"],
+                        "kernels": kernel_models,
+                    }
+                )
 
-            triple_model = TripleModel(
-                **{
-                    "machine": os["machine"],
-                    "os": os["os"],
-                    "environment": os["environment"],
-                }
-            )
+                documentation_link_models = []
 
-            os_model = OSModel(
-                **{
-                    "triple": triple_model,
-                    "distribution": os["distribution"],
-                    "release": os["release"],
-                    "description": os["description"],
-                    "sysroot": os["sysroot"],
-                    "rootfs": os["rootfs"],
-                    "multiarch": os["multiarch"],
-                    "kernels": kernel_models,
-                }
-            )
+                for doc in docs:
+                    documentation_link_model = DocumentationLinkModel(**doc)
 
-            documentation_link_models = []
+                    documentation_link_models.append(documentation_link_model)
 
-            for doc in docs:
-                documentation_link_model = DocumentationLinkModel(**doc)
+                cpu_core_models = []
 
-                documentation_link_models.append(documentation_link_model)
+                for cpu_core in cpu_cores:
+                    # FIXME: Core Model DB?
+                    cpu_core_model = CoreModel(**cpu_core)
 
-            cpu_core_models = []
+                    cpu_core_models.append(cpu_core_model)
 
-            for cpu_core in cpu_cores:
-                # FIXME: Core Model DB?
-                cpu_core_model = CoreModel(**cpu_core)
+                ssh_connection_model = SSHConnectionModel(
+                    host=board["hostname"],
+                    username=board["ssh_username"],
+                    port=board["ssh_port"],
+                )
 
-                cpu_core_models.append(cpu_core_model)
+                # FIXME: move to separate table
+                board = dict(board)
+                del board["ssh_username"]
+                del board["ssh_port"]
 
-            ssh_connection_model = SSHConnectionModel(
-                host=board["hostname"],
-                username=board["ssh_username"],
-                port=board["ssh_port"],
-            )
+                # FIXME: add database fields for rundir and board
+                board_model = BoardModelDB(  # type: ignore
+                    **board,
+                    rundir="/home/es/run",
+                    board="unknown",
+                    doc=documentation_link_models,
+                    connections=[ssh_connection_model],
+                    cores=cpu_core_models,
+                    os=os_model,
+                )
 
-            # FIXME: move to separate table
-            board = dict(board)
-            del board["ssh_username"]
-            del board["ssh_port"]
-
-            # FIXME: add database fields for rundir and board
-            board_model = BoardModelDB(  # type: ignore
-                **board,
-                rundir="/home/es/run",
-                board="unknown",
-                doc=documentation_link_models,
-                connections=[ssh_connection_model],
-                cores=cpu_core_models,
-                os=os_model,
-            )
-
-            board_models.append(board_model)
+                board_models.append(board_model)
 
         return board_models
 
@@ -304,8 +325,10 @@ class Database:
         )
 
         try:
-            self.cursor.execute(query)
-            self.connection.commit()
+            with self.connection() as conn:
+                cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                cursor.execute(query)
+                conn.commit()
         except Exception as e:
             self.logger.error("ERROR: database import failed")
             self.logger.error(e)
@@ -315,15 +338,16 @@ class Database:
             self.select_lock_for_board_query, {"board_name": board_name}
         )
         try:
-            self.cursor.execute(query)
-            self.connection.commit()
+            with self.connection() as conn:
+                cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                cursor.execute(query)
+                conn.commit()
+                lock = cursor.fetchone()
         except Exception as e:
             self.logger.error(
                 "ERROR: could not access lock for '" + board_name + "'"
             )
             self.logger.error(e)
-
-        lock = self.cursor.fetchone()
 
         return lock
 
@@ -333,8 +357,10 @@ class Database:
             {"board_name": board_name, "user_id": user_id},
         )
         try:
-            self.cursor.execute(query)
-            self.connection.commit()
+            with self.connection() as conn:
+                cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                cursor.execute(query)
+                conn.commit()
         except Exception as e:
             self.logger.error("ERROR: unlocking of '" + board_name + "' failed")
             self.logger.error(e)
@@ -362,8 +388,12 @@ class Database:
                         },
                     )
                     try:
-                        self.cursor.execute(query)
-                        self.connection.commit()
+                        with self.connection() as conn:
+                            cursor = conn.cursor(
+                                cursor_factory=psycopg2.extras.DictCursor
+                            )
+                            cursor.execute(query)
+                            conn.commit()
                     except Exception as e:
                         self.logger.error(
                             "ERROR: transfer of lock for '"
@@ -385,8 +415,12 @@ class Database:
                     },
                 )
                 try:
-                    self.cursor.execute(query)
-                    self.connection.commit()
+                    with self.connection() as conn:
+                        cursor = conn.cursor(
+                            cursor_factory=psycopg2.extras.DictCursor
+                        )
+                        cursor.execute(query)
+                        conn.commit()
                 except Exception as e:
                     self.logger.error(
                         "ERROR: update of lock lease for '"
@@ -408,8 +442,12 @@ class Database:
                 },
             )
             try:
-                self.cursor.execute(query)
-                self.connection.commit()
+                with self.connection() as conn:
+                    cursor = conn.cursor(
+                        cursor_factory=psycopg2.extras.DictCursor
+                    )
+                    cursor.execute(query)
+                    conn.commit()
             except Exception as e:
                 self.logger.error(
                     "ERROR: acquiring lock for '" + board_name + "' failed"

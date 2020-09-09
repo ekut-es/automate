@@ -6,17 +6,36 @@ from db import db
 from pytest import fixture
 
 from automate.database import Database, database_enabled
-from automate.locks import DatabaseLockManager
+from automate.locks import DatabaseLockManager, SimpleLockManager
 
 
 @pytest.mark.skipif(not database_enabled(), reason="requires database drivers")
-def test_lock_manager(db):
-
-    board_name = "test_board"
-
+def test_lock_manager_db(db):
     local_lock_manager = DatabaseLockManager(db, "local")
     bobs_lock_manager = DatabaseLockManager(db, "bob")
     eves_lock_manager = DatabaseLockManager(db, "eve")
+
+    do_test_lock_manager(
+        local_lock_manager, eves_lock_manager, bobs_lock_manager
+    )
+
+
+def test_lock_manager_simple(tmp_path):
+    lockfile = tmp_path / "locks.db"
+
+    local_lock_manager = SimpleLockManager(lockfile, "local")
+    bobs_lock_manager = SimpleLockManager(lockfile, "bob")
+    eves_lock_manager = SimpleLockManager(lockfile, "eve")
+
+    do_test_lock_manager(
+        local_lock_manager, eves_lock_manager, bobs_lock_manager
+    )
+
+
+def do_test_lock_manager(
+    local_lock_manager, eves_lock_manager, bobs_lock_manager
+):
+    board_name = "test_board"
 
     # nobody has a lock on test_board
     assert local_lock_manager.is_locked(board_name) == False

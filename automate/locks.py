@@ -25,22 +25,35 @@ class KeepLockThread(threading.Thread):
 
         self.stop_event = threading.Event()
 
+        logging.debug("Creating keep lock thread")
         super().__init__()
 
     def run(self):
 
         while True:
-            wait_time = max(0, self.current_lease_time - 30)
+            wait_time = max(0, self.current_lease_time - 10)
+            logging.debug(
+                "Keep lock thread for %s waiting for %d seconds",
+                self.board_name,
+                wait_time,
+            )
             self.stop_event.wait(wait_time)
             if self.stop_event.is_set():
                 return
-            logging.info(
-                "Increasing lock time by %d seconds", self.lease_time_increase
-            )
-            self.manager.lock(self.board_name, str(self.lease_time_increase))
-            self.current_lease_time = self.lease_time_increase
+            if self.manager.has_lock(self.board_name):
+                logging.info(
+                    "Increasing lock time by %d seconds",
+                    self.lease_time_increase,
+                )
+                self.manager.lock(
+                    self.board_name, str(self.lease_time_increase)
+                )
+                self.current_lease_time = self.lease_time_increase
+            else:
+                self.current_lease_time = 11
 
     def stop(self):
+        logging.debug("Stopping keep lock thread")
         self.stop_event.set()
 
 
@@ -89,17 +102,7 @@ class LockManagerBase:
         board: Union["Board", str],
         lease_time: Union[timedelta, str] = "1h",
     ) -> None:
-        if isinstance(board, str):
-            board_name = board
-        else:
-            board_name = board.name
-
-        if isinstance(lease_time, str):
-            delta = self._str_to_timedelta(lease_time)
-        else:
-            delta = lease_time
-
-        while not self._do_trylock(board_name, delta.seconds):
+        while not self.trylock(board, lease_time):
             time.sleep(0.5)
 
     def unlock(self, board: Union["Board", str]) -> None:
@@ -127,6 +130,11 @@ class LockManagerBase:
         else:
             delta = lease_time
 
+        if self.has_lock(board_name):
+            current_delta = self.lease_time(board_name)
+            if current_delta > delta:
+                return True
+
         return self._do_trylock(board_name, delta.seconds)
 
     def has_lock(self, board: Union["Board", str]) -> bool:
@@ -146,7 +154,7 @@ class LockManagerBase:
         return self._do_islocked(board_name)
 
     def lease_time(self, board: Union["Board", str]) -> timedelta:
-        """ Returns the remaining lock time for the board in seconds """
+        """ Returns the remaining lock time for the board as a timedelta"""
         if isinstance(board, str):
             board_name = board
         else:
@@ -174,13 +182,12 @@ class LockManagerBase:
         else:
             board_name = board.name
 
-        if not self.has_lock(board_name):
-            return None
-        else:
+        lease_time = 0.0
+        if self.has_lock(board_name):
             lease_time = self.lease_time(board_name).total_seconds()
 
-            thread = KeepLockThread(self, board_name, lease_time)
-            thread.start()
+        thread = KeepLockThread(self, board_name, lease_time)
+        thread.start()
 
         return thread
 
