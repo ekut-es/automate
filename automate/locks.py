@@ -25,6 +25,7 @@ class KeepLockThread(threading.Thread):
 
         self.stop_event = threading.Event()
 
+        logging.debug("Creating keep lock thread")
         super().__init__()
 
     def run(self):
@@ -52,6 +53,7 @@ class KeepLockThread(threading.Thread):
                 self.current_lease_time = 11
 
     def stop(self):
+        logging.debug("Stopping keep lock thread")
         self.stop_event.set()
 
 

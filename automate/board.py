@@ -44,9 +44,6 @@ class _ConnectionContextManager(AbstractContextManager):
         if board._connection is not None and board._connection.is_connected:
             return board._connection
 
-        self.locking_thread = board.lock_manager.keep_lock(board)
-        logging.info("Keep alive thread started")
-
         for connection in board.model.connections:
             if isinstance(connection, SSHConnectionModel):
                 host = connection.host
