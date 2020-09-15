@@ -39,9 +39,9 @@ class MakefileBuilder(BaseBuilder):
         self._mkbuilddir()
 
         if Path.is_file(Path(f"{self.srcdir}/.automateignore")):
-            self.context.run(f"rsync -ar --exclude-from={self.srcdir}/.automateignore --delete {self.srcdir} {self.builddir}")
+            self.context.run(f"rsync -ar --exclude \'.automateignore\' --exclude-from={self.srcdir}/.automateignore --delete {self.srcdir} {self.builddir}")
         else:
-            self.context.run(f"rsync -ar --delete {self.srcdir} {self.builddir}")
+            self.context.run(f"rsync -ar --exclude \'.automateignore\' --delete {self.srcdir} {self.builddir}")
 
         buildvars: Dict[str, Any] = {}
         buildvars["CC"] = cross_compiler.bin_path / cross_compiler.cc
