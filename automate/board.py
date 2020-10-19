@@ -328,16 +328,51 @@ class Board(object):
         # Returns
         If wait was true a new Connection object
         """
-        self.logger.warning(
-            "True resets are currently not implemented, trying a reboot instead"
-        )
-        try:
-            self.reboot(wait=False)
-        except BaseException as e:
-            self.logger.error(
-                "Reboot has been unsuccessful with exception {}".format(str(e))
+
+        if self.model.reset:
+            gateway_connection = None
+            extra_gateway_config = self.context.config.automate.get(
+                "extra_gateway", None
             )
-            self.logger.error("Please reboot device manually")
+            if extra_gateway_config:
+                extra_gateway_connection = connect(
+                    extra_gateway_config["host"],
+                    extra_gateway_config["user"],
+                    extra_gateway_config.get("port", 22),
+                    passwd_allowed=True,
+                )
+
+            if self.model.gateway:
+                gw_host = self.model.gateway.host
+                gw_user = self.model.gateway.username
+                gw_port = self.model.gateway.port
+
+                gateway_connection = connect(
+                    gw_host,
+                    gw_user,
+                    gw_port,
+                    identity=self.identity,
+                    gateway=gateway_connection,
+                )
+            if gateway_connection is not None:
+                for command in self.model.reset:
+                    gateway_connection.run(command, shell=True)
+
+                gateway_connection.close()
+        else:
+            self.logger.warning(
+                "True resets are currently not implemented, for board %s trying a reboot instead",
+                self.name,
+            )
+            try:
+                self.reboot(wait=False)
+            except BaseException as e:
+                self.logger.error(
+                    "Reboot has been unsuccessful with exception {}".format(
+                        str(e)
+                    )
+                )
+                self.logger.error("Please reboot device manually")
 
         if wait:
             return self.wait_for_connection()
