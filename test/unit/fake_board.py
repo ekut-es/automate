@@ -24,6 +24,10 @@ class FakeContext:
         class automate:
             boardroot = "/tmp/"
 
+            @classmethod
+            def get(cls, *args, **kwargs):
+                return None
+
 
 @yield_fixture()
 def fake_board():
