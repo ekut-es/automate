@@ -106,6 +106,7 @@ class BoardModel(DataModelBase):
 
     soc: Optional[SOCModel] = None
     power_supply: Optional[PowerSupplyModel] = None
+    reset: List[str] = []
 
     def _get_env_dict(self) -> Dict[str, str]:
         default_dict = dict(super(BoardModel, self)._get_env_dict())

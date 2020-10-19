@@ -66,6 +66,8 @@ class AutomateContext(invoke.Context):
         self,
     ) -> None:  # Start forwarder processes for port forwarding if corresponding processes do not exist already
 
+        extra_gateway = self.config.automate.get("extra_gateway", None)
+
         for forward in self.config.automate.forwards:
             pidfile = (
                 runtime_dir() / f"automate_forward_{forward['local_port']}.pid"
@@ -135,11 +137,21 @@ class AutomateContext(invoke.Context):
             if socketfile.exists():
                 socketfile.unlink()
 
+            gateway = None
+            if extra_gateway:
+                gateway = connect(
+                    extra_gateway["host"],
+                    extra_gateway["user"],
+                    extra_gateway.get("port", 22),
+                    passwd_allowed=True,
+                )
+
             connection = connect(
                 forward["host"],
                 forward["user"],
                 forward.get("port", 22),
                 passwd_allowed=True,
+                gateway=gateway,
             )
 
             # Detach from process using double fork
@@ -169,11 +181,21 @@ class AutomateContext(invoke.Context):
                 server_sock.bind(str(socketfile).encode("utf-8"))
                 server_sock.listen(1)
 
+                gateway = None
+                if extra_gateway:
+                    gateway = connect(
+                        extra_gateway["host"],
+                        extra_gateway["user"],
+                        extra_gateway.get("port", 22),
+                        passwd_allowed=True,
+                    )
+
                 connection = connect(
                     forward["host"],
                     forward["user"],
                     forward.get("port", 22),
                     passwd_allowed=True,
+                    gateway=gateway,
                 )
 
                 with connection:
