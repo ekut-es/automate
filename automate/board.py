@@ -50,6 +50,18 @@ class _ConnectionContextManager(AbstractContextManager):
                 user = connection.username
                 port = connection.port
 
+                extra_gateway_connection = None
+                extra_gateway_config = self.board.context.config.automate.get(
+                    "extra_gateway", None
+                )
+                if extra_gateway_config:
+                    extra_gateway_connection = connect(
+                        extra_gateway_config["host"],
+                        extra_gateway_config["user"],
+                        extra_gateway_config.get("port", 22),
+                        passwd_allowed=True,
+                    )
+
                 gateway_connection = None
                 if board.model.gateway:
                     gw_host = board.model.gateway.host
@@ -62,6 +74,7 @@ class _ConnectionContextManager(AbstractContextManager):
                         gw_port,
                         identity=board.identity,
                         timeout=self.timeout,
+                        gateway=extra_gateway_connection,
                     )
 
                 c = connect(
