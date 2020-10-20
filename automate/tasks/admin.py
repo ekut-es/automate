@@ -498,7 +498,7 @@ def add_board(
                 version = v
 
     distribution = prompt("  distribution: ", default=distribution)
-    version = prompt("  version: ", default=version)
+    release = prompt("  release: ", default=release)
     description = ""
     sysroot = prompt(
         "  sysroot: ", default="${boardroot}/${board_name}/sysroot"
