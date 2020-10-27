@@ -53,7 +53,9 @@ class ModelLoader(object):
             recursive: wether search allows ** in glob patterns to recurse into subdirectories
         """
         res = []
-        glob_pattern = os.path.join(self.config.automate.metadata, pattern)
+        glob_pattern = os.path.join(
+            os.path.expanduser(self.config.automate.metadata), pattern
+        )
         self.logger.debug("Load glob pattern: {}".format(str(glob_pattern)))
         files = glob(glob_pattern, recursive=recursive)
 
