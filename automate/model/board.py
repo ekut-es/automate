@@ -43,7 +43,9 @@ class CoreModel(DataModelBase):
 class UBootModel(DataModelBase):
     loadaddr: str
     image_name: Path
+    image_compression: str = "none"
     dtb_image: Path
+    dtb_compression: str = "none"
 
 
 class KernelImageModel(DataModelBase):

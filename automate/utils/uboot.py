@@ -22,7 +22,7 @@ FIT_TEMPLATE = Template(
                         type = "kernel";
                         arch = "${arch}";
                         os = "linux";
-                        compression = "none";
+                        compression = "${image_compression}";
                         load = <${loadaddr}>;
                         entry = <${loadaddr}>;
                         hash-1 {
@@ -37,7 +37,7 @@ FIT_TEMPLATE = Template(
                         data = /incbin/("${dtb_image}");
                         type = "flat_dt";
                         arch = "${arch}";
-                        compression = "none";
+                        compression = "${dtb_compression}";
                         hash-1 {
                                 algo = "crc32";
                         };
@@ -80,6 +80,8 @@ def build_ubimage(
     loadaddr = uboot_desc.loadaddr
     image_name = uboot_desc.image_name
     dtb_image = uboot_desc.dtb_image
+    image_compression = uboot_desc.image_compression
+    dtb_compression = uboot_desc.dtb_compression
 
     result = FIT_TEMPLATE.safe_substitute(
         {
@@ -88,6 +90,8 @@ def build_ubimage(
             "dtb_image": str(dtb_image),
             "arch": arch,
             "kernel_image": str(kernel_image),
+            "image_compression": str(image_compression),
+            "dtb_compression": str(dtb_compression),
         }
     )
 
