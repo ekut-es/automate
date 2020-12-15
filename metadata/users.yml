@@ -33,7 +33,7 @@ volmdenn:
     mail: nospam@example.com
     public_keys:
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHVfqEqR6dHAwEe0pZfTiiCMlQE3KNooVz4FlXcWNeXEeOl0CaBvQh2rysU3jWpnCb/9nsC2N55XdgZBrB9tUEBi4e849N3K6Sr34gfpykRcI16KP5i3Y8LA1sLlChlZS+5d3sMQ886Lb4rgWCk+pNOopegiVi1eeEUd+3pNGgRX/RTMhixLHP7UJIC1cSSaV/3M2LFxzsCLfK8AIO+lv5sTlOmhUDUVMoM48p9d/JVDnHLaWIjjosX4EgLK1Se9o6R11wVCbNqRwaiTd0KRMstDMQb5k7RnEbT+oS4zKZRWIrYhe5N3Sar5PbrlcK7kJir5F14sRBZcKyaOC/tk6X volmdenn@ducky"
-
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCpvJdBeQVfW8JtXRGIvjx/F2btr0wnkHlISOMSNbmpagktiNDCvyJCwJWVBiBis7zjmcxvqQsVzwmF8EiVO41sLG72UkxExQUkEJw+eYLNOyjVBTKLtkpJIcjxRtgd5S0vDeeul2rSixr+zqscS5ALD8U4YVnLFKNBJ+Mmxfj4o4QtRBaCgV/uX7ot4Qj/sUHtgKslCzTJ6z5XRpOx6zK3gCHdFMIJzhic9mSlLPCfPCZ95GYw47SDEjiPoaIHfq62ok2q+JQB5EAuwFeVfGmat5UDCE0Bs+bvcbJDO4agOVBtulhgHwJieeSvDbYQ7Rxn5wEDYg5GRcuCfZrjP8KT christoph@mel"
 
 dreixler:
     name: "Stefan Dreixler"
@@ -54,3 +54,10 @@ strohm:
     mail: ""
     public_keys:
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQFJLX7SqSxb688G4nNX6e75Zxs0/vV/Izyuq17svpt martin.stroh@student.uni-tuebingen.de"
+
+
+gollm:
+    name: "Marco Goll"
+    mail: ""
+    public_keys:
+       - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGbtrWFLd+w11iLnsdbb1rjIOLYaZuGBZwulPpSS3b72"
