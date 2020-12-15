@@ -10,6 +10,6 @@ def runtime_dir() -> Path:
         dir = Path(env_dir)
 
     dir = dir / "automate"
-    dir.mkdir(exist_ok=True)
+    dir.mkdir(exist_ok=True, parents=True)
 
     return dir
