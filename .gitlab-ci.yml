@@ -67,6 +67,7 @@ build_doc:
     - pip install poetry 
   script:
     - set -e
+    - source .venv/bin/activate
     - poetry install
     - poetry run pydoc-markdown --build --site-dir site
     - mkdir -p /afs/wsi/home/gerum/public_html/automate
