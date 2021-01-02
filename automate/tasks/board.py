@@ -10,10 +10,10 @@ from ..utils.network import rsync
 @task
 def run(c, board, command, cwd=""):  # pragma: no cover
     """Run command remotely
-    
-        -b/--board: target board id
-        -c/--command: command to run
-        --cwd: working directory of the command
+
+    -b/--board: target board id
+    -c/--command: command to run
+    --cwd: working directory of the command
     """
 
     bh = c.board(board)
@@ -30,10 +30,10 @@ def run(c, board, command, cwd=""):  # pragma: no cover
 @task
 def put(c, board, file, remote_path=""):  # pragma: no cover
     """Put file on the board
-     
-        -b/--board: target board id
-        -f/--file: local file
-        -r/--remote: remote file path (default is board specific rundir)
+
+    -b/--board: target board id
+    -f/--file: local file
+    -r/--remote: remote file path (default is board specific rundir)
     """
 
     bh = c.board(board)
@@ -55,10 +55,10 @@ def put(c, board, file, remote_path=""):  # pragma: no cover
 @task
 def get(c, board, remote, local=""):  # pragma: no cover
     """Get file from board
-       
-        -b/--board: target board id
-        -r/--remote: remote file path
-        -l/--local:  local folder or filename (default is current working directory)
+
+    -b/--board: target board id
+    -r/--remote: remote file path
+    -l/--local:  local folder or filename (default is current working directory)
     """
 
     bh = c.board(board)
@@ -77,9 +77,11 @@ def get(c, board, remote, local=""):  # pragma: no cover
 def lock(c, board, lease_time="1h", timeout=""):  # pragma: no cover
     """Lock board
 
-        -b/--board: target board id
-        -t/--timeout: timeout for the lock (deprecated use lease-time)
-        -l/--lease-time: The board is kept locked for at least lease_time
+    -b/--board: target board id
+    -t/--timeout: timeout for the lock (deprecated use lease-time)
+    -l/--lease-time: The board is kept locked for at least lease_time
+         Lease time can be given as an int representing seconds or with a suffix
+         d for days, h for hours, m for minutes, s for seconds
     """
     board = c.board(board)
     if timeout != "":
@@ -94,7 +96,7 @@ def lock(c, board, lease_time="1h", timeout=""):  # pragma: no cover
 def unlock(c, board):  # pragma: no cover
     """Unlock board
 
-       -b/--board: target board id 
+    -b/--board: target board id
     """
     board = c.board(board)
     board.unlock()
@@ -104,7 +106,7 @@ def unlock(c, board):  # pragma: no cover
 def is_locked(c, board):  # pragma: no cover
     """Return 0 if board is locked by other user
 
-       -b/--board: target board id 
+    -b/--board: target board id
     """
     board = c.board(board)
     if board.is_locked():
@@ -119,7 +121,7 @@ def is_locked(c, board):  # pragma: no cover
 def has_lock(c, board):  # pragma: no cover
     """Return 0 if board is locked by current user
 
-       -b/--board: target board id 
+    -b/--board: target board id
     """
     board = c.board(board)
     if board.has_lock():
@@ -131,16 +133,23 @@ def has_lock(c, board):  # pragma: no cover
 
 
 @task
-def trylock(c, board, timeout="1h"):
-    """ Try to lock the board.
-       
-        Returns immediately, and returns 0 if lock has been acquired.
+def trylock(c, board, lease_time="1h", timeout=""):
+    """Try to lock the board.
 
-        -b/--board: target board name
-        -t/--timeout: duration of the lock
+    Returns immediately, and returns 0 if lock has been acquired.
+
+    -b/--board: target board name
+    -l/--lease-time: duration of the lock
     """
     board = c.board()
-    if board.trylock(timeout=timeout):
+
+    if timeout != "":
+        logging.warning(
+            "-t/--timeout has been deprecated please use -l/--lease-time instead"
+        )
+        lease_time = timeout
+
+    if board.trylock(lease_time=lease_time):
         raise Exit(code=0)
     raise Exit(code=1)
 
@@ -148,9 +157,9 @@ def trylock(c, board, timeout="1h"):
 @task
 def reboot(c, board, wait=False):  # pragma: no cover
     """Reboot  board
-       
-        -b/--board: target board id
-        -w/--wait block until the board is reachable via ssh again
+
+    -b/--board: target board id
+    -w/--wait block until the board is reachable via ssh again
     """
 
     board = c.board(board)
@@ -160,9 +169,9 @@ def reboot(c, board, wait=False):  # pragma: no cover
 @task
 def reset(c, board, wait=False):  # pragma: no cover
     """Hard reset board
-       
-        -b/--board: target board id
-        -w/--wait: block until the board is reachable again
+
+    -b/--board: target board id
+    -w/--wait: block until the board is reachable again
     """
 
     board = c.board(board)
@@ -173,8 +182,8 @@ def reset(c, board, wait=False):  # pragma: no cover
 def install(c, board, package):  # pragma: no cover
     """Install a package on the board
 
-        -b/--board: target board id
-        -p/--package: package
+    -b/--board: target board id
+    -p/--package: package
     """
 
     board = c.board(board)
@@ -197,9 +206,9 @@ def install(c, board, package):  # pragma: no cover
 
 @task
 def shell(c, board):  # pragma: no cover
-    """Start a remote shell 
+    """Start a remote shell
 
-        -b/--board: target board id
+    -b/--board: target board id
     """
 
     board = c.board(board)
@@ -212,17 +221,17 @@ def shell(c, board):  # pragma: no cover
 @task
 def board_ids(c, filter=""):  # pragma: no cover
     """returns list of board_ids suitable for usage in shell scripts
-    
-       -f/--filter: filter expression for boards
 
-               Filter expression is prepended with 'lambda board:  ' and then evaluated as a python function
-               board is an object of class Board, only returns board_ids if filter expression is true
+    -f/--filter: filter expression for boards
 
-               Examples:
- 
-               board.machine == 'zynqberry' to only run on zynqberry boards
+            Filter expression is prepended with 'lambda board:  ' and then evaluated as a python function
+            board is an object of class Board, only returns board_ids if filter expression is true
 
-               board.trylock() to only iterate over boards that are currently unlocked, and lock the boards while iterating
+            Examples:
+
+            board.machine == 'zynqberry' to only run on zynqberry boards
+
+            board.trylock() to only iterate over boards that are currently unlocked, and lock the boards while iterating
     """
 
     if filter:
@@ -237,13 +246,13 @@ def board_ids(c, filter=""):  # pragma: no cover
 
 @task
 def rsync_to(c, board, source, target="", delete=False):  # pragma: no cover
-    """rsync a folder to the target board by default the 
-    
-       
-       -b/--board: target board id
-       -s/--source: source folder/file
-       -t/--target: target folder/file default is configured rundir on the board
-       -d/--delete: delete files from target that do not exist in the source 
+    """rsync a folder to the target board by default the
+
+
+    -b/--board: target board id
+    -s/--source: source folder/file
+    -t/--target: target folder/file default is configured rundir on the board
+    -d/--delete: delete files from target that do not exist in the source
     """
     board = c.board(board)
 
@@ -261,11 +270,11 @@ def kexec(
     c, board, kernel_id="", append="", commandline="", wait=False
 ):  # pragma: no cover
     """Start the Linux kernel using kexec
-    
-       -b/--board: target board id
-       -k/--kernel-id: target kernel id
-       -a/--append: Append the given string to the commandline
-       -w/--wait: wait until board is reachable via ssh again
+
+    -b/--board: target board id
+    -k/--kernel-id: target kernel id
+    -a/--append: Append the given string to the commandline
+    -w/--wait: wait until board is reachable via ssh again
     """
 
     board = c.board(board)
