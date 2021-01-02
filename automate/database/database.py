@@ -40,14 +40,14 @@ class Database:
         self, host: str, port: int, db: str, user: str, password: str
     ) -> None:
         """Init database connection
-    
-           # Arguments
 
-           host: hostname or ip address for database connection
-           port: port for database connection
-           db: name of database
-           user: username for connection
-           password: password for connection
+        # Arguments
+
+        host: hostname or ip address for database connection
+        port: port for database connection
+        db: name of database
+        user: username for connection
+        password: password for connection
         """
         self.logger = logging.getLogger(__name__)
 
@@ -279,7 +279,7 @@ class Database:
     def insert_board(
         self, board_model: BoardModel, additional_data: Any
     ) -> None:
-        """ Insert a board into database
+        """Insert a board into database
 
         # Arguments
         board_model: The BoardModel to insert
@@ -370,6 +370,10 @@ class Database:
     ) -> bool:
         # check if board is locked
         lock = self._select_lock_for_board(board_name)
+
+        self.logger.info(
+            "Trying to lock board %s for %d seconds", board_name, lease_duration
+        )
 
         # board is locked
         if lock is not None:

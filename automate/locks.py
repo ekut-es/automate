@@ -84,7 +84,9 @@ class LockManagerBase:
     def _str_to_timedelta(self, inp: str) -> timedelta:
         inp = inp.strip()
         seconds = 0
-        if inp[-1] == "h":
+        if inp[-1] == "d":
+            seconds = int(inp[:-1].strip()) * 3600 * 24
+        elif inp[-1] == "h":
             seconds = int(inp[:-1].strip()) * 3600
         elif inp[-1] == "m":
             seconds = int(inp[:-1].strip()) * 60
@@ -135,7 +137,9 @@ class LockManagerBase:
             if current_delta > delta:
                 return True
 
-        return self._do_trylock(board_name, delta.seconds)
+        print("Lease time", delta)
+
+        return self._do_trylock(board_name, delta.total_seconds())
 
     def has_lock(self, board: Union["Board", str]) -> bool:
         if isinstance(board, str):
@@ -222,7 +226,7 @@ class SimpleLockManager(LockManagerBase):
         return None
 
     def _do_trylock(self, board_name: str, lease_time: float) -> bool:
-        """ 
+        """
         checks if board with board_name is locked
         if the desired board is locked it will be checked
             if user owns the lock and if so the lease will be updated
