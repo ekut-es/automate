@@ -26,7 +26,7 @@ class KeepLockThread(threading.Thread):
         self.stop_event = threading.Event()
 
         logging.debug("Creating keep lock thread")
-        super().__init__()
+        super().__init__(daemon=True)
 
     def run(self):
 
