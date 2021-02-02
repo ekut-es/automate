@@ -122,13 +122,9 @@ class Database:
 
     def __load_query(self, name: str) -> str:
         sql_file_path = self.QUERIES_DIR + "/" + name + ".sql"
-        try:
-            sql_file = open(sql_file_path, "r")
-        except:
-            self.logger.error(
-                "could not load sql file: '" + sql_file_path + "'"
-            )
-        query = sql_file.read()
+        
+        with open(sql_file_path, "r") as sql_file:
+            query = sql_file.read()
         return query
 
     def init(self) -> None:
