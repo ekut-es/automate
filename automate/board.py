@@ -102,7 +102,6 @@ class _ConnectionContextManager(AbstractContextManager):
 
         if self.locking_thread is not None:
             self.locking_thread.stop()
-            self.locking_thread.join()
             self.locking_thread = None
 
         if not self.nested:
@@ -113,7 +112,6 @@ class _ConnectionContextManager(AbstractContextManager):
     def __del__(self):
         if self.locking_thread is not None:
             self.locking_thread.stop()
-            self.locking_thread.join()
             self.locking_thread = None
 
     def __getattr__(self, attr: str) -> Any:
