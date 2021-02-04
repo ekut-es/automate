@@ -350,7 +350,7 @@ class Board(object):
                     gw_user,
                     gw_port,
                     identity=self.identity,
-                    gateway=gateway_connection,
+                    gateway=extra_gateway_connection,
                 )
             if gateway_connection is not None:
                 for command in self.model.reset:
