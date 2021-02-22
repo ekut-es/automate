@@ -1,5 +1,10 @@
 image: centos:7
 
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  POETRY_HOME: "$CI_PROJECT_DIR/.poetry"
+  GIT_SUBMODULE_STRATEGY: recursive
+
 stages:
   - test
   - integration_test
@@ -12,7 +17,13 @@ before_script:
   - yum groupinstall 'Development Tools' -y
   - yum install postgresql-devel -y
   - python3.6 -m ensurepip
-  - python3.6 -m pip install poetry
+  
+  # Install poetry using recommended method
+  - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.6
+  - export PATH=${POETRY_HOME}/bin:${PATH}
+
+  # Work around: https://github.com/python-poetry/poetry/issues/3199
+  - poetry config experimental.new-installer false
   
 variables:
   LC_ALL: "en_US.UTF-8"
