@@ -19,6 +19,7 @@ before_script:
   - python3.6 -m ensurepip
   
   # Install poetry using recommended method
+  - export  POETRY_HOME="$CI_PROJECT_DIR/.poetry"
   - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.6
   - export PATH=${POETRY_HOME}/bin:${PATH}
 
