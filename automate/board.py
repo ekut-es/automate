@@ -102,7 +102,6 @@ class _ConnectionContextManager(AbstractContextManager):
 
         if self.locking_thread is not None:
             self.locking_thread.stop()
-            self.locking_thread.join()
             self.locking_thread = None
 
         if not self.nested:
@@ -113,7 +112,6 @@ class _ConnectionContextManager(AbstractContextManager):
     def __del__(self):
         if self.locking_thread is not None:
             self.locking_thread.stop()
-            self.locking_thread.join()
             self.locking_thread = None
 
     def __getattr__(self, attr: str) -> Any:
@@ -352,7 +350,7 @@ class Board(object):
                     gw_user,
                     gw_port,
                     identity=self.identity,
-                    gateway=gateway_connection,
+                    gateway=extra_gateway_connection,
                 )
             if gateway_connection is not None:
                 for command in self.model.reset:
