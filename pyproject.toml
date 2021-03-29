@@ -16,14 +16,14 @@ patchwork = "^1.0"
 prompt_toolkit = "^3.0"
 requests = "^2.22"
 python-dotenv = {version = "^0.10.5", optional = true}
-psycopg2 = {version = "^2.8.4", optional = true}
 pydot = {version = "^1.4.1", optional = true}
 jinjasql = {version = "^0.1.7", optional = true}
 keyring = "^21.1.0"
 setproctitle = "^1.1.10"
+psycopg2-binary = {version = "^2.8.6", optional = true}
 
 [tool.poetry.extras]
-postgres = ["python-dotenv", "pydot", "psycopg2", "jinjasql"]
+postgres = ["python-dotenv", "pydot", "psycopg2-binary", "jinjasql"]
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.740.0"
