@@ -70,7 +70,7 @@ class MakefileBuilder(BaseBuilder):
         """Do nothing"""
         logging.warning("Install does nothing with make builder")
 
-    def deploy(self, delete=False):
+    def deploy(self, connection=None, delete=False):
         """Deploy package on board
 
            Just copies build_directory/srcdir_name to the rundir
@@ -79,14 +79,28 @@ class MakefileBuilder(BaseBuilder):
 
            delete: if true delete remove non existant files from install prefix on the board
         """
+        if connection == None:
+            with self.board.connect() as con:
+                self.deploy_internal(con, delete)
+        else:
+            self.deploy_internal(connection, delete)
 
-        with self.board.connect() as con:
-            with con.cd(str(self.board.rundir)):
-                con.run(f"mkdir -p {self.srcdir.name}")
-            rsync(
-                con,
-                source=str(self.builddir / self.srcdir.name) + "/",
-                target=str(self.board.rundir / self.srcdir.name),
-                delete=delete,
-                rsync_opts="-l",
-            )
+    def deploy_internal(self, con, delete=False):
+        """Deploy package on board (see deploy())
+
+           # Arguments
+
+           con: Connection object
+
+           delete: see deploy()
+        """
+        with con.cd(str(self.board.rundir)):
+            con.run(f"mkdir -p {self.srcdir.name}")
+        rsync(
+            con,
+            source=str(self.builddir / self.srcdir.name) + "/",
+            target=str(self.board.rundir / self.srcdir.name),
+            delete=delete,
+            rsync_opts="-l",
+        )
+
