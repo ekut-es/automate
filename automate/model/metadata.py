@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, Schema
+from pydantic import BaseModel
 
 from .board import BoardModel
 from .compiler import CompilerModel
