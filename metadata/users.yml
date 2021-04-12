@@ -21,7 +21,7 @@ gerum:
   mail: nospam@example.com
   public_keys:
     - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEAv61/8ZqrfDJ+XvNP3nsxtA0Dim0PMA26bx1LTk3CveCPDMd5EamXHX/h+RyB63mhp42W8gFJvosV0kVkbK7IWvfWFDWdYuMDn7c6K28IEmWaD8mmBdwYFChGDKf+Pdonk60SQdNlKCrvCJzbgTIfdZJyP/D2/BF7mllaBQlSCtc= *"
-
+    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCrOH76XNwEBiKLigCzxHY6k3L6Re1joxyFDwV3ZqeGhbYWNBgEFxcVAQnEPvLS9DGFbAGqGstlCjXK2E5EkyE/k8GvUg5/s+ENc1N8qzxg+ovFaf1J44cO/GjSfE2PllLxz0QAq/VgSNqICxGSlEDl0nY4vubfHDEWbPuA+qBe+BSOlsRdHuRctuTFW+DfRgOfGemxxBc4SIjoql0+5v7UT4Ia/UbLyMQzPa5ccNWILq7qiBmILc+8r2c1LKlGljSz4y+5oXyxtOq8gxRDBoMJH+j6fGaG/dekLC7m1xwxWwsl9z1gKzKPvjV9PzsmIlCXW3ZfV3H0rVIZGGKfZtl4PO0kP1il5bwx1iFt+xQ836wqHLiBDwSFOUFXvaqs2n0jKhIHEF/CHHBA/nn+l/cMmN3FCI9ArGOwlQW0Q85SXdRJcCNG7zPthgTSOtu7dhPu3mXCNpk7dZtx1jlCKf7LQGAnuNqa2FykMJIHH8N7Fi06yzuygto/GQLjIpAaCZU= gerum@leia"
 luebeck:
   name: "Konstantin Lübeck"
   mail: nospam@example.com
