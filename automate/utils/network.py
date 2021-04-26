@@ -189,7 +189,7 @@ def rsync(
     exclude: Iterable[str] = (),
     delete: bool = False,
     verbose: bool = False,
-    rsync_timeout: int = 5,
+    rsync_timeout: int = 20,
     retries: int = 5,
     rsync_opts: str = "",
 ) -> None:
