@@ -5,7 +5,7 @@ description = ""
 authors = ["Christoph Gerum <christoph.gerum@uni-tuebingen.de>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.1"
 pydantic = "^1.2"
 "ruamel.yaml" = "^0.16.6"
 coloredlogs = "^10.0"
