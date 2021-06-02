@@ -61,3 +61,9 @@ gollm:
     mail: ""
     public_keys:
        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGbtrWFLd+w11iLnsdbb1rjIOLYaZuGBZwulPpSS3b72"
+
+longnguy:
+    name: "Long Nguyen"
+    mail: "long.nguyen@student.uni-tuebingen.de"
+    public_keys:
+       - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZttx4XN6roXaDoIbQJ7YokR+2/KHwZ4e9r48aBvzLJEes2d5WP3wL8E7bL/DE0wccmBVYgrLte9z45Fbs204UKwORHihdDf5nr+6sLT/yTxz2QoDk3z67l3F9I//jjPSH4E1xkOQceZFgz2TyQakqIg5jY6FLJn6MGKfsoWeLh4Vd8u4YNnMKzEIlwEcMqu8nemjIcLhX+kHlHG2sfPtJ8Xe9q8moGIIks65WnFSbflVjt0PrkLsmmlatbe0lO6/lY3MSGCUqguXxhG7kbfUvxSLPdepny1lu/3UWMTicUSX3R0L1uRdmlQ/17aaHJHGPFlgg+66Jl+wfAIKCurmr longnguy@vegeta"
