@@ -109,6 +109,7 @@ class BaseBuilder(object):
 
         if cross_compiler is not None:
             self.cross_compiler = deepcopy(cross_compiler)
+        
 
         if override_flags is not None:
             self.cross_compiler.configure(**override_flags)

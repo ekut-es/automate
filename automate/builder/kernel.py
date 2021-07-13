@@ -60,6 +60,9 @@ class KernelBuilder(BaseBuilder):
         cross_compiler: cross_compiler object to use
         """
 
+        if cross_compiler is None:
+            cross_compiler = self.board.compiler()
+
         super(KernelBuilder, self).configure(cross_compiler=cross_compiler)
 
         self._mkbuilddir()
