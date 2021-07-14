@@ -269,6 +269,17 @@ class CrossCompiler(Compiler):
         return flag
 
     @property
+    def features(self) -> List[str]:
+        features = self.board.cores[self.core].extensions
+        ret = []
+        for k, v in self.model.feature_map.items():
+            if k in features:
+                ret.append(f"+{v}")
+            else:
+                ret.append(f"-{v}")
+        return ret
+
+    @property
     def sysroot(self) -> Union[Path, str]:
         """Sysroot flag for this compiler and board"""
         if not Path(self.board.os.sysroot).exists():
@@ -392,6 +403,7 @@ class CrossCompiler(Compiler):
 
         if self.toolchain == Toolchain.LLVM:
             flags.append("--rtlib=libgcc")
+            flags.append("--unwindlib=libgcc")
             flags.append("--stdlib=libstdc++")
 
         if self._ldflags:

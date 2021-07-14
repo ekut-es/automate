@@ -32,6 +32,7 @@ class CompilerModel(LoadedModelBase):
     ar: str
     isa_map: Dict[str, str]
     uarch_map: Dict[str, str]
+    feature_map: Dict[str, str] = Field(default_factory=dict)
     description: str = ""
     prefix: str = ""
     postfix: str = ""
