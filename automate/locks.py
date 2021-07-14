@@ -104,8 +104,12 @@ class LockManagerBase:
         board: Union["Board", str],
         lease_time: Union[timedelta, str] = "1h",
     ) -> None:
-        while not self.trylock(board, lease_time):
-            time.sleep(0.5)
+        if not self.trylock(board, lease_time):
+            logging.warning(
+                "Board has already been locked by a different user waiting until board is available"
+            )
+            while not self.trylock(board, lease_time):
+                time.sleep(0.5)
 
     def unlock(self, board: Union["Board", str]) -> None:
 
@@ -136,8 +140,6 @@ class LockManagerBase:
             current_delta = self.lease_time(board_name)
             if current_delta > delta:
                 return True
-
-        print("Lease time", delta)
 
         return self._do_trylock(board_name, delta.total_seconds())
 
