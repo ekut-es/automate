@@ -68,3 +68,10 @@ longnguy:
     mail: "long.nguyen@student.uni-tuebingen.de"
     public_keys:
        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCZttx4XN6roXaDoIbQJ7YokR+2/KHwZ4e9r48aBvzLJEes2d5WP3wL8E7bL/DE0wccmBVYgrLte9z45Fbs204UKwORHihdDf5nr+6sLT/yTxz2QoDk3z67l3F9I//jjPSH4E1xkOQceZFgz2TyQakqIg5jY6FLJn6MGKfsoWeLh4Vd8u4YNnMKzEIlwEcMqu8nemjIcLhX+kHlHG2sfPtJ8Xe9q8moGIIks65WnFSbflVjt0PrkLsmmlatbe0lO6/lY3MSGCUqguXxhG7kbfUvxSLPdepny1lu/3UWMTicUSX3R0L1uRdmlQ/17aaHJHGPFlgg+66Jl+wfAIKCurmr longnguy@vegeta"
+
+reiber:
+    name: "Moritz Reiber"
+    mail: ""
+    public_keys:
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFwsYfx7NQZam7ZXYRujZEEKzOUciZytgE2jilU5SiQb moritz.reiber@student.uni-tuebingen.de"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOU4WuRQX/Tb8r1CafBe2ylRFdsHqEjk5/tfKrVbb4GX8Jr4t3PKsQ5xasVM7CRsTl+lITfKBt/ymE8G6E6JYSsBBE1rVaojLvwbaP7XaNqCWLNTYwnPApZII1o1JmVzHeo90FNBChs416tPbKbqrreJyFeg1qa2vItmPSuSQDWmlBcFybSYcallOnmQqz539Csv5MUJDrrYgCdJOA11/IOFLRQYqQVos2h7A76Kgr7Fh3Fmnb2cQul0w0AEnSMTkq0CeeedI4hTsJKjp8Mtdt0gv1dVqLeP3OeWYORcIUfKqrtt3ErJftzq4cIx+OurZwqqhha04+UXLJb8nqwYPJ reiber@dacky"
