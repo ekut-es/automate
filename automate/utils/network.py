@@ -134,7 +134,7 @@ def connect(
     return connection
 
 
-def find_local_port() -> int:
+def find_local_port(start=1024, end=65536) -> int:
     """ Returns a locally bindable port number 
 
     # Returns
@@ -142,7 +142,7 @@ def find_local_port() -> int:
     """  # noqa
 
     while True:
-        port = random.randint(1024, 65536)
+        port = random.randint(start, end)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             logging.debug("selected local port: %d", port)
