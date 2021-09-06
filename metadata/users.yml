@@ -75,3 +75,9 @@ reiber:
     public_keys:
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFwsYfx7NQZam7ZXYRujZEEKzOUciZytgE2jilU5SiQb moritz.reiber@student.uni-tuebingen.de"
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOU4WuRQX/Tb8r1CafBe2ylRFdsHqEjk5/tfKrVbb4GX8Jr4t3PKsQ5xasVM7CRsTl+lITfKBt/ymE8G6E6JYSsBBE1rVaojLvwbaP7XaNqCWLNTYwnPApZII1o1JmVzHeo90FNBChs416tPbKbqrreJyFeg1qa2vItmPSuSQDWmlBcFybSYcallOnmQqz539Csv5MUJDrrYgCdJOA11/IOFLRQYqQVos2h7A76Kgr7Fh3Fmnb2cQul0w0AEnSMTkq0CeeedI4hTsJKjp8Mtdt0gv1dVqLeP3OeWYORcIUfKqrtt3ErJftzq4cIx+OurZwqqhha04+UXLJb8nqwYPJ reiber@dacky"
+
+brandts:
+    name: "Sebastian Brandt"
+    mail: "sebastian.brandt@student.uni-tuebingen.de"
+    public_keys:
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINOr/01jd4aZPb95hf3hlLFBHnrDPcSAZOnSyxdkHvb7 sebastian.brandt@student.uni-tuebingen.de"
