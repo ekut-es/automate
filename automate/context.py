@@ -57,8 +57,8 @@ class AutomateContext(invoke.Context):
                     self.config.automate.database.password,
                 )
             else:
-                self.logger.warning(
-                    "You have configured a database but the required packages are not installed"
+                raise Exception(
+                    "You have configured a database but the required packages are not installed, please install with -E postgres"
                 )
         return None
 
