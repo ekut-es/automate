@@ -16,7 +16,11 @@ if TYPE_CHECKING:
 
 class KeepLockThread(threading.Thread):
     def __init__(
-        self, manager, board_name, current_lease_time, lease_time_increase=90,
+        self,
+        manager,
+        board_name,
+        current_lease_time,
+        lease_time_increase=90,
     ):
         self.manager = manager
         self.board_name = board_name
@@ -220,8 +224,11 @@ class SimpleLockManager(LockManagerBase):
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
-                    assert hasattr(lockdb[board_name], 'user_id')
-                    if cast(LockEntry, lockdb[board_name]).user_id == self.user_id: 
+                    assert hasattr(lockdb[board_name], "user_id")
+                    if (
+                        cast(LockEntry, lockdb[board_name]).user_id
+                        == self.user_id
+                    ):
                         del lockdb[board_name]
         except Exception as e:
             self.logger.error("Exception during board unlock", str(e))
@@ -241,30 +248,34 @@ class SimpleLockManager(LockManagerBase):
 
         delta = timedelta(seconds=lease_time)
         lease_time_absolute = datetime.now() + delta
-        lease_time_seconds = lease_time_absolute.timestamp()
-        lease_time = lease_time_seconds
 
         try:
             with shelve.open(self.lockfile) as lockdb:
-                current_timestamp = time.time()
+                current_timestamp = datetime.now()
                 if board_name in lockdb:
-                    current_lock : LockEntry = cast(LockEntry, lockdb[board_name]) 
-                    if current_lock.user_id != self.user_id: # typing: ignore
+                    current_lock: LockEntry = cast(
+                        LockEntry, lockdb[board_name]
+                    )
+                    if current_lock.user_id != self.user_id:  # typing: ignore
                         if current_timestamp < current_lock.timestamp:
                             return False
                         else:
                             lockdb[board_name] = LockEntry(
-                                self.user_id, lease_time
+                                self.user_id, lease_time_absolute
                             )
                             return True
 
                     if current_lock.timestamp < lease_time:
-                        lockdb[board_name] = LockEntry(self.user_id, lease_time)
+                        lockdb[board_name] = LockEntry(
+                            self.user_id, lease_time_absolute
+                        )
                     return True
 
-                lockdb[board_name] = LockEntry(self.user_id, lease_time)
+                lockdb[board_name] = LockEntry(
+                    self.user_id, lease_time_absolute
+                )
         except Exception as e:
-            self.logger.error("Exception during board lock", str(e))
+            self.logger.error("Exception during board lock %s", str(e))
 
         return True
 
@@ -274,7 +285,7 @@ class SimpleLockManager(LockManagerBase):
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
                     current_lock = cast(LockEntry, lockdb[board_name])
-                    current_timestamp = time.time()
+                    current_timestamp = datetime.now()
 
                     if (
                         current_lock.user_id == self.user_id
@@ -282,7 +293,7 @@ class SimpleLockManager(LockManagerBase):
                     ):
                         return True
         except Exception as e:
-            self.logger.error("Exception during has_lock", str(e))
+            self.logger.error("Exception during has_lock %s", str(e))
 
         return False
 
@@ -292,7 +303,7 @@ class SimpleLockManager(LockManagerBase):
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
                     current_lock = cast(LockEntry, lockdb[board_name])
-                    current_timestamp = time.time()
+                    current_timestamp = datetime.now()
                     if (
                         current_lock.user_id != self.user_id
                         and current_lock.timestamp > current_timestamp
@@ -309,7 +320,7 @@ class SimpleLockManager(LockManagerBase):
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
                     current_lock = cast(LockEntry, lockdb[board_name])
-                    current_timestamp = time.time()
+                    current_timestamp = datetime.now()
                     lock_timestamp = current_lock.timestamp
 
                     delta = lock_timestamp - current_timestamp
@@ -317,7 +328,7 @@ class SimpleLockManager(LockManagerBase):
                     return delta
 
         except Exception as e:
-            self.logger.error("Exception during board islocked", str(e))
+            self.logger.error("Exception during board islocked: %s", str(e))
 
         return timedelta()
 
@@ -329,7 +340,7 @@ class SimpleLockManager(LockManagerBase):
                     return str(current_lock.user_id)
 
         except Exception as e:
-            self.logger.error("Exception during board islocked", str(e))
+            self.logger.error("Exception during board islocked %s", str(e))
         return ""
 
 

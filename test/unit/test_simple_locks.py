@@ -12,7 +12,7 @@ def test_simple_lock(tmpdir):
 
     def get_timeout(board):
         with shelve.open(str(db_file)) as db:
-            return db[board].timestamp
+            return db[board].timestamp.timestamp()
 
     lock_manager.lock("fake_board")
     assert lock_manager.has_lock("fake_board") == True

@@ -122,7 +122,7 @@ class Database:
 
     def __load_query(self, name: str) -> str:
         sql_file_path = self.QUERIES_DIR + "/" + name + ".sql"
-        
+
         with open(sql_file_path, "r") as sql_file:
             query = sql_file.read()
         return query

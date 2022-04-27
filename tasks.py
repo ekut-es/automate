@@ -26,7 +26,6 @@ def mypy(c):
     "Run static typechecker on the code"
     root_path = Path(os.path.dirname(os.path.abspath(__file__)))
     with c.cd(str(root_path)):
-        c.run("mypy --install-types")
         c.run("mypy automate")
 
 
