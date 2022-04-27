@@ -82,3 +82,10 @@ brandts:
     mail: "sebastian.brandt@student.uni-tuebingen.de"
     public_keys:
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINOr/01jd4aZPb95hf3hlLFBHnrDPcSAZOnSyxdkHvb7 sebastian.brandt@student.uni-tuebingen.de"
+
+
+schondor:
+    name: "Lukas Schondorf"
+    mail: "omitted@test.com"
+    public_keys:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGXsNbiclniV5i0+49h+JeO8MhCXGim5+Sv2U37TChuOBPsN1j4pdj2uZ7LNJix9b1Yn8IxbT0yUzKaGQCWCWSqEdy/vv/H39i0YPDh3Ls+pSl4pEbpib7msOT+Yvm74/39jekmDoZv5Eep/CXQCmHhx3X03YKeYFfFLXPevRpr8rC8sWlcQJnxLBwej8NRWJdqBc2QpNpWUuA7a0UeQoND+jJIIfJCvTCbnb027oXSMpnyEU96hW/teTcLKyFNaHnwHlMtxO62ik3Bhez/ALsQjk4TankA/5VoCfkybpJ5P3xF3iMBx+VzIODw4Fvusa3mjp9B2F2eDy/RGLQ5in1 schondor@mambo"
