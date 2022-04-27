@@ -25,11 +25,11 @@ from .model import (
 
 class ModelLoader(object):
     def __init__(self, config: AutomateConfig, database=None) -> None:
-        """ Initialize model loader
-        
-            # Parameters 
-            config: AutomateConfig object to use for search of metadata locations
-            database: optional database connnection
+        """Initialize model loader
+
+        # Parameters
+        config: AutomateConfig object to use for search of metadata locations
+        database: optional database connnection
         """
 
         self.config = config
@@ -46,11 +46,11 @@ class ModelLoader(object):
     def _load_metadata_list(
         self, pattern: str, recursive: bool = True
     ) -> List[CommentedMap]:
-        """ Parse yaml files for metadata information 
-            
-            # Arguments
-            pattern: glob_pattern to search for metadata files
-            recursive: wether search allows ** in glob patterns to recurse into subdirectories
+        """Parse yaml files for metadata information
+
+        # Arguments
+        pattern: glob_pattern to search for metadata files
+        recursive: wether search allows ** in glob patterns to recurse into subdirectories
         """
         res = []
         glob_pattern = os.path.join(
@@ -134,19 +134,19 @@ class ModelLoader(object):
         return None
 
     def load(self, expand_templates=True) -> MetadataModel:
-        """ Load Metadata model 
-        
-            # Arguments:
-                expand_templates: boolean if true ${var} templates Paths are replaced by their respective configuration value
-               
-            # Templates
-            Expand templates currently expands the following templates
-            ${metadata}: metadata location from config
-            ${toolroot}: toolroot from config  used to give relative paths for compilers
-            ${boardroot}: boardroot from config used to store kernel_sources, rootfs_images, board sysroots, cached_builds 
+        """Load Metadata model
+
+        # Arguments:
+            expand_templates: boolean if true ${var} templates Paths are replaced by their respective configuration value
+
+        # Templates
+        Expand templates currently expands the following templates
+        ${metadata}: metadata location from config
+        ${toolroot}: toolroot from config  used to give relative paths for compilers
+        ${boardroot}: boardroot from config used to store kernel_sources, rootfs_images, board sysroots, cached_builds
         """
-        compilers = self._load_metadata_list("compilers/**/description.yml")
-        compilers = [CompilerModel(**c) for c in compilers]
+        compiler_map = self._load_metadata_list("compilers/**/description.yml")
+        compilers = [CompilerModel(**c) for c in compiler_map]
 
         board_dicts = self._load_metadata_list("boards/**/description.yml")
         boards = []

@@ -22,9 +22,14 @@ def test_simple_lock(tmpdir):
     assert lock_manager.is_locked("fake_board") == False
     assert lock_manager.trylock("fake_board", "5m") == True
     assert abs(get_timeout("fake_board") - time.time() - 5 * 60) < 5
+    print(get_timeout("fake_board"))
+
     assert lock_manager.trylock("fake_board", "5s") == True
+    print(get_timeout("fake_board"))
     assert abs(get_timeout("fake_board") - time.time() - 5 * 60) < 5
+
     assert lock_manager.trylock("fake_board", "5h") == True
+    print(get_timeout("fake_board"))
     assert abs(get_timeout("fake_board") - time.time() - 5 * 3600) < 5
     assert lock_manager.has_lock("fake_board") == True
 
