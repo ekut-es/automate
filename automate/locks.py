@@ -249,7 +249,6 @@ class SimpleLockManager(LockManagerBase):
         delta = timedelta(seconds=lease_time)
         lease_time_absolute = datetime.now() + delta
 
-        print(lease_time_absolute)
         try:
             with shelve.open(self.lockfile) as lockdb:
                 current_timestamp = datetime.now()
@@ -266,7 +265,6 @@ class SimpleLockManager(LockManagerBase):
                             )
                             return True
 
-                    print("current", current_lock.timestamp)
                     if current_lock.timestamp < lease_time_absolute:
                         lockdb[board_name] = LockEntry(
                             self.user_id, lease_time_absolute
