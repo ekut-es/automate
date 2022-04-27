@@ -6,7 +6,7 @@ import time
 from collections import namedtuple
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union, cast
 
 from .database import Database
 
@@ -220,7 +220,8 @@ class SimpleLockManager(LockManagerBase):
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
-                    if lockdb[board_name].user_id == self.user_id:
+                    assert hasattr(lockdb[board_name], 'user_id')
+                    if cast(LockEntry, lockdb[board_name]).user_id == self.user_id: 
                         del lockdb[board_name]
         except Exception as e:
             self.logger.error("Exception during board unlock", str(e))
@@ -247,8 +248,8 @@ class SimpleLockManager(LockManagerBase):
             with shelve.open(self.lockfile) as lockdb:
                 current_timestamp = time.time()
                 if board_name in lockdb:
-                    current_lock = lockdb[board_name]
-                    if current_lock.user_id != self.user_id:
+                    current_lock : LockEntry = cast(LockEntry, lockdb[board_name]) 
+                    if current_lock.user_id != self.user_id: # typing: ignore
                         if current_timestamp < current_lock.timestamp:
                             return False
                         else:
@@ -272,7 +273,7 @@ class SimpleLockManager(LockManagerBase):
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
-                    current_lock = lockdb[board_name]
+                    current_lock = cast(LockEntry, lockdb[board_name])
                     current_timestamp = time.time()
 
                     if (
@@ -290,7 +291,7 @@ class SimpleLockManager(LockManagerBase):
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
-                    current_lock = lockdb[board_name]
+                    current_lock = cast(LockEntry, lockdb[board_name])
                     current_timestamp = time.time()
                     if (
                         current_lock.user_id != self.user_id
@@ -307,7 +308,7 @@ class SimpleLockManager(LockManagerBase):
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
-                    current_lock = lockdb[board_name]
+                    current_lock = cast(LockEntry, lockdb[board_name])
                     current_timestamp = time.time()
                     lock_timestamp = current_lock.timestamp
 
@@ -324,7 +325,7 @@ class SimpleLockManager(LockManagerBase):
         try:
             with shelve.open(self.lockfile) as lockdb:
                 if board_name in lockdb:
-                    current_lock = lockdb[board_name]
+                    current_lock = cast(LockEntry, lockdb[board_name])
                     return str(current_lock.user_id)
 
         except Exception as e:

@@ -1269,6 +1269,33 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "types-requests"
+version = "2.27.20"
+description = "Typing stubs for requests"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+types-urllib3 = "<1.27"
+
+[[package]]
+name = "types-tabulate"
+version = "0.8.7"
+description = "Typing stubs for tabulate"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-urllib3"
+version = "1.26.13"
+description = "Typing stubs for urllib3"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.1.1"
 description = "Backported and Experimental Type Hints for Python 3.6+"
@@ -1358,7 +1385,7 @@ postgres = ["python-dotenv", "pydot", "psycopg2-binary", "jinjasql"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "0c81df9f52606996a353b00aaad9409cd485743809a191de23828eb55eb406cf"
+content-hash = "2ae51a8ef9ddbd5f86f99f292aad78f57ffa7de0ae2b99de193b8c2a5e2545f9"
 
 [metadata.files]
 appdirs = [
@@ -2363,6 +2390,18 @@ typed-ast = [
     {file = "typed_ast-1.5.3-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:8831479695eadc8b5ffed06fdfb3e424adc37962a75925668deeb503f446c0a3"},
     {file = "typed_ast-1.5.3-cp39-cp39-win_amd64.whl", hash = "sha256:20d5118e494478ef2d3a2702d964dae830aedd7b4d3b626d003eea526be18718"},
     {file = "typed_ast-1.5.3.tar.gz", hash = "sha256:27f25232e2dd0edfe1f019d6bfaaf11e86e657d9bdb7b0956db95f560cceb2b3"},
+]
+types-requests = [
+    {file = "types-requests-2.27.20.tar.gz", hash = "sha256:63344573cde6c4efd44d867c0158d9fb7e6beb95721cbe9882f3f857ee8a5398"},
+    {file = "types_requests-2.27.20-py3-none-any.whl", hash = "sha256:68b8de86552116424ec23b77afc925e111afb6496d3821b183b7d151b3b834d4"},
+]
+types-tabulate = [
+    {file = "types-tabulate-0.8.7.tar.gz", hash = "sha256:0acd0295866e5f2de2e90738ff0bc1201751e1dd028bd30cbfa41aa7a669929e"},
+    {file = "types_tabulate-0.8.7-py3-none-any.whl", hash = "sha256:540dc44538bb5a24ef2b359d6a3649547013ae4500205829ce4b9f7d2e1630e7"},
+]
+types-urllib3 = [
+    {file = "types-urllib3-1.26.13.tar.gz", hash = "sha256:40f8fb5e8cd7d57e8aefdee3fdd5e930aa1a1bb4179cdadd55226cea588af790"},
+    {file = "types_urllib3-1.26.13-py3-none-any.whl", hash = "sha256:ff7500641824f881b2c7bde4cc57e6c3abf03d1e005bae83aca752e77213a5da"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.1.1-py3-none-any.whl", hash = "sha256:21c85e0fe4b9a155d0799430b0ad741cdce7e359660ccbd8b530613e8df88ce2"},
