@@ -76,6 +76,6 @@ renderer:
     markdown_extensions:
       - def_list
       - pymdownx.highlight:
-          use_pygments: true
+          use_pygments: false
           linenums: true
       
