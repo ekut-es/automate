@@ -1,4 +1,4 @@
-image: centos:7
+image: almalinux:8
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -13,7 +13,7 @@ stages:
 
 before_script:
   - yum install epel-release -y
-  - yum install git sudo python36 python36-devel -y
+  - yum install git sudo python39 python39-devel -y
   - yum groupinstall 'Development Tools' -y
   - yum install postgresql-devel -y
   - python3.6 -m ensurepip
