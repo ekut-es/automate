@@ -81,7 +81,7 @@ brandts:
     name: "Sebastian Brandt"
     mail: "sebastian.brandt@student.uni-tuebingen.de"
     public_keys:
-        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINOr/01jd4aZPb95hf3hlLFBHnrDPcSAZOnSyxdkHvb7 sebastian.brandt@student.uni-tuebingen.de"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFuVYsTLc9nEg2ZGE6hQNSMYub7Bh/fmcvhNFicYx2940b9CcRlsAuPlR7WJQUbSHIgPtzMCqw+5D8llSq8gRkBelNUCnEHck7D0AfLM874tQ9OSupxGzP02U7zZIGPU48SHZ6N+BSRE/PFecGEqB7CEF+C/43I3DeQekwG9tWlQv1j0REK0yxQvwNDwvdy+LIR5ABHTdTzJ82o804dZoZGXcIvp+U3Leym9z/jhliuO0m0frXYSsZUuuaDiYVtL8NyfM2WmzT1lXPk0zGvVg6EGNHF+vL9zXPS73F/ZQLSHarwjb5UMLi/9kFyOFoJ0IM/7bd91pMiPdDFcfzsTlP GIT"
 
 
 schondor:
