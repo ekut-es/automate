@@ -4,8 +4,9 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   POETRY_HOME: "$CI_PROJECT_DIR/.poetry"
   GIT_SUBMODULE_STRATEGY: recursive
+  LC_ALL: "en_US.UTF-8"
 
-stages:
+  stages:
   - test
   - integration_test
   - deploy_test
@@ -16,7 +17,7 @@ before_script:
   - yum install git sudo python39 python39-devel -y
   - yum groupinstall 'Development Tools' -y
   - yum install postgresql-devel -y
-  - python3.6 -m ensurepip
+  - python3.9 -m ensurepip
   
   # Install poetry using recommended method
   - export  POETRY_HOME="$CI_PROJECT_DIR/.poetry"
@@ -25,9 +26,6 @@ before_script:
 
   # Work around: https://github.com/python-poetry/poetry/issues/3199
   - poetry config experimental.new-installer false
-  
-variables:
-  LC_ALL: "en_US.UTF-8"
   
 test:
   stage: test
