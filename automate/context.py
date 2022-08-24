@@ -1,11 +1,13 @@
 import logging
 import os
 import os.path
+import pathlib
 import socket
 import sys
 import time
 from typing import Generator, Optional, Union
 
+import git
 import invoke
 from setproctitle import setproctitle
 
@@ -20,13 +22,13 @@ from .utils.network import connect
 
 
 class AutomateContext(invoke.Context):
-    """ Main entry for interaction with the system"""
+    """Main entry for interaction with the system"""
 
     def __init__(self, config: AutomateConfig) -> None:
         """Setup context
-        
-           # Arguments:
-           config: Automate Configuration for the System
+
+        # Arguments:
+        config: Automate Configuration for the System
         """
         super(AutomateContext, self).__init__(config)
 
@@ -38,9 +40,62 @@ class AutomateContext(invoke.Context):
         self.database: Optional[Database] = None
 
         self._setup_database()
+        self._sync_metadata()
 
         loader = ModelLoader(config)  # , database=self.database)
         self.metadata = loader.load()
+
+    def _sync_metadata(self) -> None:
+        config = self.config
+        automate_config = config.automate
+        metadata_path = pathlib.Path(automate_config.metadata)
+        metadata_url = str(automate_config.metadata_url)
+        metadata_ref = str(automate_config.metadata_ref)
+
+        self.logger.debug(
+            "Using metadata from %s (ref: %s)", metadata_url, metadata_ref
+        )
+
+        exists = True
+        try:
+            repo = git.Repo(metadata_path)
+        except (
+            git.exc.InvalidGitRepositoryError,  # type: ignore
+            git.exc.NoSuchPathError,  # type: ignore
+        ):
+            if metadata_path.exists():
+                self.logger.warning(
+                    "Path %s exists but is not a git repository assuming it contains valid metadata",
+                    str(metadata_path),
+                )
+            exists = False
+
+        if not exists:
+            self.logger.info("Cloning metadata into %s", str(metadata_path))
+            metadata_path.mkdir(exist_ok=True, parents=True)
+
+            repo = git.Repo.init(metadata_path)
+            remote = repo.create_remote("origin", metadata_url)
+            remote.fetch()
+
+            repo.create_head(metadata_ref, remote.refs[metadata_ref])
+            repo.heads[metadata_ref].set_tracking_branch(
+                remote.refs[metadata_ref]
+            )
+            repo.heads[metadata_ref].checkout()
+
+        repo.git.submodule("update", "--init", "--recursive")
+        remote = repo.remote("origin")
+
+        if remote.url != metadata_url:
+            self.logger.critical(
+                "Metadata url is not as configured: %s", remote.url
+            )
+
+        if repo.is_dirty():
+            self.logger.warning(
+                "Metadata repository is dirty consider publishing your changes"
+            )
 
     def _setup_database(
         self,
@@ -287,9 +342,9 @@ class AutomateContext(invoke.Context):
 
     def board(self, board_name: str) -> Board:
         """Return Board object for board identified by board_name
-        
-           #Returns
-           Board object if board exists
+
+        #Returns
+        Board object if board exists
         """
         for board in self.metadata.boards:
             if board.name == board_name:
@@ -307,8 +362,10 @@ class AutomateContext(invoke.Context):
             )
         )
 
-    def compilers(self,) -> Generator[Compiler, None, None]:
-        """ Return iterator over configured compilers  """
+    def compilers(
+        self,
+    ) -> Generator[Compiler, None, None]:
+        """Return iterator over configured compilers"""
         for compiler in sorted(
             self.metadata.compilers,
             key=lambda c: (c.toolchain.value, c.version),

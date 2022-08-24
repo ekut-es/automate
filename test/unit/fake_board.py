@@ -1,7 +1,7 @@
 import os
 
 import mockssh
-from pytest import yield_fixture
+from pytest import fixture
 
 from automate import Board
 from automate.model import (
@@ -29,7 +29,7 @@ class FakeContext:
                 return None
 
 
-@yield_fixture()
+@fixture()
 def fake_board():
     users = {"test": str(test_private_key)}
     with mockssh.Server(users) as s:
