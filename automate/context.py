@@ -68,6 +68,7 @@ class AutomateContext(invoke.Context):
                     "Path %s exists but is not a git repository assuming it contains valid metadata",
                     str(metadata_path),
                 )
+                return True
             exists = False
 
         if not exists:
