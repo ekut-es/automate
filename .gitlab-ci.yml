@@ -72,7 +72,7 @@ integration_test_with_db:
 
 build_doc:
   before_script:
-    - python3 -m virtualenv -p python3 .venv
+    - python3.9 -m virtualenv -p python3 .venv
     - source .venv/bin/activate
     - pip install poetry 
   script:
