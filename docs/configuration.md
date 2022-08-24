@@ -7,6 +7,8 @@ It has the following sections.
 ## automate
 
 metadata: Location of metadata .yml files 
+metadata_url: Url of git repository containing the central metdata repository (ignored if metdata folder exists and is not a git repository)
+metadata_ref: Git branch or tag of metadata (ignored if metadata folder exists and is not a git repository)
 identity: (Optional) Path of ssh private key to use
 toolroot: installation of tools
 boardroot: Location of saved board data (Kernel SOurces, Kernel Buildds, Device Trees)

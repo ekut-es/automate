@@ -4,7 +4,7 @@ import os.path
 from fabric import Connection
 from fake_board import fake_board, test_private_key
 from monkeypatch_state import monkeypatch_state
-from pytest import raises, yield_fixture
+from pytest import fixture, raises
 
 import automate
 from automate.config import AutomateConfig
@@ -14,10 +14,10 @@ root_path = os.path.dirname(os.path.abspath(__file__))
 metadata_path = os.path.join(root_path, "src", "metadata")
 
 
-@yield_fixture()
+@fixture()
 def zynqberry_board(monkeypatch):
     """Test fixture returning a faked zynqberry board,
-       .connect method is monkeypatched and does produce a FakeConnection object
+    .connect method is monkeypatched and does produce a FakeConnection object
     """
 
     class FakeConnection:

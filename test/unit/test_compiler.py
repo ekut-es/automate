@@ -4,7 +4,7 @@
 import os
 from pathlib import Path
 
-from pytest import raises, yield_fixture
+from pytest import fixture, raises
 
 import automate.model.common
 from automate.config import AutomateConfig
@@ -14,7 +14,7 @@ root_path = os.path.dirname(os.path.abspath(__file__))
 metadata_path = os.path.join(root_path, "src", "metadata")
 
 
-@yield_fixture()
+@fixture()
 def zynqberry_cc():
     """Test fixture for zynqberry cross compiler"""
 

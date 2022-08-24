@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "board-automate"
-version = "0.1.0"
+version = "0.2.0"
 description = "Automate remote exection on linux based embedded boards"
 authors = ["Christoph Gerum <christoph.gerum@uni-tuebingen.de>"]
 packages = [
@@ -25,6 +25,7 @@ jinja2 = {version = ">3.0,<3.1", optional = true}
 keyring = "^21.1.0"
 setproctitle = "^1.1.10"
 psycopg2-binary = {version = "^2.8.6", optional = true}
+GitPython = "^3.1.27"
 
 [tool.poetry.extras]
 postgres = ["python-dotenv", "pydot", "psycopg2-binary", "jinjasql", "jinja"]
