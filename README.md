@@ -33,9 +33,8 @@ Copy the configuration file:
 
     cp automate.yml ~/.automate.yml
 	
-Edit '~/.automate.yml' to change value of key metadata to the subdirectory 
-metadata of repository checkout. 
- 
+And adopt the settings of the configuration file. 
+
 List available boards
 
     automate list
