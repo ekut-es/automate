@@ -1212,7 +1212,7 @@ postgres = ["python-dotenv", "pydot", "psycopg2-binary", "jinjasql"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">3.7.1,<4.0"
-content-hash = "f06d3232b39f716f0c11212cf24afc843d501fa16a62d562b651848c7fa92ec6"
+content-hash = "9adfa04d14a798fcf7ff12e451a8a0bba2253c0b5b0d20d4dfdf39af52536f75"
 
 [metadata.files]
 asttokens = [
