@@ -36,7 +36,7 @@ jobs:
 
 
     - name: Install Dependencies 🔧
-      run: pip install --upgrade pydoc-markdown mkdocs pymdown-extensions
+      run: pip install --upgrade pydoc-markdown mkdocs pymdown-extensions mkdocs-material
 
     - name: Build 🔧
       run: pydoc-markdown --build --site-dir _build
