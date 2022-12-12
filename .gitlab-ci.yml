@@ -70,7 +70,7 @@ integration_test_with_db:
     - docker
 
 deploy to github:
-  stage: build
+  stage: test
   image: ubuntu:latest
   before_script:
     - apt update
