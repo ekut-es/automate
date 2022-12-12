@@ -4,6 +4,7 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   POETRY_HOME: "$CI_PROJECT_DIR/.poetry"
   GIT_SUBMODULE_STRATEGY: recursive
+  LC_ALL: "en_US.UTF-8"
 
 stages:
   - test
@@ -16,18 +17,15 @@ before_script:
   - yum install git sudo python39 python39-devel -y
   - yum groupinstall 'Development Tools' -y
   - yum install postgresql-devel -y
-  - python3.6 -m ensurepip
+  - python3.9 -m ensurepip
   
   # Install poetry using recommended method
   - export  POETRY_HOME="$CI_PROJECT_DIR/.poetry"
-  - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.6
+  - curl -sSL https://install.python-poetry.org | python3.9
   - export PATH=${POETRY_HOME}/bin:${PATH}
 
   # Work around: https://github.com/python-poetry/poetry/issues/3199
   - poetry config experimental.new-installer false
-  
-variables:
-  LC_ALL: "en_US.UTF-8"
   
 test:
   stage: test
@@ -70,28 +68,6 @@ integration_test_with_db:
     - poetry run inv test --integration
   tags:
     - docker
-
-
-build_doc:
-  before_script:
-    - python3 -m virtualenv -p python3 .venv
-    - source .venv/bin/activate
-    - pip install poetry 
-  script:
-    - set -e
-    - source .venv/bin/activate
-    - poetry install
-    - poetry run pydoc-markdown --build --site-dir site
-    - mkdir -p /afs/wsi/home/gerum/public_html/automate
-    - cp -r build/docs/site/* /afs/wsi/home/gerum/public_html/automate
-  stage: deploy
-  tags:
-    - afs
-
-  only:
-    refs:
-      - master
-
 
 deploy to github:
   stage: build
