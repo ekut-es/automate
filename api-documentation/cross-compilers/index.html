@@ -1,0 +1,1416 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>Cross Compilers - My Project</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#automatecompiler" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Project" class="md-header__button md-logo" aria-label="My Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Project
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cross Compilers
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Project" class="md-nav__button md-logo" aria-label="My Project" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    My Project
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Commandline Interface
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Commandline Interface" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Commandline Interface
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commandline-interface/automate/" class="md-nav__link">
+        automate
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../commandline-interface/automate-run/" class="md-nav__link">
+        automate-run
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../metadata-model/" class="md-nav__link">
+        Metadata Model
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Setup
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Setup" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Setup
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/boards/" class="md-nav__link">
+        Boards
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/gateway/" class="md-nav__link">
+        Gateway
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../setup/database/" class="md-nav__link">
+        Database
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/" class="md-nav__link">
+        Development
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          API Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="API Documentation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          API Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../boards/" class="md-nav__link">
+        Boards
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Cross Compilers
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Cross Compilers
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#compiler-objects" class="md-nav__link">
+    Compiler Objects
+  </a>
+  
+    <nav class="md-nav" aria-label="Compiler Objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#triples" class="md-nav__link">
+    triples
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiarch" class="md-nav__link">
+    multiarch
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bin_path" class="md-nav__link">
+    bin_path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix" class="md-nav__link">
+    prefix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cc" class="md-nav__link">
+    cc
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cxx" class="md-nav__link">
+    cxx
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asm" class="md-nav__link">
+    asm
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ld" class="md-nav__link">
+    ld
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ar" class="md-nav__link">
+    ar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toolchain" class="md-nav__link">
+    toolchain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#id" class="md-nav__link">
+    id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#name" class="md-nav__link">
+    name
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crosscompiler-objects" class="md-nav__link">
+    CrossCompiler Objects
+  </a>
+  
+    <nav class="md-nav" aria-label="CrossCompiler Objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure_extend" class="md-nav__link">
+    configure_extend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure" class="md-nav__link">
+    configure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gcc_toolchain" class="md-nav__link">
+    gcc_toolchain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#os" class="md-nav__link">
+    os
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#machine" class="md-nav__link">
+    machine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment" class="md-nav__link">
+    environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isa_flags" class="md-nav__link">
+    isa_flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uarch_flags" class="md-nav__link">
+    uarch_flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uarch_or_isa_flags" class="md-nav__link">
+    uarch_or_isa_flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sysroot" class="md-nav__link">
+    sysroot
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#valid" class="md-nav__link">
+    valid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#base_flags" class="md-nav__link">
+    base_flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cflags" class="md-nav__link">
+    cflags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cxxflags" class="md-nav__link">
+    cxxflags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ldflags" class="md-nav__link">
+    ldflags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libs" class="md-nav__link">
+    libs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default_builddir" class="md-nav__link">
+    default_builddir
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_3" type="checkbox" id="__nav_7_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7_3">
+          Builders
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Builders" data-md-level="2">
+        <label class="md-nav__title" for="__nav_7_3">
+          <span class="md-nav__icon md-icon"></span>
+          Builders
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builders/cmake/" class="md-nav__link">
+        cMake
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builders/kernel/" class="md-nav__link">
+        kernel
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builders/make/" class="md-nav__link">
+        make
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../builders/spec/" class="md-nav__link">
+        spec
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model/" class="md-nav__link">
+        Model
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utilities/" class="md-nav__link">
+        Utilities
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-integration/" class="md-nav__link">
+        Database Integration
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#compiler-objects" class="md-nav__link">
+    Compiler Objects
+  </a>
+  
+    <nav class="md-nav" aria-label="Compiler Objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#triples" class="md-nav__link">
+    triples
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version" class="md-nav__link">
+    version
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiarch" class="md-nav__link">
+    multiarch
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bin_path" class="md-nav__link">
+    bin_path
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefix" class="md-nav__link">
+    prefix
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cc" class="md-nav__link">
+    cc
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cxx" class="md-nav__link">
+    cxx
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asm" class="md-nav__link">
+    asm
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ld" class="md-nav__link">
+    ld
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ar" class="md-nav__link">
+    ar
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#toolchain" class="md-nav__link">
+    toolchain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#id" class="md-nav__link">
+    id
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#name" class="md-nav__link">
+    name
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crosscompiler-objects" class="md-nav__link">
+    CrossCompiler Objects
+  </a>
+  
+    <nav class="md-nav" aria-label="CrossCompiler Objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configure_extend" class="md-nav__link">
+    configure_extend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure" class="md-nav__link">
+    configure
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gcc_toolchain" class="md-nav__link">
+    gcc_toolchain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#os" class="md-nav__link">
+    os
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#machine" class="md-nav__link">
+    machine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment" class="md-nav__link">
+    environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isa_flags" class="md-nav__link">
+    isa_flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uarch_flags" class="md-nav__link">
+    uarch_flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uarch_or_isa_flags" class="md-nav__link">
+    uarch_or_isa_flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sysroot" class="md-nav__link">
+    sysroot
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#valid" class="md-nav__link">
+    valid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#base_flags" class="md-nav__link">
+    base_flags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cflags" class="md-nav__link">
+    cflags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cxxflags" class="md-nav__link">
+    cxxflags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ldflags" class="md-nav__link">
+    ldflags
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libs" class="md-nav__link">
+    libs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#default_builddir" class="md-nav__link">
+    default_builddir
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<p><a id="automate.compiler"></a></p>
+<h1 id="automatecompiler">automate.compiler</h1>
+<p><a id="automate.compiler.Compiler"></a></p>
+<h2 id="compiler-objects">Compiler Objects</h2>
+<pre><code class="language-python">class Compiler(object)
+</code></pre>
+<p>Represents an unconfigured generic compiler</p>
+<p><a id="automate.compiler.Compiler.triples"></a></p>
+<h4 id="triples">triples</h4>
+<pre><code class="language-python">@property
+def triples() -&gt; List[TripleModel]
+</code></pre>
+<p>List of supported triples</p>
+<p><a id="automate.compiler.Compiler.version"></a></p>
+<h4 id="version">version</h4>
+<pre><code class="language-python">@property
+def version() -&gt; VersionString
+</code></pre>
+<p>Compiler version</p>
+<p><a id="automate.compiler.Compiler.multiarch"></a></p>
+<h4 id="multiarch">multiarch</h4>
+<pre><code class="language-python">@property
+def multiarch() -&gt; bool
+</code></pre>
+<p>Wether this compiler supports multiarch rootfs</p>
+<p><a id="automate.compiler.Compiler.bin_path"></a></p>
+<h4 id="bin_path">bin_path</h4>
+<pre><code class="language-python">@property
+def bin_path() -&gt; Path
+</code></pre>
+<p>Installation path of compiler tools</p>
+<p><a id="automate.compiler.Compiler.prefix"></a></p>
+<h4 id="prefix">prefix</h4>
+<pre><code class="language-python">@property
+def prefix()
+</code></pre>
+<p>Prefix of compiler tools eg: arm-linux-gnueabihf</p>
+<p><a id="automate.compiler.Compiler.cc"></a></p>
+<h4 id="cc">cc</h4>
+<pre><code class="language-python">@property
+def cc() -&gt; str
+</code></pre>
+<p>Binary name of C compiler</p>
+<p><a id="automate.compiler.Compiler.cxx"></a></p>
+<h4 id="cxx">cxx</h4>
+<pre><code class="language-python">@property
+def cxx() -&gt; str
+</code></pre>
+<p>Binary name of C++ compiler</p>
+<p><a id="automate.compiler.Compiler.asm"></a></p>
+<h4 id="asm">asm</h4>
+<pre><code class="language-python">@property
+def asm() -&gt; str
+</code></pre>
+<p>Binary name of assembler</p>
+<p><a id="automate.compiler.Compiler.ld"></a></p>
+<h4 id="ld">ld</h4>
+<pre><code class="language-python">@property
+def ld() -&gt; str
+</code></pre>
+<p>Binary name of Linker</p>
+<p><a id="automate.compiler.Compiler.ar"></a></p>
+<h4 id="ar">ar</h4>
+<pre><code class="language-python">@property
+def ar() -&gt; str
+</code></pre>
+<p>Binary name of Archiver</p>
+<p><a id="automate.compiler.Compiler.toolchain"></a></p>
+<h4 id="toolchain">toolchain</h4>
+<pre><code class="language-python">@property
+def toolchain() -&gt; Toolchain
+</code></pre>
+<p>Toolchain family of the compiler eg. LLVM or GCC</p>
+<p><a id="automate.compiler.Compiler.id"></a></p>
+<h4 id="id">id</h4>
+<pre><code class="language-python">@property
+def id() -&gt; str
+</code></pre>
+<p>Unique identifier of compiler in metadata</p>
+<p><a id="automate.compiler.Compiler.name"></a></p>
+<h4 id="name">name</h4>
+<pre><code class="language-python">@property
+def name() -&gt; str
+</code></pre>
+<p>Unique identifier of compiler in metadata</p>
+<p><a id="automate.compiler.CrossCompiler"></a></p>
+<h2 id="crosscompiler-objects">CrossCompiler Objects</h2>
+<pre><code class="language-python">class CrossCompiler(Compiler)
+</code></pre>
+<p>Represents a Compiler with board specific configuration</p>
+<p><a id="automate.compiler.CrossCompiler.configure_extend"></a></p>
+<h4 id="configure_extend">configure_extend</h4>
+<pre><code class="language-python">def configure_extend(flags: Optional[str] = None,
+                     cflags: Optional[str] = None,
+                     cxxflags: Optional[str] = None,
+                     ldflags: Optional[str] = None,
+                     libs: Optional[str] = None) -&gt; None
+</code></pre>
+<p>Extend compiler flags</p>
+<p>For arguments see configure</p>
+<p><a id="automate.compiler.CrossCompiler.configure"></a></p>
+<h4 id="configure">configure</h4>
+<pre><code class="language-python">def configure(flags: Optional[str] = None,
+              cflags: Optional[str] = None,
+              cxxflags: Optional[str] = None,
+              ldflags: Optional[str] = None,
+              libs: Optional[str] = None,
+              uarch_opt=True,
+              isa_opt=True,
+              enable_sysroot=True) -&gt; None
+</code></pre>
+<p>Set compiler options</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>flags</strong>: Basic flags (used for compilation and linkags)</li>
+<li><strong>cflags</strong>: flags for C compiler</li>
+<li><strong>cxxflags</strong>: flags for C++ compiler</li>
+<li><strong>ldflags</strong>: flags for linker (linker is assumed to call C/C++-Compiler)</li>
+<li><strong>libs</strong>: Additional libraries to link (some builds might need -lrt)</li>
+<li><strong>uarch_opt</strong>: Enable microarchitecture specific optimizations</li>
+<li><strong>isa_opt</strong>: Enable isa specific optimizations</li>
+<li><strong>enable_sysroot</strong>: Link and build with --sysroot set to a dump of the boards root file system, linkers and cmake will link to libraries installed on the board</li>
+</ul>
+<p><a id="automate.compiler.CrossCompiler.gcc_toolchain"></a></p>
+<h4 id="gcc_toolchain">gcc_toolchain</h4>
+<pre><code class="language-python">@property
+def gcc_toolchain() -&gt; Union[None, &quot;CrossCompiler&quot;]
+</code></pre>
+<p>GCC toolchain to use for LLVM based cross compilers</p>
+<p>The gcc toolchain is used to provide the linker,
+and the runtime libraries libgcc and libstdc++</p>
+<p><a id="automate.compiler.CrossCompiler.os"></a></p>
+<h4 id="os">os</h4>
+<pre><code class="language-python">@property
+def os() -&gt; OS
+</code></pre>
+<p>OS part of compiler target triple</p>
+<p><a id="automate.compiler.CrossCompiler.machine"></a></p>
+<h4 id="machine">machine</h4>
+<pre><code class="language-python">@property
+def machine() -&gt; Machine
+</code></pre>
+<p>Machine part of compiler target triple</p>
+<p><a id="automate.compiler.CrossCompiler.environment"></a></p>
+<h4 id="environment">environment</h4>
+<pre><code class="language-python">@property
+def environment() -&gt; Environment
+</code></pre>
+<p>Environment part of compiler target triple</p>
+<p><a id="automate.compiler.CrossCompiler.isa_flags"></a></p>
+<h4 id="isa_flags">isa_flags</h4>
+<pre><code class="language-python">@property
+def isa_flags() -&gt; str
+</code></pre>
+<p>Default isa specific flags for this board if enabled</p>
+<p><a id="automate.compiler.CrossCompiler.uarch_flags"></a></p>
+<h4 id="uarch_flags">uarch_flags</h4>
+<pre><code class="language-python">@property
+def uarch_flags() -&gt; str
+</code></pre>
+<p>Default microarchitecture specific flags for this board if enabled</p>
+<p><a id="automate.compiler.CrossCompiler.uarch_or_isa_flags"></a></p>
+<h4 id="uarch_or_isa_flags">uarch_or_isa_flags</h4>
+<pre><code class="language-python">@property
+def uarch_or_isa_flags() -&gt; str
+</code></pre>
+<p>Default flags machine specific flags for this board if enabled</p>
+<p><a id="automate.compiler.CrossCompiler.sysroot"></a></p>
+<h4 id="sysroot">sysroot</h4>
+<pre><code class="language-python">@property
+def sysroot() -&gt; Union[Path, str]
+</code></pre>
+<p>Sysroot flag for this compiler and board</p>
+<p><a id="automate.compiler.CrossCompiler.valid"></a></p>
+<h4 id="valid">valid</h4>
+<pre><code class="language-python">@property
+def valid() -&gt; bool
+</code></pre>
+<p>Boolean flag wether this compiler is expected to generate working executables</p>
+<p><a id="automate.compiler.CrossCompiler.base_flags"></a></p>
+<h4 id="base_flags">base_flags</h4>
+<pre><code class="language-python">@property
+def base_flags() -&gt; str
+</code></pre>
+<p>basic flags shared between  C/C++ compiler and Linker</p>
+<p><a id="automate.compiler.CrossCompiler.cflags"></a></p>
+<h4 id="cflags">cflags</h4>
+<pre><code class="language-python">@property
+def cflags() -&gt; str
+</code></pre>
+<p>CFLAGS for this compiler</p>
+<p><a id="automate.compiler.CrossCompiler.cxxflags"></a></p>
+<h4 id="cxxflags">cxxflags</h4>
+<pre><code class="language-python">@property
+def cxxflags() -&gt; str
+</code></pre>
+<p>CXXFLAGS for this compiler</p>
+<p><a id="automate.compiler.CrossCompiler.ldflags"></a></p>
+<h4 id="ldflags">ldflags</h4>
+<pre><code class="language-python">@property
+def ldflags()
+</code></pre>
+<p>LDFLAGS for this compiler</p>
+<p>These flags are appended to the linker commandline before object files</p>
+<p><a id="automate.compiler.CrossCompiler.libs"></a></p>
+<h4 id="libs">libs</h4>
+<pre><code class="language-python">@property
+def libs() -&gt; str
+</code></pre>
+<p>LIBFLAGS for this compiler</p>
+<p>These flags are appended to the linker driver commandline after the objectfiles
+Currently not used</p>
+<p><a id="automate.compiler.CrossCompiler.default_builddir"></a></p>
+<h4 id="default_builddir">default_builddir</h4>
+<pre><code class="language-python">@property
+def default_builddir() -&gt; Path
+</code></pre>
+<p>The default build directory for this cross compiler / board combinarion
+For now this is just "<cwd>/builds/<board_id>"</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../boards/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Boards" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Boards
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../builders/cmake/" class="md-footer__link md-footer__link--next" aria-label="Next: cMake" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              cMake
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+    
+    
+  </body>
+</html>
