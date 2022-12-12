@@ -30,13 +30,6 @@ luebeck:
   public_keys:
     - "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA7gwcV8B+cnnpEdQaxzC1ZDCXlUtCriYzzHndgs/pd9w9BccvLgIFWCjYgApKbt8fn6sp1sF7AwYBhpYE3XfIXz5eb1LxmX8SGr5RziwfSLMiTssDILMswyWOaUJEYsX58M/iQAJ+BRkBS6kWuBQx4z5NnBS2AzNtsyvFZESYs5EqT8jS53RT2bO8I14iF1d8NQkUJcuXnwoKsuRbcSGp0ckfeY3S1hu3dOk/icyaObBBeIBLdTZM4ozvdZu1HBuF3MirI/Y2AtoKQko+jUnkwFWOfUVo7OU/AeLqvlAfrUk9MGSqJ+Mxd1ygqoLSP3cbKqXKVM3m20Kpg3O0CyET5Q== konstantin.luebeck@student.uni-tuebingen.de"
 
-volmdenn:
-    name: "Dennis Volm"
-    mail: nospam@example.com
-    public_keys:
-        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHVfqEqR6dHAwEe0pZfTiiCMlQE3KNooVz4FlXcWNeXEeOl0CaBvQh2rysU3jWpnCb/9nsC2N55XdgZBrB9tUEBi4e849N3K6Sr34gfpykRcI16KP5i3Y8LA1sLlChlZS+5d3sMQ886Lb4rgWCk+pNOopegiVi1eeEUd+3pNGgRX/RTMhixLHP7UJIC1cSSaV/3M2LFxzsCLfK8AIO+lv5sTlOmhUDUVMoM48p9d/JVDnHLaWIjjosX4EgLK1Se9o6R11wVCbNqRwaiTd0KRMstDMQb5k7RnEbT+oS4zKZRWIrYhe5N3Sar5PbrlcK7kJir5F14sRBZcKyaOC/tk6X volmdenn@ducky"
-        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCpvJdBeQVfW8JtXRGIvjx/F2btr0wnkHlISOMSNbmpagktiNDCvyJCwJWVBiBis7zjmcxvqQsVzwmF8EiVO41sLG72UkxExQUkEJw+eYLNOyjVBTKLtkpJIcjxRtgd5S0vDeeul2rSixr+zqscS5ALD8U4YVnLFKNBJ+Mmxfj4o4QtRBaCgV/uX7ot4Qj/sUHtgKslCzTJ6z5XRpOx6zK3gCHdFMIJzhic9mSlLPCfPCZ95GYw47SDEjiPoaIHfq62ok2q+JQB5EAuwFeVfGmat5UDCE0Bs+bvcbJDO4agOVBtulhgHwJieeSvDbYQ7Rxn5wEDYg5GRcuCfZrjP8KT christoph@mel"
-
 dreixler:
     name: "Stefan Dreixler"
     mail: nospam@example.com
@@ -57,13 +50,6 @@ strohm:
     public_keys:
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQFJLX7SqSxb688G4nNX6e75Zxs0/vV/Izyuq17svpt martin.stroh@student.uni-tuebingen.de"
 
-
-gollm:
-    name: "Marco Goll"
-    mail: ""
-    public_keys:
-       - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGbtrWFLd+w11iLnsdbb1rjIOLYaZuGBZwulPpSS3b72"
-
 longnguy:
     name: "Long Nguyen"
     mail: "long.nguyen@student.uni-tuebingen.de"
@@ -81,7 +67,7 @@ brandts:
     name: "Sebastian Brandt"
     mail: "sebastian.brandt@student.uni-tuebingen.de"
     public_keys:
-        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINOr/01jd4aZPb95hf3hlLFBHnrDPcSAZOnSyxdkHvb7 sebastian.brandt@student.uni-tuebingen.de"
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFuVYsTLc9nEg2ZGE6hQNSMYub7Bh/fmcvhNFicYx2940b9CcRlsAuPlR7WJQUbSHIgPtzMCqw+5D8llSq8gRkBelNUCnEHck7D0AfLM874tQ9OSupxGzP02U7zZIGPU48SHZ6N+BSRE/PFecGEqB7CEF+C/43I3DeQekwG9tWlQv1j0REK0yxQvwNDwvdy+LIR5ABHTdTzJ82o804dZoZGXcIvp+U3Leym9z/jhliuO0m0frXYSsZUuuaDiYVtL8NyfM2WmzT1lXPk0zGvVg6EGNHF+vL9zXPS73F/ZQLSHarwjb5UMLi/9kFyOFoJ0IM/7bd91pMiPdDFcfzsTlP GIT"
 
 
 schondor:
@@ -89,3 +75,10 @@ schondor:
     mail: "omitted@test.com"
     public_keys:
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGXsNbiclniV5i0+49h+JeO8MhCXGim5+Sv2U37TChuOBPsN1j4pdj2uZ7LNJix9b1Yn8IxbT0yUzKaGQCWCWSqEdy/vv/H39i0YPDh3Ls+pSl4pEbpib7msOT+Yvm74/39jekmDoZv5Eep/CXQCmHhx3X03YKeYFfFLXPevRpr8rC8sWlcQJnxLBwej8NRWJdqBc2QpNpWUuA7a0UeQoND+jJIIfJCvTCbnb027oXSMpnyEU96hW/teTcLKyFNaHnwHlMtxO62ik3Bhez/ALsQjk4TankA/5VoCfkybpJ5P3xF3iMBx+VzIODw4Fvusa3mjp9B2F2eDy/RGLQ5in1 schondor@mambo"
+
+
+payat:
+    name: "Hakan Payat"
+    mail: ""
+    public_keys:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDTrIJocrgIkXfjETgQPfAb9xJdTbAczURscTAsjf3CovGkDDPU14id5iwg+QF5B4a7Htvkkqu8qutVRg+XO8oQGP5p/WzxBvNUFYSZTuCK5dwCCDt7bptllU+7DiptNhiX7UWZy2TA6hdMUSd71/JeE2ukxjkq1zWF4EI7TOGXksO0vAsfzxynhHoYMnpBc6FNbIA2kLuZ9EU+5qDBldU/bQItraL50mU6iHDRRkeLv8NPzK90MzqlXTevnsW//NXYPCd+KDxEs0Bg6BECCcJdCmB78xaqC6ciZQ7ZlCIcSoW0tKThiMaD9+Va7VePRSUFXG078dcXiO4NdkSI0cT5QbaRtgwk2ndVHKOYCxg/p2P3uuFuVS4u5c3VQ3cJIp6hkGPkDlOc0nME+3STPlILNhaRY7YrLFvygxAC6alWaqzgEf555Gp8WaZWPv9cF5UgerV8KlaimnodmC4rgGzvF6xEVC8tM80QGhQmKj+oBvgGS3wjbQUzi9YV+Siyr5rDYYoIameDk4VysUpDClKYhpJADQWLL59/Yo2Rws9rQu28nrglnzgMSPRQiGzq8EpC35+ytuFi2sZjc78Em/M9nwpb555NSzW4ektoA14Dc0/EW17tvT7BTS9UbL0ucEsxoTP6sOKW+8RY0yo1Zs27EmXFhwU+HyCn2Ep7IFQWaQ=="
