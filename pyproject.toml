@@ -6,6 +6,7 @@ authors = ["Christoph Gerum <christoph.gerum@uni-tuebingen.de>"]
 packages = [
     { include = "automate"}
 ]
+license = MIT
 
 [tool.poetry.dependencies]
 python = ">3.7.1,<4.0"
