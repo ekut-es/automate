@@ -1,8 +1,9 @@
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Literal
 
 from pydantic import BaseModel, Field, HttpUrl
+
 
 from .common import *
 from .compiler import TripleModel
@@ -24,6 +25,16 @@ class SSHConnectionModel(DataModelBase):
     host: str
     username: str
     port: int = 22
+    
+class XilinxHWServerConnectionModel(DataModelBase):
+    host: str
+    protocol: Literal["xilinx_hw"] = "xilinx_hw"
+    port: int = 3121 
+    
+class XilinxCSServerConnectionModel(DataModelBase):
+    host: str
+    protocol: Literal["xilinx_cs"] = "xilinx_cs"
+    port: int = 3121
 
 
 class UARTConnectionModel(DataModelBase):
@@ -102,7 +113,7 @@ class BoardModel(DataModelBase):
     rundir: Path
     doc: List[DocumentationLinkModel] = []
     gateway: Optional[GatewayModel] = None
-    connections: List[Union[SSHConnectionModel, UARTConnectionModel]]
+    connections: List[Union[SSHConnectionModel, UARTConnectionModel, XilinxHWServerConnectionModel, XilinxCSServerConnectionModel]]
     cores: List[CoreModel]
     os: OSModel
 

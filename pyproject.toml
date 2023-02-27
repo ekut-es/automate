@@ -28,8 +28,12 @@ psycopg2-binary = {version = "^2.8.6", optional = true}
 GitPython = "^3.1.27"
 ruamel-yaml = "^0.17.21"
 
+# Optional dependencies for xilinx boards
+chipscopy = {version = "^2021.2", optional = true}
+
 [tool.poetry.extras]
 postgres = ["python-dotenv", "pydot", "psycopg2-binary", "jinjasql", "jinja"]
+xilinx = ["chipscopy"]
 
 [tool.poetry.dev-dependencies]
 mypy = ">0.740.0"
