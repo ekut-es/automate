@@ -90,7 +90,7 @@ class BaseBuilder(object):
 
     def configure(
         self,
-        cross_compiler: CrossCompiler = None,
+        cross_compiler: Optional[CrossCompiler] = None,
         srcdir: Union[Path, str] = "",
         prefix: Union[Path, str] = "",
         extra_flags: Optional[Dict[str, str]] = None,
