@@ -15,7 +15,7 @@
         <link rel="next" href="../database/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.0">
     
     
       
@@ -23,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0d440cfe.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.402914a4.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
       
       
 
@@ -79,7 +79,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="automate" class="md-header__button md-logo" aria-label="automate" data-md-component="logo">
       
@@ -774,14 +776,12 @@
                   
 
 
-
 <h1 id="gatway-configuration">Gatway Configuration</h1>
 <p>This describes a simple gateway configuration assuming a 
 RHEL  based system.</p>
 <h2 id="disable-network-manager-for-the-interface">Disable Network Manager for the interface</h2>
 <p>All boards are part of a network (10.42.0.0/24) administered by the gateway. The board network is connected to a dedicated network interface of the gateway. To assign a static IP address to the network interface get the name and MAC address of the network interface by executing:</p>
-<pre class="highlight"><code>ifconfig -a
-</code></pre>
+<pre class="highlight"><code>ifconfig -a</code></pre>
 <p>Edit or add the file in <code>/etc/sysconfig/network-scripts/ifcfg-IF_NAME</code> corresponding to your device and replace all content of the file with the following:</p>
 <pre class="highlight"><code>TYPE=Ethernet
 DEFROUTE=no
@@ -800,23 +800,16 @@ BOOTPROTO=shared
 NM_CONTROLLED=no
 NETMASK=255.255.255.0
 IPADDR=10.42.0.1
-ZONE=dmz
-
-</code></pre>
+ZONE=dmz</code></pre>
 <h2 id="disable-network-manager-dnsmasq">Disable Network Manager dnsmasq</h2>
 <p>By default Network Manager runs a DNS/DHCP server. This DNS server has to be disabled by editing <code>/etc/NetworkManager/NetworkManager.conf</code>. Under section <code>[main]</code> add the following line to the config file:</p>
-<pre class="highlight"><code>dns=none
-</code></pre>
+<pre class="highlight"><code>dns=none</code></pre>
 <p>Reboot the computer:</p>
-<pre class="highlight"><code>shutdown -r now
-
-</code></pre>
+<pre class="highlight"><code>shutdown -r now</code></pre>
 <h2 id="enable-dnsmasq">Enable dnsmasq</h2>
 <p>To enable dnsmasq use:</p>
 <pre class="highlight"><code>yum install dnsmasq
-systemctl enable dnsmasq
-
-</code></pre>
+systemctl enable dnsmasq</code></pre>
 <h2 id="configure-dnsmasq">Configure dnsmasq</h2>
 <p>Add the following in <code>/etc/dnsmasq.d/derschrank.conf</code></p>
 <pre class="highlight"><code>listen-address=10.42.0.1,::1,127.0.0.1
@@ -832,28 +825,22 @@ server=134.2.12.17
 dhcp-range=10.42.0.10,10.42.0.150,72h
 dhcp-leasefile=/var/lib/dnsmasq/dnsmasq.leases
 dhcp-authoritative
-dhcp-option=option:ntp-server,134.2.10.50,134.2.12.2,134.2.14.2
-</code></pre>
+dhcp-option=option:ntp-server,134.2.10.50,134.2.12.2,134.2.14.2</code></pre>
 <p>To syntax check the commandline do:</p>
-<pre class="highlight"><code>dnsmasq --test
-</code></pre>
+<pre class="highlight"><code>dnsmasq --test</code></pre>
 <p>And apply the changes with:</p>
 <pre class="highlight"><code>systemctl restart dnsmasq
-systemctl status dnsmasq
-</code></pre>
+systemctl status dnsmasq</code></pre>
 <p>When a new board is installed and joins the network. The hostname, MAC address, and IP address can be found in: <code>/var/lib/dnsmasq/dnsmasq.leases</code>. To assign a static IP to a board add the following line to <code>/etc/dnsmasq.d/derschrank.conf</code>: </p>
-<pre class="highlight"><code>dhcp-host=yy:yy:yy:yy:yy:yy,boardhostname,10.42.0.YY
-</code></pre>
+<pre class="highlight"><code>dhcp-host=yy:yy:yy:yy:yy:yy,boardhostname,10.42.0.YY</code></pre>
 <p>In order to make the locallay installed dnsmasq server the primary DNS server edit <code>/etc/resolv.conf</code> with the following line:</p>
 <pre class="highlight"><code>nameserver 127.0.0.1
-search your.localdomain.com
-</code></pre>
+search your.localdomain.com</code></pre>
 <h2 id="configure-nat-forwarding">Configure NAT forwarding</h2>
 <pre class="highlight"><code> yum install firewalld
  systemctl enable firewalld
  systemctl start firewalld
- systemctl status firewalld
-</code></pre>
+ systemctl status firewalld</code></pre>
 <h3 id="configure-dmz">Configure DMZ</h3>
 <pre class="highlight"><code>firewall-cmd --zone=dmz --add-service=ntp  --permanent
 firewall-cmd --zone=dmz --add-service=dhcp --permanent
@@ -862,8 +849,7 @@ firewall-cmd --zone=dmz --add-service=http --permanent
 firewall-cmd --zone=dmz --add-service=https --permanent
 firewall-cmd --zone=dmz --remove-service=ssh --permanent
 
-firewall-cmd --reload
-</code></pre>
+firewall-cmd --reload</code></pre>
 <h3 id="configure-public-zone">Configure Public Zone</h3>
 <p>If gateway is a normal staff host you might want to enable usual stuff:</p>
 <pre class="highlight"><code>firewall-cmd --zone=public --add-service=nfs --permanent
@@ -878,13 +864,10 @@ firewall-cmd --permanent --service=afs-client --add-port=7001/tcp
 firewall-cmd --zone=public --add-service=afs-client --permanent
 
 firewall-cmd --zone=public --add-service=ipp --permanent
-firewall-cmd --reload
-
-</code></pre>
+firewall-cmd --reload</code></pre>
 <h2 id="configure-masquerading">Configure masquerading</h2>
 <pre class="highlight"><code>firewall-cmd --zone=public --add-rich-rule="rule family=ipv4 source address=10.42.0.0/24 masquerade" --permanent
-firewall-cmd --reload
-</code></pre>
+firewall-cmd --reload</code></pre>
 <p>FIXME: this rule is too permissive to allow untrusted users on the boards.</p>
 <p>This would probably need direct rules  https://www.lisenet.com/2016/firewalld-rich-and-direct-rules-setup-rhel-7-server-as-a-router/</p>
 <p>Or maybe just disable masquerading and install an ntp server on the gateway.</p>
@@ -925,10 +908,10 @@ firewall-cmd --reload
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ce72ebac.min.js"></script>
       
     
   </body>

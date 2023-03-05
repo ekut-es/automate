@@ -15,7 +15,7 @@
         <link rel="next" href="../api-documentation/boards/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.0">
     
     
       
@@ -23,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.0d440cfe.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.402914a4.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a0c5b2b5.min.css">
       
       
 
@@ -79,7 +79,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="automate" class="md-header__button md-logo" aria-label="automate" data-md-component="logo">
       
@@ -704,7 +706,6 @@
                   
 
 
-
 <h1 id="development">Development</h1>
 <p>To get a common development environment this project uses <a href="https://poetry.eustace.io/">poetry</a></p>
 <p>To get started just run:</p>
@@ -722,44 +723,34 @@ poetry shell
 </code></pre>
 <p>For automation of common development tasks (testing, deployment, ..) we use <a href="https://pyinvoke.org">pyinvoke</a> . </p>
 <p>The complete list of currently defined tasks can be shown by running</p>
-<pre class="highlight"><code>inv --list
-</code></pre>
+<pre class="highlight"><code>inv --list</code></pre>
 <h2 id="test-suite">Test Suite</h2>
 <p>To run the integration tests use: </p>
-<pre class="highlight"><code>inv test
-</code></pre>
+<pre class="highlight"><code>inv test</code></pre>
 <h2 id="static-type-hints">Static Type Hints</h2>
 <p>Where applicable this project uses type hints to allow, 
 static type checking and error detection. </p>
 <p>The typechecking is invoked through:</p>
-<pre class="highlight"><code>inv mypy
-</code></pre>
+<pre class="highlight"><code>inv mypy</code></pre>
 <p>Additionally static type information can be derived from the 
 unittest suite using monkeytype. </p>
-<pre class="highlight"><code>inv monkeytype
-</code></pre>
+<pre class="highlight"><code>inv monkeytype</code></pre>
 <p>This command executes the test suite and derives traces dynamically used
 types. </p>
 <p>Then you can use monkeytype to automatically annotate the modules with type 
 information using:</p>
 <pre class="highlight"><code>monkeytype list-modules
 monkeytype stub $module
-monkeytype apply $module
-
-
-</code></pre>
+monkeytype apply $module</code></pre>
 <h2 id="codestyle">Codestyle</h2>
 <p>This project uses black to enforce a common codestyle throughout the project.</p>
 <p>Reformatting can be invoked through:</p>
-<pre class="highlight"><code>inv black
-</code></pre>
+<pre class="highlight"><code>inv black</code></pre>
 <p>It is recommended to configure your editor to autmatically reload changed files </p>
 <h2 id="pre-commit-hooks">Pre-Commit Hooks</h2>
 <p>Static Typechecking, and blackening can be run as pre-commit hooks.
 These are installed using:</p>
-<pre class="highlight"><code>inv pre-commit
-
-</code></pre>
+<pre class="highlight"><code>inv pre-commit</code></pre>
 
 
 
@@ -797,10 +788,10 @@ These are installed using:</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      <script src="../assets/javascripts/bundle.ce72ebac.min.js"></script>
       
     
   </body>

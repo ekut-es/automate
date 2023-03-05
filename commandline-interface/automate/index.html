@@ -15,7 +15,7 @@
         <link rel="next" href="../automate-run/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.0">
     
     
       
@@ -23,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0d440cfe.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.402914a4.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
       
       
 
@@ -79,7 +79,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="automate" class="md-header__button md-logo" aria-label="automate" data-md-component="logo">
       
@@ -618,7 +620,6 @@
                   
 
 
-
 <h1 id="commandline-interface">Commandline Interface</h1>
 <p>The commandline interface is used for interactive and scripted interaction
 with the boards. It uses the entry point automate.</p>
@@ -628,8 +629,7 @@ Core options:
 
   -d, --debug                        Enable debug output.
   -l [STRING], --list[=STRING]       List available tasks, optionally limited to a namespace.
-  -V, --version                      Show version and exit.
-</code></pre>
+  -V, --version                      Show version and exit.</code></pre>
 <p>Actual tasks are run as subcommands of automate.</p>
 <h1 id="automate-list"><em>automate list</em></h1>
 <p>List available boards and compilers.</p>
@@ -639,8 +639,7 @@ Docstring:
   List available boards and compilers
 
   -b/--boards: only list boards
-  -c/--compilers: only list compilers
-</code></pre>
+  -c/--compilers: only list compilers</code></pre>
 <p>Example:</p>
 <pre class="highlight"><code>$ automate list
 Boards:
@@ -662,8 +661,7 @@ aarch64-gcc65    gcc          6.5.0      aarch64       yes
 aarch64-gcc74    gcc          7.4.1      aarch64       yes
 clang-70         llvm         7.0.1      aarch64, arm  yes
 clang-80         llvm         8.0.1      aarch64, arm  yes
-clang-90         llvm         9.0.0      aarch64, arm  yes
-</code></pre>
+clang-90         llvm         9.0.0      aarch64, arm  yes</code></pre>
 <h1 id="board-interaction">Board Interaction</h1>
 <p>Board interaction commands are defined in namespace <em>board</em>.</p>
 <h2 id="automate-boardboard-ids"><em>automate board.board-ids</em></h2>
@@ -683,19 +681,16 @@ Docstring:
           board.machine == 'zynqberry' to only run on zynqberry boards
 
           board.trylock() to only iterate over boards that are currently
-          unlocked, and lock the boards while iterating
-</code></pre>
+          unlocked, and lock the boards while iterating</code></pre>
 <p>Examples:</p>
 <p>List all available board ids:</p>
 <pre class="highlight"><code>$automate board.board-ids
 jetsonagx
 zynqberry
-jetsontx2
-</code></pre>
+jetsontx2</code></pre>
 <p>List only boards with gnueabhif environment (32Bit ARM with floating point):</p>
 <pre class="highlight"><code>$automate board.board-ids --filter 'board.os.triple.environment.value == gnueabihf'
-zynqberry
-</code></pre>
+zynqberry</code></pre>
 <h2 id="automate-boardget"><em>automate board.get</em></h2>
 <p>Get files from board.</p>
 <pre class="highlight"><code>Usage: automate [--core-opts] board.get [--options] [other tasks here ...]
@@ -705,12 +700,9 @@ Docstring:
 
   -b/--board: target board id
   -r/--remote: remote file path
-  -l/--local:  local folder or filename (default is current working directory)
-</code></pre>
+  -l/--local:  local folder or filename (default is current working directory)</code></pre>
 <p>Examples:</p>
-<pre class="highlight"><code> automate board.get zynqberry /proc/cpuinfo
-
-</code></pre>
+<pre class="highlight"><code> automate board.get zynqberry /proc/cpuinfo</code></pre>
 <h2 id="automate-boardkexec"><em>automate board.kexec</em></h2>
 <pre class="highlight"><code>Usage: automate [--core-opts] board.kexec [--options] [other tasks here ...]
 
@@ -720,8 +712,7 @@ Docstring:
   -b/--board: target board id
   -k/--kernel-id: target kernel id
   -a/--append: Append the given string to the commandline
-  -w/--wait: wait until board is reachable via ssh again
-</code></pre>
+  -w/--wait: wait until board is reachable via ssh again</code></pre>
 <h2 id="automate-boardlock"><em>automate</em> board.lock</h2>
 <pre class="highlight"><code>Usage: automate [--core-opts] board.lock [--options] [other tasks here ...]
 
@@ -732,11 +723,9 @@ Docstring:
   -t/--timeout: timeout for the lock (deprecated use lease-time)
   -l/--lease-time: The board is kept locked for at least lease_time
      Lease time can be given as an int representing seconds or with a suffix
-     d for days, h for hours, m for minutes, s for seconds
-</code></pre>
+     d for days, h for hours, m for minutes, s for seconds</code></pre>
 <p>Example:</p>
-<pre class="highlight"><code>automate board.lock raspberrypi4b-jh1 -l 2d
-</code></pre>
+<pre class="highlight"><code>automate board.lock raspberrypi4b-jh1 -l 2d</code></pre>
 <p>Lock raspberrypi4b-jh1 for 2 days</p>
 <h2 id="automate-boardput_"><em>automate</em> board.put_</h2>
 <pre class="highlight"><code>Usage: automate [--core-opts] board.put [--options] [other tasks here ...]
@@ -746,8 +735,7 @@ Docstring:
 
   -b/--board: target board id
   -f/--file: local file
-  -r/--remote: remote file path (default is board specific rundir)
-</code></pre>
+  -r/--remote: remote file path (default is board specific rundir)</code></pre>
 <h2 id="automate-boardreboot"><em>automate board.reboot</em></h2>
 <pre class="highlight"><code> Usage: automate [--core-opts] board.reboot [--options] [other tasks here ...]
 
@@ -755,8 +743,7 @@ Docstring:
    Reboot  board
 
    -b/--board: target board id
-   -w/--wait block until the board is reachable via ssh again
-</code></pre>
+   -w/--wait block until the board is reachable via ssh again</code></pre>
 <h2 id="automate-boardreset"><em>automate board.reset</em></h2>
 <pre class="highlight"><code>Usage: automate [--core-opts] board.reset [--options] [other tasks here ...]
 
@@ -764,8 +751,7 @@ Docstring:
   Hard reset board
 
   -b/--board: target board id
-  -w/--wait: block until the board is reachable again
-</code></pre>
+  -w/--wait: block until the board is reachable again</code></pre>
 <h2 id="automate-boardrsync-to"><em>automate board.rsync-to</em></h2>
 <pre class="highlight"><code> Usage: automate [--core-opts] board.rsync-to [--options] [other tasks here ...]
 
@@ -776,8 +762,7 @@ Docstring:
    -b/--board: target board id
    -s/--source: source folder/file
    -t/--target: target folder/file default is configured rundir on the board
-   -d/--delete: delete files from target that do not exist in the source
-</code></pre>
+   -d/--delete: delete files from target that do not exist in the source</code></pre>
 <h2 id="automate-boardrun"><em>automate board.run</em></h2>
 <pre class="highlight"><code>Usage: automate [--core-opts] board.run [--options] [other tasks here ...]
 
@@ -786,8 +771,7 @@ Docstring:
 
   -b/--board: target board id
   -c/--command: command to run
-  --cwd: working directory of the command (default is rundir of board)
-</code></pre>
+  --cwd: working directory of the command (default is rundir of board)</code></pre>
 <h2 id="automate-boardshell">automate board.shell</h2>
 <pre class="highlight"><code>Usage: automate [--core-opts] board.shell [--options] [other tasks here ...]
 
@@ -797,8 +781,7 @@ Docstring:
   -b/--board: target board id
 
 Options:
-  -b STRING, --board=STRING
-</code></pre>
+  -b STRING, --board=STRING</code></pre>
 <h2 id="automate-boardunlock">automate board.unlock</h2>
 <pre class="highlight"><code>Usage: automate [--core-opts] board.unlock [--options] [other tasks here ...]
 
@@ -808,8 +791,7 @@ Docstring:
   -b/--board: target board id
 
 Options:
-  -b STRING, --board=STRING
-</code></pre>
+  -b STRING, --board=STRING</code></pre>
 <h1 id="builders">Builders</h1>
 <p>Software for boards can be built using a standard buildsystem. All buildsystem
 follow the sequence.</p>
@@ -848,8 +830,7 @@ Docstring:
   --port: port of ssh deamon on board (optional default: 22)
   --gw-host: hostname of gateway (optional if omitted not gateway is configured)
   --gw-user: username on gateway (optional if omitted use --user)
-  --gw-port: port of ssh on gateway (optional default: 22)
-</code></pre>
+  --gw-port: port of ssh on gateway (optional default: 22)</code></pre>
 <h2 id="automate-adminsafe-rootfs"><em>automate admin.safe-rootfs</em></h2>
 <p>Safe a filesystem image of the root filesystem of a board.</p>
 <p>Filesystem images are saved in in the path given by attribute os.rootfs of a boards metadata description. Usually the path is: ${boardroot}/${board_name}/${board_name}.img</p>
@@ -860,8 +841,7 @@ a forceful readonly remount of the rootfs before taking the dump. In some cases 
 Docstring:
   Safe rootfs image of board
 
-  -b/--board: target board name
-</code></pre>
+  -b/--board: target board name</code></pre>
 <h2 id="automate-adminbuild-sysroot">automate <em>admin.build-sysroot</em></h2>
 <p>Convert the dumped root filesystem to a sysroot for building. Sysroots
 are not necessary for simple builds, but allow usage of libraries installed
@@ -875,8 +855,7 @@ to dynamic linker errors for most programs.</p>
 Docstring:
   Build compiler sysroot for board
 
-  -b/--board: target board id
-</code></pre>
+  -b/--board: target board id</code></pre>
 <h1 id="examples">Examples</h1>
 <p>Examples for commandline usage can be found in <em>examples/shell</em> folder of the project.</p>
 
@@ -916,10 +895,10 @@ Docstring:
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ce72ebac.min.js"></script>
       
     
   </body>

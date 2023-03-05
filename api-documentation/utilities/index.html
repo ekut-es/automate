@@ -15,7 +15,7 @@
         <link rel="next" href="../database-integration/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.9">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.0">
     
     
       
@@ -23,10 +23,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.0d440cfe.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.402914a4.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
       
       
 
@@ -67,7 +67,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#automateutilscpuinfo_arm" class="md-skip">
+        <a href="#automateutilskernel" class="md-skip">
           Skip to content
         </a>
       
@@ -79,7 +79,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="automate" class="md-header__button md-logo" aria-label="automate" data-md-component="logo">
       
@@ -556,9 +558,94 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Utilities
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Utilities
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kernelconfigbuilder-objects" class="md-nav__link">
+    KernelConfigBuilder Objects
+  </a>
+  
+    <nav class="md-nav" aria-label="KernelConfigBuilder Objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#predefined_configs" class="md-nav__link">
+    predefined_configs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predefined_config" class="md-nav__link">
+    predefined_config
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kerneldata-objects" class="md-nav__link">
+    KernelData Objects
+  </a>
+  
+    <nav class="md-nav" aria-label="KernelData Objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared_data_dir" class="md-nav__link">
+    shared_data_dir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy_package_name" class="md-nav__link">
+    deploy_package_name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_cache_name" class="md-nav__link">
+    build_cache_name
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -605,6 +692,75 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kernelconfigbuilder-objects" class="md-nav__link">
+    KernelConfigBuilder Objects
+  </a>
+  
+    <nav class="md-nav" aria-label="KernelConfigBuilder Objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#predefined_configs" class="md-nav__link">
+    predefined_configs
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predefined_config" class="md-nav__link">
+    predefined_config
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kerneldata-objects" class="md-nav__link">
+    KernelData Objects
+  </a>
+  
+    <nav class="md-nav" aria-label="KernelData Objects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shared_data_dir" class="md-nav__link">
+    shared_data_dir
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy_package_name" class="md-nav__link">
+    deploy_package_name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build_cache_name" class="md-nav__link">
+    build_cache_name
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -618,9 +774,78 @@
                   
 
 
-
-<p><a id="automate.utils.cpuinfo_arm"></a></p>
-<h1 id="automateutilscpuinfo_arm">automate.utils.cpuinfo_arm</h1>
+<p><a id="automate.utils.kernel"></a></p>
+<h1 id="automateutilskernel">automate.utils.kernel</h1>
+<p><a id="automate.utils.kernel.KernelConfigBuilder"></a></p>
+<h2 id="kernelconfigbuilder-objects">KernelConfigBuilder Objects</h2>
+<pre><code class="language-python">class KernelConfigBuilder()
+</code></pre>
+<p><a id="automate.utils.kernel.KernelConfigBuilder.predefined_configs"></a></p>
+<h4 id="predefined_configs">predefined_configs</h4>
+<pre><code class="language-python">def predefined_configs() -&gt; Generator[Tuple[str, List[str]], None, None]
+</code></pre>
+<p>Return all predefined configs that are applicable to a board</p>
+<p><strong>Returns</strong>:</p>
+<p>An iterable of tuple of string(name) and list of string [kernel config options]</p>
+<p><a id="automate.utils.kernel.KernelConfigBuilder.predefined_config"></a></p>
+<h4 id="predefined_config">predefined_config</h4>
+<pre><code class="language-python">def predefined_config(name: str) -&gt; List[str]
+</code></pre>
+<p>Search for predefined config options with given name</p>
+<p><a id="automate.utils.kernel.KernelData"></a></p>
+<h2 id="kerneldata-objects">KernelData Objects</h2>
+<pre><code class="language-python">class KernelData(object)
+</code></pre>
+<p>Provides collection of calculated kernel data</p>
+<p><a id="automate.utils.kernel.KernelData.shared_data_dir"></a></p>
+<h4 id="shared_data_dir">shared_data_dir</h4>
+<pre><code class="language-python">@property
+def shared_data_dir()
+</code></pre>
+<p>Location for shared kernel sources and cached deploy and build packages</p>
+<p><a id="automate.utils.kernel.KernelData.deploy_package_name"></a></p>
+<h4 id="deploy_package_name">deploy_package_name</h4>
+<pre><code class="language-python">@property
+def deploy_package_name()
+</code></pre>
+<p>Name of the kernel deploy archive</p>
+<p><a id="automate.utils.kernel.KernelData.build_cache_name"></a></p>
+<h4 id="build_cache_name">build_cache_name</h4>
+<pre><code class="language-python">@property
+def build_cache_name()
+</code></pre>
+<p>Name of the kernel build cache archive</p>
+<p><a id="automate.utils"></a></p>
+<h1 id="automateutils">automate.utils</h1>
+<p><a id="automate.utils.fix_symlinks"></a></p>
+<h4 id="fix_symlinks">fix_symlinks</h4>
+<pre><code class="language-python">def fix_symlinks(base_path: Path) -&gt; None
+</code></pre>
+<p>This function tries to fix symlinks in cloned buildroots by:</p>
+<ol>
+<li>Searching for all symlinks with absolute target path in base_path</li>
+<li>Prepending base_path to the target path</li>
+<li>Making the targets of the links relative to the symlink location</li>
+<li>Deleting the symlink and replacing it with one to the relative location</li>
+</ol>
+<p><a id="automate.utils.uboot"></a></p>
+<h1 id="automateutilsuboot">automate.utils.uboot</h1>
+<p><a id="automate.utils.uboot.build_ubimage"></a></p>
+<h4 id="build_ubimage">build_ubimage</h4>
+<pre><code class="language-python">def build_ubimage(c, uboot_desc: UBootModel, arch: str, build_path: Path,
+                  boot_path: Path, kernel_image: Path) -&gt; None
+</code></pre>
+<p>Build a U-Boot image file  for kernel deployment</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>c</strong>: AutomateContext to run commands on</li>
+<li><strong>uboot_desc</strong>: UBootModel describing image configuration</li>
+<li><strong>build_path</strong>: Path of kernel Build directory</li>
+<li><strong>boot_path</strong>: path of built ubimage (usually install/boot inside kernel build directory)</li>
+<li><strong>kernel_image</strong>: path to kernel_image file that should be packaged inside builddir</li>
+</ul>
+<p><a id="automate.utils.appdirs"></a></p>
+<h1 id="automateutilsappdirs">automate.utils.appdirs</h1>
 <p><a id="automate.utils.network"></a></p>
 <h1 id="automateutilsnetwork">automate.utils.network</h1>
 <p><a id="automate.utils.network.connect"></a></p>
@@ -695,19 +920,6 @@
 <li><strong>verbose</strong>: if True print transfered files to stdout</li>
 <li><strong>rsync_opts</strong>: string of additional rsync options</li>
 </ul>
-<p><a id="automate.utils"></a></p>
-<h1 id="automateutils">automate.utils</h1>
-<p><a id="automate.utils.fix_symlinks"></a></p>
-<h4 id="fix_symlinks">fix_symlinks</h4>
-<pre><code class="language-python">def fix_symlinks(base_path: Path) -&gt; None
-</code></pre>
-<p>This function tries to fix symlinks in cloned buildroots by:</p>
-<ol>
-<li>Searching for all symlinks with absolute target path in base_path</li>
-<li>Prepending base_path to the target path</li>
-<li>Making the targets of the links relative to the symlink location</li>
-<li>Deleting the symlink and replacing it with one to the relative location</li>
-</ol>
 <p><a id="automate.utils.cpuinfo"></a></p>
 <h1 id="automateutilscpuinfo">automate.utils.cpuinfo</h1>
 <p><a id="automate.utils.cpuinfo.cpuinfo"></a></p>
@@ -721,65 +933,8 @@
 </ul>
 <p><strong>Returns</strong></p>
 <p>A list of CoreModel with the parsed cpuinfos</p>
-<p><a id="automate.utils.uboot"></a></p>
-<h1 id="automateutilsuboot">automate.utils.uboot</h1>
-<p><a id="automate.utils.uboot.build_ubimage"></a></p>
-<h4 id="build_ubimage">build_ubimage</h4>
-<pre><code class="language-python">def build_ubimage(c, uboot_desc: UBootModel, arch: str, build_path: Path,
-                  boot_path: Path, kernel_image: Path) -&gt; None
-</code></pre>
-<p>Build a U-Boot image file  for kernel deployment</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>c</strong>: AutomateContext to run commands on</li>
-<li><strong>uboot_desc</strong>: UBootModel describing image configuration</li>
-<li><strong>build_path</strong>: Path of kernel Build directory</li>
-<li><strong>boot_path</strong>: path of built ubimage (usually install/boot inside kernel build directory)</li>
-<li><strong>kernel_image</strong>: path to kernel_image file that should be packaged inside builddir</li>
-</ul>
-<p><a id="automate.utils.kernel"></a></p>
-<h1 id="automateutilskernel">automate.utils.kernel</h1>
-<p><a id="automate.utils.kernel.KernelConfigBuilder"></a></p>
-<h2 id="kernelconfigbuilder-objects">KernelConfigBuilder Objects</h2>
-<pre><code class="language-python">class KernelConfigBuilder()
-</code></pre>
-<p><a id="automate.utils.kernel.KernelConfigBuilder.predefined_configs"></a></p>
-<h4 id="predefined_configs">predefined_configs</h4>
-<pre><code class="language-python">def predefined_configs() -&gt; Generator[Tuple[str, List[str]], None, None]
-</code></pre>
-<p>Return all predefined configs that are applicable to a board</p>
-<p><strong>Returns</strong>:</p>
-<p>An iterable of tuple of string(name) and list of string [kernel config options]</p>
-<p><a id="automate.utils.kernel.KernelConfigBuilder.predefined_config"></a></p>
-<h4 id="predefined_config">predefined_config</h4>
-<pre><code class="language-python">def predefined_config(name: str) -&gt; List[str]
-</code></pre>
-<p>Search for predefined config options with given name</p>
-<p><a id="automate.utils.kernel.KernelData"></a></p>
-<h2 id="kerneldata-objects">KernelData Objects</h2>
-<pre><code class="language-python">class KernelData(object)
-</code></pre>
-<p>Provides collection of calculated kernel data</p>
-<p><a id="automate.utils.kernel.KernelData.shared_data_dir"></a></p>
-<h4 id="shared_data_dir">shared_data_dir</h4>
-<pre><code class="language-python">@property
-def shared_data_dir()
-</code></pre>
-<p>Location for shared kernel sources and cached deploy and build packages</p>
-<p><a id="automate.utils.kernel.KernelData.deploy_package_name"></a></p>
-<h4 id="deploy_package_name">deploy_package_name</h4>
-<pre><code class="language-python">@property
-def deploy_package_name()
-</code></pre>
-<p>Name of the kernel deploy archive</p>
-<p><a id="automate.utils.kernel.KernelData.build_cache_name"></a></p>
-<h4 id="build_cache_name">build_cache_name</h4>
-<pre><code class="language-python">@property
-def build_cache_name()
-</code></pre>
-<p>Name of the kernel build cache archive</p>
-<p><a id="automate.utils.appdirs"></a></p>
-<h1 id="automateutilsappdirs">automate.utils.appdirs</h1>
+<p><a id="automate.utils.cpuinfo_arm"></a></p>
+<h1 id="automateutilscpuinfo_arm">automate.utils.cpuinfo_arm</h1>
 
 
 
@@ -817,10 +972,10 @@ def build_cache_name()
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.ce72ebac.min.js"></script>
       
     
   </body>
