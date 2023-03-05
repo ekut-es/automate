@@ -9,7 +9,6 @@ from typing import Iterable, Optional
 import fabric
 import keyring
 from paramiko.ssh_exception import AuthenticationException, ChannelException
-from patchwork.files import exists
 from prompt_toolkit import prompt
 
 from ..locks import KeepLockThread
