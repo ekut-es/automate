@@ -18,7 +18,7 @@ class AutomateConfig(Config):
         my_defaults = {
             "automate": {
                 "metadata": os.path.expanduser("~/.automate/metadata"),
-                "metadata_url": "git@es.git.cs.uni-tuebingen.de:/es/timing/schrank/metadata.git",
+                "metadata_url": "git@es-git.cs.uni-tuebingen.de:/es/timing/schrank/metadata.git",
                 "metadata_ref": "main",
                 "identity": os.path.expanduser("~/.ssh/id_rsa"),
                 "toolroot": os.path.expanduser("~/.automate/tools"),
