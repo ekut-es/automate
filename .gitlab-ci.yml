@@ -82,9 +82,9 @@ deploy to github:
     GIT_DEPTH: 1000
 
   only:
-    - master
+    - main
   script:
     - echo "Pushing upstream"
-    - ./scripts/git-push git@github.com:ekut-es/automate.git master
+    - ./scripts/git-push git@github.com:ekut-es/automate.git main
   tags:
     - docker
