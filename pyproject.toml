@@ -55,6 +55,9 @@ types-tabulate = "^0.8.7"
 automate = 'automate.main:program.run'
 automate-run = 'automate.main:program_run.run'
 
+[tool.poetry.group.dev.dependencies]
+types-six = "^1.16.21.6"
+
 [tool.isort]
 multi_line_output=3
 include_trailing_comma=true

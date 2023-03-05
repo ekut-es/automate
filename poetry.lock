@@ -2069,6 +2069,18 @@ files = [
 types-urllib3 = "<1.27"
 
 [[package]]
+name = "types-six"
+version = "1.16.21.6"
+description = "Typing stubs for six"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-six-1.16.21.6.tar.gz", hash = "sha256:7b6a60ef6b46bc954903fc588161c09183b7a33ee5ebfba556174fa649f4c1e0"},
+    {file = "types_six-1.16.21.6-py3-none-any.whl", hash = "sha256:15b24f0ca13b7c2ec6448ec4d96e8691899525989e53802e99bc5b4c2574382f"},
+]
+
+[[package]]
 name = "types-tabulate"
 version = "0.8.11"
 description = "Typing stubs for tabulate"
@@ -2246,4 +2258,4 @@ postgres = ["jinjasql", "psycopg2-binary", "pydot", "python-dotenv"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.7.1,<4.0"
-content-hash = "99c765973b098e13da2029b735787149c6a9427b99bcaf6306ba3e5c2a292791"
+content-hash = "0950e616d75feb64767a55e8c7cb3f4698ec44bde1309ac8f26b93c49eb144b6"
