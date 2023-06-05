@@ -7,27 +7,41 @@ It has the following sections.
 ## automate
 
 metadata: Location of metadata .yml files 
+
 metadata_url: Url of git repository containing the central metdata repository (ignored if metdata folder exists and is not a git repository)
+
 metadata_ref: Git branch or tag of metadata (ignored if metadata folder exists and is not a git repository)
+
 identity: (Optional) Path of ssh private key to use
+
 toolroot: installation of tools
+
 boardroot: Location of saved board data (Kernel SOurces, Kernel Buildds, Device Trees)
+
 database: Database Configuration
+
 forwards: List of port forwardings
 
 ### database 
 
 host: host of database server
+
 port: port of database server
+
 db: name of database to use
+
 user: username for database server
+
 password: password for database server
 
 ### forwards
 
 host: remote host for forwards
+
 user: username for remote host
+
 local_port: local port to forwardings
+
 remote_port: remote_port to forward
 
 

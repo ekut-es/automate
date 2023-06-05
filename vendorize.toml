@@ -1,0 +1,4 @@
+target = "automate/_vendor"
+packages = [
+    "patchwork",
+]

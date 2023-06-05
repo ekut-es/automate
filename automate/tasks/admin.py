@@ -10,7 +10,7 @@ from collections import namedtuple
 from enum import Enum
 from pathlib import Path
 
-import patchwork.files
+import automate._vendor.patchwork.files
 from fabric import Connection, task
 from paramiko.ssh_exception import AuthenticationException
 from prompt_toolkit import prompt
