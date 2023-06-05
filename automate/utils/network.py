@@ -49,11 +49,12 @@ class GatewayManagingConnection(fabric.Connection):
         return super().__exit__(*args, **kwargs)
 
     def close(self):
+        ret = super().close()
         if self.gateway is not None:
             self.gateway.close()
             self.gateway = None
 
-        return super().close()
+        return ret
 
     def __del__(self):
         self.close()
