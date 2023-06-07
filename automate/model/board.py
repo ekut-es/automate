@@ -120,8 +120,8 @@ class BoardModel(DataModelBase):
     soc: Optional[SOCModel] = None
     power_supply: Optional[PowerSupplyModel] = None
     reset: List[str] = []
-    active: bool =  True
-    maintenance: bool = False
+    available: bool =  True    # Board is theoretically available
+    maintenance: bool = False  # Board is in maintenance mode
 
     def _get_env_dict(self) -> Dict[str, str]:
         default_dict = dict(super(BoardModel, self)._get_env_dict())

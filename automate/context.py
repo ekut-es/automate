@@ -334,7 +334,7 @@ class AutomateContext(invoke.Context):
     def boards(self, all=False) -> Generator[Board, None, None]:
         """Return iterator over Boards"""
         for board in sorted(self.metadata.boards, key=lambda b: b.name):
-            if not board.active and not all:
+            if not board.available and not all:
                 continue
             if board.maintenance and not all:
                 continue

@@ -34,9 +34,9 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
             "OS",
             "Connections",
             "Default Compiler",
-            "Lock Status",
+            "Status",
         ]
-        for board in c.boards():
+        for board in c.boards(all=True):
             os = getattr(board.os, "distribution", "unknown")
 
             connections = []
@@ -50,13 +50,19 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
             except:
                 pass
 
-            lock_status = "unlocked"
+            status = "unlocked"
             if board.is_locked() or board.has_lock():
                 lock_user = board.lock_holder()
                 lock_lease_time_end = datetime.now() + board.lock_lease_time()
-                lock_status = (
+                status = (
                     f"locked by {lock_user} until {lock_lease_time_end}"
                 )
+
+            if board.maintenance: 
+                status = "maintenance"
+
+            if not board.available:
+                status = "unavailable"
 
             board_line = [
                 board.name,
@@ -65,7 +71,7 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
                 os,
                 ",".join(connections),
                 default_compiler_name,
-                lock_status,
+                status,
             ]
 
             board_table.append(board_line)
