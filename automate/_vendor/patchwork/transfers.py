@@ -2,7 +2,7 @@
 File transfer functionality above and beyond basic ``put``/``get``.
 """
 
-from invoke.vendor import six
+import six
 
 
 def rsync(

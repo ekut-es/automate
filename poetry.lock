@@ -2258,8 +2258,9 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 
 [extras]
 postgres = ["jinjasql", "psycopg2-binary", "pydot", "python-dotenv"]
+xilinx = []
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.7.1,<4.0"
-content-hash = "0950e616d75feb64767a55e8c7cb3f4698ec44bde1309ac8f26b93c49eb144b6"
+content-hash = "1f0cd13f06d12b4b51b3ecef87f813498ecd2717fdc252f9a962e539129cc5a1"

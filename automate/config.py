@@ -8,8 +8,8 @@ from invoke.config import Config, merge_dicts
 class AutomateConfig(Config):
     """Encapsulates ~/.automate.yml"""
 
-    prefix = "automate"
-    env_prefix = "AUTOMATE"
+    prefix = "automate" # type: ignore
+    env_prefix = "AUTOMATE" # type: ignore
 
     @staticmethod
     def global_defaults() -> Any:

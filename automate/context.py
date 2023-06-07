@@ -331,9 +331,14 @@ class AutomateContext(invoke.Context):
 
         logging.debug("Setup forwards finished")
 
-    def boards(self) -> Generator[Board, None, None]:
+    def boards(self, all=False) -> Generator[Board, None, None]:
         """Return iterator over Boards"""
         for board in sorted(self.metadata.boards, key=lambda b: b.name):
+            if not board.available and not all:
+                continue
+            if board.maintenance and not all:
+                continue
+
             yield Board(
                 self,
                 board,

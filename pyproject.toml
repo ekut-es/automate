@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "board-automate"
-version = "0.3.0"
+version = "0.4.0"
 description = "Automate remote exection on linux based embedded boards"
 authors = ["Christoph Gerum <christoph.gerum@uni-tuebingen.de>"]
 packages = [
@@ -13,8 +13,7 @@ python = ">3.7.1,<4.0"
 pydantic = "^1.10.5"
 coloredlogs = "^10.0"
 tabulate = "^0.8.6"
-invoke = "^2.0.0"
-fabric = "^3.0.0"
+fabric = "^3.1.0"
 prompt_toolkit = "^3.0"
 requests = "^2.22"
 python-dotenv = {version = "^0.10.5", optional = true}
@@ -28,8 +27,11 @@ GitPython = "^3.1.27"
 ruamel-yaml = "^0.17.21"
 six = "^1.16.0"
 
+# Optional dependencies for xilinx boards
+
 [tool.poetry.extras]
 postgres = ["python-dotenv", "pydot", "psycopg2-binary", "jinjasql", "jinja"]
+xilinx = ["chipscopy"]
 
 [tool.poetry.dev-dependencies]
 mypy = ">0.740.0"
