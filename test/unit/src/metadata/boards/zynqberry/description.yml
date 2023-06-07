@@ -1,0 +1,82 @@
+name: zynqberry
+board: zynqberry
+description: TE0726 Zynq "ZynqBerry" (Z-7010) Module with Dual-Core Cortex-A9
+rundir: /home/es/run
+
+doc: []
+
+gateway:
+  host: tichy.informatik.uni-tuebingen.de
+  username: esdata
+  
+connections:
+  - host: 10.42.0.10
+    username: es
+    port: 22
+
+cores:
+  - num: 0
+    description: 'ARMv7 Processor rev 0 (v7l) (microarchitecture: cortex-a9)'
+    isa: armv7-a
+    uarch: cortex-a9
+    vendor: arm
+    extensions:
+      - half
+      - thumb
+      - fastmult
+      - vfp
+      - edsp
+      - neon
+      - vfpv3
+      - tls
+      - vfpd32
+  
+  - num: 1
+    description: 'ARMv7 Processor rev 0 (v7l) (microarchitecture: cortex-a9)'
+    isa: armv7-a
+    uarch: cortex-a9
+    vendor: arm
+    extensions:
+      - half
+      - thumb
+      - fastmult
+      - vfp
+      - edsp
+      - neon
+      - vfpv3
+      - tls
+      - vfpd32
+    
+os:
+  triple:
+    machine: arm
+    vendor: unknown
+    os: linux
+    environment: gnueabihf
+  distribution: debian
+  release: ''
+  description: ''
+  sysroot: ${boardroot}/${board_name}/sysroot
+  rootfs: ${boardroot}/${board_name}/${board_name}.img
+  multiarch: true
+  kernels:
+    -
+      name: default
+      description: "Standard xilinx kernel with extended build capability"
+      version: 4.14.0-xilinx-v2018.2
+      commandline: console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0p2 rw rootwait
+      kernel_source: ${boardroot}/${board}/kernel/xilinx-v2018.2.tar.gz
+      kernel_srcdir: linux-xlnx-xilinx-v2018.2
+      kernel_config: ${model_dir}/kernel/config
+
+      uboot:
+        loadaddr: 0x00008000
+        image_name: image.ub
+        dtb_image: ${boardroot}/${board}/kernel/default.dtb
+
+      image:
+        deploy_path: /boot/zImage
+        build_path:  linux-xlnx-xilinx-v2018.2/arch/arm/boot/zImage
+        
+      default: true
+      

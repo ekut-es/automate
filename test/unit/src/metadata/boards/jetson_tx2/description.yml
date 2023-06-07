@@ -1,0 +1,146 @@
+name: jetsontx2
+board: jetsontx2
+description: An NVIDIA Jetson TX2 based board running linux
+rundir: /home/es/run
+
+doc:
+  -
+    title: Technical Reference Manual
+    loc: ${model_dir}/doc/Parker_TRM_DP07821001p.pdf
+  -
+    title: Users Guide
+    loc: ${model_dir}/doc/Jetson_X2_Developer_Kit_User_Guide.pdf
+  -
+    title: ELinux Documentation
+    loc: https://elinux.org/Jetson_TX2
+  -
+    title: Thermal Design Guide
+    loc: ${model_dir}/doc/Jetson_TX2_Series_Thermal_Design_Guide.pdf
+
+
+gateway:
+  host: tichy.informatik.uni-tuebingen.de
+  username: esdata
+  
+  
+connections:
+  -
+    host: 10.42.0.99
+    username: es
+
+  -
+    device: /dev/ttyACM0
+    
+cores:
+  -
+    num: 0
+    isa: armv8-a
+    uarch: cortex-a57
+    vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+  -
+    num: 1
+    isa: armv8-a
+    uarch: denver2
+    vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+  -
+    num: 2
+    isa: armv8-a
+    uarch: denver2
+    vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+  -
+    num: 3
+    isa: armv8-a
+    uarch: cortex-a57
+    vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+  -
+    num: 4
+    isa: armv8-a
+    uarch: cortex-a57
+    vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+  -
+    num: 5
+    isa: armv8-a
+    uarch: cortex-a57
+    vendor: nvidia
+    extensions:
+      - fp
+      - asimd
+      - evtstrm
+      - aes
+      - pmull
+      - sha1
+      - sha2
+      - crc32
+ 
+ 
+os:
+    triple:
+      os: linux
+      machine: aarch64
+      environment: gnu
+    distribution: ubuntu
+    release: "18.04.02"
+    description: "Ubuntu 18.04.2 LTS"
+    sysroot: ${boardroot}/${board_name}/sysroot
+    rootfs: ${boardroot}/${board_name}/${board_name}.img
+    multiarch: True
+    kernels:
+      -
+        name: default
+        description: "Standard nvidia (jetpack) kernel with enabled kexec, coresight, nohz_full"
+        version: "4.9.140-tegra"
+        commandline: root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 console=ttyS0,115200n8 console=tty0 fbcon=map:0 net.ifnames=0 video=tegrafb no_console_suspend=1 earlycon=uart8250,mmio32,0x3100000 nvdumper_reserved=0x2772e0000 gpt usbcore.old_scheme_first=1 tegraid=18.1.2.0.0 maxcpus=6 boot.slot_suffix= boot.ratchetvalues=0.2031647.1 bl_prof_dataptr=0x10000@0x275840000 sdhci_tegra.en_boot_part_access=1 quiet
+        kernel_config: ${model_dir}/kernel/config
+        kernel_source: ${boardroot}/${board}/kernel/kernel_src_4.9.tar.bz
+        kernel_srcdir: kernel/kernel-4.9
+        image:
+          deploy_path: /boot/Image
+          build_path: kernel/kernel-4.9/arch/arm64/boot/zImage
+        default: true
+      
+    

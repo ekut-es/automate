@@ -1,0 +1,10 @@
+processor	: 0
+model name	: ARMv7 Processor rev 0 (v7l)
+BogoMIPS	: 666.66
+Features	: half thumb test_unknown
+CPU implementer	: 0x12
+CPU architecture: 2
+CPU variant	: 0x1
+CPU part	: 0x0
+CPU revision	: 0
+

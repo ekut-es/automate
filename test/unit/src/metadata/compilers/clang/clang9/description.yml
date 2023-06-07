@@ -1,0 +1,31 @@
+name: clang-90
+triples:
+  -
+    machine: aarch64
+    os: linux
+    environment: gnu
+  -
+    machine: arm
+    os: linux
+    environment: gnueabihf
+  -
+    machine: arm
+    os: linux
+    environment: gnueabi
+
+toolchain: llvm
+version: 9.0.0
+basedir: /afs/wsi/es/tools/clang/9.0
+cc: clang
+cxx: clang++
+asm: llvm-as
+ld: lld
+ar: llvm-ar
+multiarch: true
+
+isa_map:
+  armv8.1-a: -march=armv8.1-a
+
+uarch_map:
+  cortex-a35: -mcpu=cortex-a35
+

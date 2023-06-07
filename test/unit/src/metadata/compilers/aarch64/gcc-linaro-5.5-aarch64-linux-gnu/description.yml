@@ -1,0 +1,27 @@
+name: aarch64-gcc55
+triples:
+  -
+    machine: aarch64
+    os: linux
+    environment: gnu
+toolchain: gcc
+version: 5.5.0
+basedir: /afs/wsi/es/tools/arm/gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu/
+prefix: aarch64-linux-gnu-
+cc: gcc
+cxx: g++
+asm: as
+ld: ld
+ar: ar
+multiarch: True
+
+isa_map: []
+
+uarch_map:
+  cortex-a53:     -mcpu=cortex-a53
+  cortex-a57:     -mcpu=cortex-a57
+  cortex-a72:     -mcpu=cortex-a72
+  xgene1:         -mcpu=xgene1
+  exynos-m1:      -mcpu=exynos-m1
+  thunderx:       -mcpu=thunderx
+
