@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "board-automate"
-version = "0.3.0"
+version = "0.4.0"
 description = "Automate remote exection on linux based embedded boards"
 authors = ["Christoph Gerum <christoph.gerum@uni-tuebingen.de>"]
 packages = [
