@@ -1,7 +1,0 @@
-{
-    "git.ignoreLimitWarning": true,
-    "cmake.configureOnOpen": false,
-    "editor.formatOnSave": true,
-    "python.formatting.provider": "black",
-    "C_Cpp.loggingLevel": "Information"
-}

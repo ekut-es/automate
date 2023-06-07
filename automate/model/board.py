@@ -114,12 +114,14 @@ class BoardModel(DataModelBase):
     doc: List[DocumentationLinkModel] = []
     gateway: Optional[GatewayModel] = None
     connections: List[Union[SSHConnectionModel, UARTConnectionModel, XilinxHWServerConnectionModel, XilinxCSServerConnectionModel]]
-    cores: List[CoreModel]
-    os: OSModel
+    cores: List[CoreModel] = []
+    os: Optional[OSModel] = None
 
     soc: Optional[SOCModel] = None
     power_supply: Optional[PowerSupplyModel] = None
     reset: List[str] = []
+    active: bool =  True
+    maintenance: bool = False
 
     def _get_env_dict(self) -> Dict[str, str]:
         default_dict = dict(super(BoardModel, self)._get_env_dict())

@@ -23,7 +23,7 @@ def list(c, boards=False, compilers=False):  # pragma: no cover
 
     if not boards and not compilers:
         boards = True
-        compilers = True
+        compilers = False
 
     if boards:
         board_table = []
