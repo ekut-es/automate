@@ -10,7 +10,7 @@ from collections import namedtuple
 from enum import Enum
 from pathlib import Path
 
-import automate._vendor.patchwork.files
+import automate._vendor.patchwork.files as patchwork_files 
 from fabric import Connection, task
 from paramiko.ssh_exception import AuthenticationException
 from prompt_toolkit import prompt
@@ -37,7 +37,7 @@ def add_users(c):  # pragma: no cover
     users = loader.load_users()
 
     def copy_keys(sftp, users, homedir):
-        patchwork.files.directory(con, "~/.ssh", mode="700")
+        patchwork_files.directory(con, "~/.ssh", mode="700")
 
         authorized_keys = homedir / ".ssh" / "authorized_keys"
         with sftp.open(str(authorized_keys), "w") as authorized_keys_file:
@@ -382,8 +382,8 @@ def add_board(
         with open(keyfile) as f:
             key = f.read()
 
-            patchwork.files.directory(con, "~/.ssh", mode="700")
-            patchwork.files.append(con, "~/.ssh/authorized_keys", key)
+            patchwork_files.directory(con, "~/.ssh", mode="700")
+            patchwork_files.append(con, "~/.ssh/authorized_keys", key)
 
             con.close()
 
