@@ -141,7 +141,7 @@ def trylock(c, board, lease_time="1h", timeout=""):
     -b/--board: target board name
     -l/--lease-time: duration of the lock
     """
-    board = c.board()
+    board = c.board(board)
 
     if timeout != "":
         logging.warning(
